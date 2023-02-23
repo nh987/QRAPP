@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+<!--REGULAR-->
+    <item
+        android:id="@+id/leaderboard_tab"
+        android:icon="@drawable/ic_outline_leaderboard_24"
+        android:title="Rankings"
+        app:showAsAction="always"/>
+
+    <item android:title="Main"
+        android:icon="@drawable/ic_sharp_dynamic_feed_24"
+        android:id="@+id/main_tab"
+        app:showAsAction="always"/>
+
+    <item android:title=""
+        android:enabled="false"/>
+
+    <item android:title="Near Me"
+        android:icon="@drawable/ic_outline_map"
+        android:id="@+id/map_tab"
+        app:showAsAction="always"/>
+    <item android:title="Search"
+        android:icon="@drawable/ic_baseline_search_24"
+        android:id="@+id/search_tab"
+        app:showAsAction="always"/>
+
+
+
+
+</menu>
