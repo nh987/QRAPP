@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -21,6 +23,8 @@ public class MainActivity extends AppCompatActivity {
 
     BottomNavigationView nav_bar;
 
+    ImageButton myProfileButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
 
         nav_bar = findViewById(R.id.nav_barview);
         nav_bar.setOnItemSelectedListener(navbar_listener);
+
+        myProfileButton = findViewById(R.id.myp);
 
         // start at menu
         nav_bar.setSelectedItemId(R.id.main_tab);
@@ -37,10 +43,20 @@ public class MainActivity extends AppCompatActivity {
                 .replace(R.id.frame, new MainFragment())
                 .commit();
 
+        myProfileButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.frame, new MyProfileFragment())
+                        .commit();
+            }
+        });
+
+        }
 
 
 
-    }
 
     NavigationBarView.OnItemSelectedListener navbar_listener = new NavigationBarView.OnItemSelectedListener() {
         @Override
@@ -71,4 +87,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
     };
+
+
 }
