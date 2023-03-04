@@ -85,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
             This is the fragment that is commited
              */
 
+
             switch (item.getItemId()){
                 case R.id.leaderboard_tab:
                     selected = new RankFragment();

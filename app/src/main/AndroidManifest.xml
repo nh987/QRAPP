@@ -19,7 +19,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBjQHXoekiXP7B45PEmzluBQM05lKVzSnQ" />
+            android:value="${KEY}" />
 
         <activity
             android:name=".ScanActivity"
