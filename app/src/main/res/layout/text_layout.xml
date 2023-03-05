@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android = "http://schemas.android.com/apk/res/android"
+    android:id = "@+id/textinlist"
+    android:text = "Bruh"
+    android:textSize = "35sp"
+    android:textColor = "#824a5a"
+    android:fontFamily= "sans-serif-black"
+    android:paddingLeft="15dp"
+    android:layout_width = "400dp"
+    android:layout_height = "wrap_content"/>
