@@ -25,51 +25,24 @@ public class MainFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 //        return super.onCreateView(inflater, container, savedInstanceState);
         //
+        //set attrs
         View contentView = inflater.inflate(R.layout.fragment_main,container,false);
         mListView = contentView.findViewById(R.id.item_listview);
         qrcs = new ArrayList<>();
-        qrcs.add("Another");
-        qrcs.add("Another");
-        qrcs.add("Another");
-        qrcs.add("Another");
-        qrcs.add("Another");
-        qrcs.add("Another");
-        qrcs.add("Another");
-        qrcs.add("Another");
-        qrcs.add("Another");
-        qrcs.add("Another");
-        qrcs.add("Another");
-        qrcs.add("Another");
-        qrcs.add("Another");
-        qrcs.add("Another");
-        qrcs.add("Another");
-        qrcs.add("Another");
-        qrcs.add("Another");
-        qrcs.add("Another");
-        qrcs.add("Another");
-        qrcs.add("Another");
-        qrcs.add("Another");
-        qrcs.add("Another");
-        qrcs.add("Another");
-        qrcs.add("Another");
-        qrcs.add("Another");
-        qrcs.add("Another");
-        qrcs.add("Another");
-        qrcs.add("Another");
-        qrcs.add("Another");
-        qrcs.add("Another");
-        qrcs.add("Another");
-        qrcs.add("Another");
+
+        //Dummy items
+        for(int i=20; i>=0; i--){
+            qrcs.add("Another");
+        }
+
+        //link list AND listview to a listadapter
         mListView = contentView.findViewById(R.id.item_listview);
         ListViewAdapter = new ArrayAdapter<>(contentView.getContext(), R.layout.item_qrc, qrcs);
-//        ListViewAdapter = new QRcAdapter(qrcs, getContext());
         mListView.setAdapter(ListViewAdapter);
 
+        //notify adapter of list updates
         ListViewAdapter.notifyDataSetChanged();
 
-//        LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) mListView.getLayoutParams();
-//        lp.height = 300;
-//        mListView.setLayoutParams(lp);
 
         return contentView;
     }

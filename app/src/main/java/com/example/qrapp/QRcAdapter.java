@@ -10,6 +10,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+//CUSTOM ADAPTER FOR QRc Object
+// Used to show them in format we want
 class QRcAdapter extends BaseAdapter {
     ArrayList<String> items;
     Context mycontext;

@@ -8,7 +8,6 @@
     tools:context=".MainActivity">
 
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -21,16 +20,13 @@
             android:background="@color/white"
             android:gravity="right">
 
-            <!--        <com.google.android.material.floatingactionbutton.FloatingActionButton-->
-            <!--            android:layout_width="wrap_content"-->
-            <!--            android:layout_height="wrap_content"-->
-            <!--            android:src="@drawable/ic_baseline_myprofile"-->
-            <!--            android:layout_gravity="end"/>-->
+
             <ImageButton
-                android:id="@+id/myp"
+                android:id="@+id/button_MYprofile"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_baseline_myprofile"/>
+                android:src="@drawable/ic_baseline_myprofile"
+                android:contentDescription="Main[Middle] Action Button, Scan QRc" />
         </LinearLayout>
 
 
@@ -41,7 +37,6 @@
             android:layout_height="match_parent"
             android:layout_gravity="bottom">
         </FrameLayout>
-
 
     </LinearLayout>
 
@@ -70,6 +65,7 @@
     </com.google.android.material.bottomappbar.BottomAppBar>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/button_scan"
         android:contentDescription="Scan a Code"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

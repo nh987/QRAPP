@@ -14,13 +14,16 @@
         android:id="@+id/main_tab"
         app:showAsAction="always"/>
 
+
     <item android:title=""
         android:enabled="false"/>
+
 
     <item android:title="Near Me"
         android:icon="@drawable/ic_outline_map"
         android:id="@+id/map_tab"
         app:showAsAction="always"/>
+
     <item android:title="Search"
         android:icon="@drawable/ic_baseline_search_24"
         android:id="@+id/search_tab"
