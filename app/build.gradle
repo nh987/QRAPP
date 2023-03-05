@@ -3,10 +3,6 @@ plugins {
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 }
 
-def localPropertiesFile = rootProject.file("local.properties")
-def localProperties = new Properties()
-localProperties.load(new FileInputStream(localPropertiesFile))
-
 
 android {
     namespace 'com.example.qrapp'
@@ -14,13 +10,12 @@ android {
 
     defaultConfig {
         applicationId "com.example.qrapp"
-        minSdk 21
+        minSdk 31
         targetSdk 33
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField "String", "API_KEY", localProperties['KEY']
     }
 
     buildTypes {

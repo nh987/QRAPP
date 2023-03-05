@@ -4,6 +4,7 @@ package com.example.qrapp;
 import static com.google.android.gms.location.Priority.*;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -135,6 +136,7 @@ public class MapFragment extends Fragment {
     }
 
 
+    @SuppressLint("MissingPermission")
     private void update() {
 
         //Client allows retrieval of location
