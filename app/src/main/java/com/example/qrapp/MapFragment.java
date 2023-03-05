@@ -1,6 +1,7 @@
 package com.example.qrapp;
 
-import static com.google.android.gms.location.Priority.PRIORITY_BALANCED_POWER_ACCURACY;
+
+import static com.google.android.gms.location.Priority.*;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -8,6 +9,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationRequest;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +22,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
@@ -104,10 +107,12 @@ public class MapFragment extends Fragment {
 
         int update_interval=10; // these are used to update location after a certain amount of secs
         int fastest_update_interval = 5; // I times these by 100o because apparently, the function accepts time in millisecs
+
         LRequest = new LocationRequest.Builder(PRIORITY_BALANCED_POWER_ACCURACY)
                 .setIntervalMillis(update_interval * 1000) //set location requesting params
                 .setMinUpdateIntervalMillis(fastest_update_interval * 1000)
                 .build();
+
 
         View view = inflater.inflate(R.layout.fragment_map, container, false);
         UPDATE = view.findViewById(R.id.button_addpoint);
