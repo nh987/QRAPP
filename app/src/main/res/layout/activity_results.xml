@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/purple_200">
+
+    <TextView
+        android:id="@+id/results_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/purple_500"
+        android:padding="15dp"
+        android:text="1D/2D Code Scan Results"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/results_points"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/purple_500"
+        android:padding="15dp"
+        android:text="Scanned code is worth: \n X points!"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/results_checkbox"
+        app:layout_constraintEnd_toEndOf="@+id/results_options"
+        app:layout_constraintStart_toStartOf="@+id/results_options"
+        app:layout_constraintTop_toBottomOf="@+id/results_header" />
+
+    <TextView
+        android:id="@+id/results_options"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/purple_500"
+        android:padding="15dp"
+        android:text="Options:"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+
+        app:layout_constraintBottom_toTopOf="@+id/results_checkbox"
+        app:layout_constraintTop_toBottomOf="@+id/results_points" />
+
+    <CheckBox
+        android:id="@+id/results_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/purple_500"
+        android:padding="15dp"
+        android:text="Include geolocation?"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/results_options"
+        app:layout_constraintStart_toStartOf="@+id/results_options"
+        app:layout_constraintTop_toBottomOf="@+id/results_header" />
+
+    <Button
+        android:id="@+id/results_add_photo_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="15dp"
+        android:text="Add photo"
+        android:textSize="15dp"
+        app:layout_constraintEnd_toEndOf="@+id/results_checkbox"
+        app:layout_constraintStart_toStartOf="@+id/results_checkbox"
+        app:layout_constraintTop_toBottomOf="@+id/results_checkbox" />
+
+    <Button
+        android:id="@+id/results_continue_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="15dp"
+        android:text="Continue to post"
+        android:textSize="15dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/results_add_photo_btn"
+        app:layout_constraintStart_toStartOf="@+id/results_add_photo_btn"
+        app:layout_constraintTop_toBottomOf="@+id/results_add_photo_btn" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
