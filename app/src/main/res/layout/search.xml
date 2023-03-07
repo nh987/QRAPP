@@ -56,14 +56,15 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="96dp"
         android:layout_marginTop="12dp"
-        android:background="@drawable/button_shape"
-        android:backgroundTint="@color/white"
         android:text="Players"
         android:textColor="@color/black"
+        android:background="@drawable/button_shape"
+        android:backgroundTint="@color/white"
         app:layout_constraintEnd_toStartOf="@+id/button2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/searchView"
         />
+
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button2"

@@ -1,4 +1,5 @@
 package com.example.qrapp;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -47,6 +48,8 @@ public class SearchFragment extends Fragment {
             public void onClick(View view) {
                 playerFilterButtonClicked = true;
                 QrFilterButtonClicked = false;
+                QRSearch.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FFFFFF")));
+                playerSearch.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF0000")));
                 // change Qr color to standard
                 // change player color to coloured
             }
@@ -57,6 +60,9 @@ public class SearchFragment extends Fragment {
             public void onClick(View view) {
                 QrFilterButtonClicked = true;
                 playerFilterButtonClicked = false;
+                QRSearch.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF0000")));
+                playerSearch.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FFFFFF")));
+
                 // change Qr color to coloured
                 // change player color to standard
 
