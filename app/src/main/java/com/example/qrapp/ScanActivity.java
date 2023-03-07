@@ -2,6 +2,7 @@ package com.example.qrapp;
 
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 
 import android.graphics.Point;
@@ -41,10 +42,12 @@ import com.google.mlkit.vision.barcode.common.Barcode;
 
 
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
-
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class ScanActivity extends AppCompatActivity implements ImageAnalysis.Analyzer {
@@ -52,6 +55,9 @@ public class ScanActivity extends AppCompatActivity implements ImageAnalysis.Ana
     private ImageButton BACK_ARROW;
     private PreviewView previewView;
     private ImageAnalysis imageAnalysis;
+    boolean scannedCode = false; // init false, set true when scanned and close activity
+    long score;
+    String hashed;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,8 +114,10 @@ public class ScanActivity extends AppCompatActivity implements ImageAnalysis.Ana
 
     @Override
     public void analyze(@NonNull ImageProxy imageProxy) {
-        // kill me please for the love of god i want to die
         Log.d("ScanActivity_analyze", "analyze: got the frame at: " + imageProxy.getImageInfo().getTimestamp());
+//        boolean scannedCode = false;
+//        long score;
+//        String hashed;
         @SuppressLint("UnsafeOptInUsageError") Image mediaImage = imageProxy.getImage();
         if (mediaImage != null) {
             InputImage image = InputImage.fromMediaImage(mediaImage, imageProxy.getImageInfo().getRotationDegrees());
@@ -133,22 +141,13 @@ public class ScanActivity extends AppCompatActivity implements ImageAnalysis.Ana
 
                                 Log.d("barcode", "extractBarCodeInfo: "+rawValue+", extractBarCodeRawBytes: "+rawData+", extractBarCodeType: "+valueType);
                                 // TODO: PASS SHA-256 HASHED SCORE, NAME, VISUAL INTO RESULTS VIEW
-//                                MessageDigest digest = null;
-//                                try {
-//                                    digest = MessageDigest.getInstance("SHA-256");
-//                                    byte[] hash = digest.digest(rawValue.getBytes(StandardCharsets.UTF_8));
-//                                    String encoded = Base64.getEncoder().encodeToString(hash);
-//                                    Log.d("sha256", "encoded: "+encoded);
-//
-//                                } catch (NoSuchAlgorithmException e) {
-//                                    throw new RuntimeException(e);
-//                                }
-                                final String hashed = Hashing.sha256()
+
+                                hashed = Hashing.sha256()
                                         .hashString(rawValue, StandardCharsets.UTF_8)
                                         .toString();
                                 Log.d("encoded", "sha256 hex string: "+hashed);
-
-                                // finish();
+                                score = score(hashed);
+                                scannedCode = true;
                             }
 
                         }
@@ -164,10 +163,48 @@ public class ScanActivity extends AppCompatActivity implements ImageAnalysis.Ana
                             // close working images
                             imageProxy.close();
                             mediaImage.close();
-
+                            if (scannedCode) {
+                                Intent toResults = new Intent(ScanActivity.this, ResultsActivity.class);
+                                toResults.putExtra("hashed", hashed);
+                                toResults.putExtra("score", score);
+                                startActivity(toResults);
+                                finish();
+                            }
                         }
                     });
         }
+    }
+    public long score(String hex) {
+        long score = 0;
+        HashMap<Character, Integer> hexMap = new HashMap<Character, Integer>();
+        hexMap.put('0', 20); // handle 0 differently because it is built differently
+        hexMap.put('1', 1);
+        hexMap.put('2', 2);
+        hexMap.put('3', 3);
+        hexMap.put('4', 4);
+        hexMap.put('5', 5);
+        hexMap.put('6', 6);
+        hexMap.put('7', 7);
+        hexMap.put('8', 8);
+        hexMap.put('9', 9);
+        hexMap.put('a', 10);
+        hexMap.put('b', 11);
+        hexMap.put('c', 12);
+        hexMap.put('d', 13);
+        hexMap.put('e', 14);
+        hexMap.put('f', 15);
 
+        Pattern pattern = Pattern.compile("([0-9a-f])(\\1+)",  2);
+        Matcher matcher = pattern.matcher(hex);
+        while (matcher.find()) {
+            String repeated = matcher.group();
+            Log.d("REPEATED SUBSTRING:", repeated);
+            long len = repeated.length() - 1; // subtract 1 from length
+            double val = Math.pow(hexMap.get(repeated.charAt(0)),len);
+            Log.d("SUBSTRING VALUE", ""+val);
+            score += Math.pow(hexMap.get(repeated.charAt(0)),len);
+        }
+        Log.d("hex SCORE: ", ""+score);
+        return score;
     }
 }
