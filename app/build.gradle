@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
+
 }
 
 
@@ -28,7 +29,7 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-9
+
 }
 
 dependencies {
@@ -44,5 +45,25 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
     implementation 'com.google.android.gms:play-services-location:21.0.1'
+
+
+    // SCANNING STUFF BELOW //
+
+    // ML Kit
+    implementation 'com.google.mlkit:barcode-scanning:17.0.3'
+
+    // CAMERAX
+    def camerax_version = "1.1.0-beta01"
+    implementation "androidx.camera:camera-core:${camerax_version}"
+    implementation "androidx.camera:camera-camera2:${camerax_version}"
+    implementation "androidx.camera:camera-lifecycle:${camerax_version}"
+    implementation "androidx.camera:camera-video:${camerax_version}"
+
+    implementation "androidx.camera:camera-view:${camerax_version}"
+    implementation "androidx.camera:camera-extensions:${camerax_version}"
+
+    // SHA-256
+    implementation("com.google.guava:guava:31.1-android")
+
 }
 
