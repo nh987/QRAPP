@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@android:color/black">
+
+    <LinearLayout
+        android:id="@+id/ScanActivity_header_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@android:color/holo_purple">
+
+        <ImageButton
+            android:id="@+id/ScanActivity_back_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_arrow_back_24"
+            android:background="@drawable/ic_baseline_arrow_back_24"
+            app:tint="@color/white"
+            />
+
+        <TextView
+            android:id="@+id/ScanActivity_header_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="Scan 1D/2D Barcode"
+            android:textSize="30dp"
+            android:textColor="@color/white"
+            />
+    </LinearLayout>
+
+    <androidx.camera.view.PreviewView
+        android:id="@+id/ScanActivity_preview_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+
+</LinearLayout>
