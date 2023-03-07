@@ -10,15 +10,17 @@ public class QRCode {
     public String name;
     public String icon;
     public ArrayList<String> playersScanned;
-    public ArrayList<PhotoObject> photos;
+    public ArrayList<String> photos;
+    public ArrayList<Float> geolocation;
 
-    public QRCode(HashMap<String, String> comments, Integer points, String name, String icon, ArrayList<String> playersScanned, ArrayList<PhotoObject> photos) {
+    public QRCode(HashMap<String, String> comments, Integer points, String name, String icon, ArrayList<String> playersScanned, ArrayList<String> photos, ArrayList<Float> geolocation) {
         this.comments = comments;
         this.points = points;
         this.name = name;
         this.icon = icon;
         this.playersScanned = playersScanned;
         this.photos = photos;
+        this.geolocation = geolocation;
     }
 
     // getters and setters
@@ -52,10 +54,16 @@ public class QRCode {
     public void setPlayersScanned(ArrayList<String> playersScanned) {
         this.playersScanned = playersScanned;
     }
-    public ArrayList<PhotoObject> getPhotos() {
+    public ArrayList<Float> getGeolocation() {
+        return geolocation;
+    }
+    public void setGeolocation(ArrayList<Float> geolocation) {
+        this.geolocation = geolocation;
+    }
+    public ArrayList<String> getPhotos() {
         return photos;
     }
-    public void setPhotos(ArrayList<PhotoObject> photos) {
+    public void setPhotos(ArrayList<String> photos) {
         this.photos = photos;
     }
 
