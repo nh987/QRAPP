@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -26,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     ImageButton SCAN;// scan button object
     ImageButton MYPROFILE;// get to myprofile page
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +41,9 @@ public class MainActivity extends AppCompatActivity {
         nav_bar = findViewById(R.id.nav_barview);
         nav_bar.setOnItemSelectedListener(navbar_listener);
 
+
+        // start at menu
+        nav_bar.setSelectedItemId(R.id.main_tab);
 
 
 
@@ -62,7 +67,21 @@ public class MainActivity extends AppCompatActivity {
                 .beginTransaction()
                 .replace(R.id.frame, new MainFragment())
                 .commit();
-    }
+
+        MYPROFILE.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.frame, new MyProfileFragment())
+                        .commit();
+            }
+        });
+
+        }
+
+
+
 
 
 
@@ -108,4 +127,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
     };
+
+
 }
