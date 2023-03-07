@@ -52,7 +52,7 @@ public class MyProfileFragment extends Fragment {
 
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        
+
         //Todo this is very fragile, add fallbacks besides just crashing
         String deviceID = "DefaultDummyDevice"; //TODO this should be the device ID once we set up registration
         //query the database for the user with the device ID

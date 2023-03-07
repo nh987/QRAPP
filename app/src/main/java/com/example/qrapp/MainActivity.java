@@ -27,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
     ImageButton SCAN;// scan button object
     ImageButton MYPROFILE;// get to myprofile page
 
-    ImageButton myProfileButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
         nav_bar = findViewById(R.id.nav_barview);
         nav_bar.setOnItemSelectedListener(navbar_listener);
 
-        myProfileButton = findViewById(R.id.myp);
 
         // start at menu
         nav_bar.setSelectedItemId(R.id.main_tab);
@@ -70,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
                 .replace(R.id.frame, new MainFragment())
                 .commit();
 
-        myProfileButton.setOnClickListener(new View.OnClickListener() {
+        MYPROFILE.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 getSupportFragmentManager()
