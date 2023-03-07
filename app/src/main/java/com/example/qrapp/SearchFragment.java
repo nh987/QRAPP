@@ -143,9 +143,6 @@ public class SearchFragment extends Fragment {
                     sortedQRCodeList.remove(closestQRCode);
                     sortedQRCodeList.add(0, closestQRCode);
                 }
-                for (QRCode qrCode : sortedQRCodeList) {
-                    Log.d("QR Code", qrCode.getName() + ": " + qrCode.getGeolocation().toString());
-                }
             }
         });
 
