@@ -20,16 +20,22 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
 
 public class SearchFragment extends Fragment {
-    Boolean playerFilterButtonClicked = false;
-    Boolean QrFilterButtonClicked = true;
+
+    Boolean playerFilterButtonClicked = true;
+    Boolean QrFilterButtonClicked = false;
     private QRcAdapter qRcAdapter;
+
     public ArrayList<QRCode> dataList;
+    public ArrayList<Player> playerList;
     @Nullable
     @Override
 
@@ -41,6 +47,7 @@ public class SearchFragment extends Fragment {
         SearchView searchView = (SearchView) view.findViewById(R.id.searchView);
         ListView qrListView = view.findViewById(R.id.listView);
         QRSearch.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF0000")));
+
 
 
         // qr code list contains the qr codes, but you cannot put those on screen
@@ -70,18 +77,50 @@ public class SearchFragment extends Fragment {
         QRCodeList.add(qrCode1);
         QRCodeList.add(qrCode2);
 
+        //adding DB instance
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 // you actually have to click on the magnifying glass..
                 // TODO, hook in database now
                 String searchText = searchView.getQuery().toString();
-
                 if (playerFilterButtonClicked) {
-                    // search for player
+                    // query the database, store results in a database
 
+
+                    // not sure why this the query returns null atm, i'll figure that out later.
+                    db.collection("Users").whereEqualTo("Username", searchText).get().addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult().getDocuments().get(0); // this im assuming gets the first result of this list
+                            String username = document.getString("Username");
+                            String email = document.getString("Email");
+                            String phoneNumber = document.getString("PhoneNumber");
+                            String location = "edmonton"; // TODO  This is currently NOT in the db
+                            Player queriedPlayer = new Player(username, email, location, phoneNumber);
+                            try {
+                                playerList.add(queriedPlayer);
+                                PlayerListAdapter playerListAdapter = new PlayerListAdapter(playerList, getContext());
+                                qrListView.setAdapter(playerListAdapter);
+                            }
+                            catch (Exception e)
+                            {
+                                Toast queryToast = Toast.makeText(getContext(), "Your search returned no results", Toast.LENGTH_SHORT);
+                                queryToast.show();
+                            }
+                        }
+                        else {
+                            Toast errorToast = Toast.makeText(getContext(), "An error occurred, please try again", Toast.LENGTH_SHORT);
+                            errorToast.show();
+                        }
+                });
                 }
 
+
+                // Just don't touch this William you giraffe
+                //*******************************************
                 else if (QrFilterButtonClicked) {
                     String searchLocationStr = searchView.getQuery().toString().trim();
                     String[] locationParts = searchLocationStr.split(",");
@@ -99,8 +138,6 @@ public class SearchFragment extends Fragment {
                         toast.show();
                         throw new IllegalArgumentException("Invalid search location format. Must be in the form \"[Location1], [Location2]\"");
                     }
-
-
                     // Find the closest QR code based on the search location
                     QRCode closestQRCode = null;
                     float closestDistance = Float.MAX_VALUE;
@@ -152,12 +189,10 @@ public class SearchFragment extends Fragment {
                 QrFilterButtonClicked = false;
                 QRSearch.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FFFFFF")));
                 playerSearch.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF0000")));
-
                 // change Qr color to standard
                 // change player color to coloured
             }
         });
-
         QRSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -165,13 +200,10 @@ public class SearchFragment extends Fragment {
                 playerFilterButtonClicked = false;
                 QRSearch.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF0000")));
                 playerSearch.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FFFFFF")));
-
             }
         });
-
         return view;
     }
-
     public float calculateDistance(ArrayList<Float> location1, ArrayList<Float> location2) {
         float x1 = location1.get(0);
         float y1 = location1.get(1);
