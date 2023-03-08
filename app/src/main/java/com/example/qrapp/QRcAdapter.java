@@ -2,10 +2,17 @@ package com.example.qrapp;
 
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,10 +20,10 @@ import java.util.List;
 //CUSTOM ADAPTER FOR QRc Object
 // Used to show them in format we want
 class QRcAdapter extends BaseAdapter {
-    ArrayList<String> items;
+    ArrayList<QRCode> items;
     Context mycontext;
 
-    public QRcAdapter(ArrayList<String> items, Context context) {
+    public QRcAdapter(ArrayList<QRCode> items, Context context) {
         super();
         this.mycontext = context;
         this.items = items;
@@ -40,8 +47,12 @@ class QRcAdapter extends BaseAdapter {
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
-        TextView textView = new TextView(mycontext);
-        textView.setText(items.get(i));
-        return textView;
+        LayoutInflater inflater = LayoutInflater.from(mycontext);
+        View row = inflater.inflate(R.layout.text_layout, viewGroup, false);
+        QRCode qrCode = items.get(i);
+        TextView qrCodeName = row.findViewById(R.id.textinlist);
+        qrCodeName.setText(qrCode.getName());
+        return row;
     }
+
 }
