@@ -38,14 +38,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignBottom="@+id/imageView"
-                    android:layout_marginStart="-1dp"
-                    android:layout_marginBottom="13dp"
+                    android:layout_marginStart="1dp"
+                    android:layout_marginBottom="17dp"
                     android:layout_toEndOf="@+id/imageView"
                     android:fontFamily="sans-serif-black"
                     android:includeFontPadding="false"
                     android:paddingLeft="5dp"
                     android:text="My Profile"
-                    android:textSize="28sp" />
+                    android:textSize="20sp" />
 
 
             </RelativeLayout>
@@ -113,7 +113,6 @@
                         android:layout_width="380dp"
                         android:layout_height="60dp"
                         android:text="Edmonton"
-                        android:clickable="false"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/relativeLayout" />
                 </com.google.android.material.textfield.TextInputLayout>

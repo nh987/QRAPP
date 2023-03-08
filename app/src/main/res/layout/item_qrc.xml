@@ -1,37 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-
-    <ImageView
-        android:id="@+id/icon"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:contentDescription="@string/app_name"
-        android:padding="10dp"
-        app:srcCompat="@drawable/ic_baseline_scan2" />
-
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/icon"
-        android:textColor="#824a5a"
-        android:padding = "10dp"
-        android:fontFamily="sans-serif-black"
-        android:textSize="16dp"
-        android:text = "hot GloUltraSonicShark"/>
-
-    <TextView
-        android:id="@+id/desc"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/title"
-        android:layout_toRightOf="@+id/icon"
-        android:textColor="#000000"
-        android:fontFamily="sans-serif-black"
-        android:paddingLeft = "10dp"
-        android:textSize="14dp"
-        android:text = "100,000 Points"/>
-</RelativeLayout>
+<TextView
+    android:id="@+id/item_cur_city"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:textSize="32sp"
+    android:textAlignment="center"
+    android:padding="4dp"
+    xmlns:android="http://schemas.android.com/apk/res/android" />
