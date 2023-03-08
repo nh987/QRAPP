@@ -2,10 +2,7 @@ package com.example.qrapp;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -46,15 +43,11 @@ public class SearchFragment extends Fragment {
         Button QRSearch = (Button) view.findViewById(R.id.button2);
         SearchView searchView = (SearchView) view.findViewById(R.id.searchView);
         ListView qrListView = view.findViewById(R.id.listView);
-        QRSearch.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF0000")));
-
-
 
         // qr code list contains the qr codes, but you cannot put those on screen
         // you need to use an adapter to do that
         // the adapter is a class that you create that extends BaseAdapter
         // qrListView is actually what shows up on screen
-
 
         ArrayList<QRCode> QRCodeList = new ArrayList<>();
         qRcAdapter = new QRcAdapter(QRCodeList, this.getContext());
@@ -141,6 +134,8 @@ public class SearchFragment extends Fragment {
                     // Find the closest QR code based on the search location
                     QRCode closestQRCode = null;
                     float closestDistance = Float.MAX_VALUE;
+
+                    // iterate through QR collection and order and display from there
                     for (QRCode qrCode : QRCodeList) {
                         float distance = calculateDistance(qrCode.getGeolocation(), searchLocation);
                         if (distance < closestDistance) {
