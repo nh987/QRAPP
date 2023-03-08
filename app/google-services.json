@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "52292401198",
+    "project_id": "qrapp-545d6",
+    "storage_bucket": "qrapp-545d6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:52292401198:android:cce042f8e8d035824ec7bf",
+        "android_client_info": {
+          "package_name": "com.example.qrapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "52292401198-6dd9m8ll59iitadojn3niab8v3gpgfp3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyClHV6NrxpNQuVyy8S5g3dk6669UfETHxE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "52292401198-6dd9m8ll59iitadojn3niab8v3gpgfp3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -4,14 +4,16 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
-
 import java.util.Arrays;
 import java.util.HashMap;
+
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,10 +30,11 @@ public class SearchFragment extends Fragment {
     Boolean QrFilterButtonClicked = false;
     private QRcAdapter qRcAdapter;
     public ArrayList<QRCode> dataList;
-
     @Nullable
     @Override
+
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
         View view = LayoutInflater.from(getContext()).inflate(R.layout.search, null);
         Button playerSearch = (Button) view.findViewById(R.id.button);
         Button QRSearch = (Button) view.findViewById(R.id.button2);
@@ -131,6 +134,7 @@ public class SearchFragment extends Fragment {
                     Toast toast = Toast.makeText(getContext(), "Please select a filter", Toast.LENGTH_SHORT);
                     toast.show();
                 }
+
                 return false;
             }
 
@@ -146,6 +150,7 @@ public class SearchFragment extends Fragment {
                 QrFilterButtonClicked = false;
                 QRSearch.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FFFFFF")));
                 playerSearch.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF0000")));
+
                 // change Qr color to standard
                 // change player color to coloured
             }
@@ -158,6 +163,7 @@ public class SearchFragment extends Fragment {
                 playerFilterButtonClicked = false;
                 QRSearch.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF0000")));
                 playerSearch.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FFFFFF")));
+
             }
         });
 
@@ -171,9 +177,5 @@ public class SearchFragment extends Fragment {
         float y2 = location2.get(1);
         return (float) Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
     }
-
-
-
-
 
 }
