@@ -27,7 +27,7 @@ import java.util.Comparator;
 
 public class SearchFragment extends Fragment {
     Boolean playerFilterButtonClicked = false;
-    Boolean QrFilterButtonClicked = false;
+    Boolean QrFilterButtonClicked = true;
     private QRcAdapter qRcAdapter;
     public ArrayList<QRCode> dataList;
     @Nullable
@@ -40,6 +40,8 @@ public class SearchFragment extends Fragment {
         Button QRSearch = (Button) view.findViewById(R.id.button2);
         SearchView searchView = (SearchView) view.findViewById(R.id.searchView);
         ListView qrListView = view.findViewById(R.id.listView);
+        QRSearch.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF0000")));
+
 
         // qr code list contains the qr codes, but you cannot put those on screen
         // you need to use an adapter to do that
