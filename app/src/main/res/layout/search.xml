@@ -56,10 +56,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="96dp"
         android:layout_marginTop="12dp"
-        android:background="@drawable/button_shape"
-        android:backgroundTint="@color/white"
         android:text="Players"
         android:textColor="@color/black"
+        android:background="@drawable/button_shape"
+        android:backgroundTint="@color/white"
         app:layout_constraintEnd_toStartOf="@+id/button2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/searchView"
@@ -81,14 +81,13 @@
 
     <ListView
         android:id="@+id/listView"
-        android:layout_width="334dp"
-        android:layout_height="352dp"
+        android:layout_width="340dp"
+        android:layout_height="360dp"
+        android:layout_marginTop="32dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.491"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchView"
-        app:layout_constraintVertical_bias="0.777" />
+        app:layout_constraintTop_toBottomOf="@+id/button" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
