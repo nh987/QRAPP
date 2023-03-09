@@ -134,7 +134,6 @@ public class SearchFragment extends Fragment {
                                 QRCode queriedQR = new QRCode(comments,  points,  name,  icon, playersScanned, geolocation);
                                 try {
                                     QRCodeList.add(queriedQR);
-                                    qrListView.setAdapter(qRcAdapter);
                                 }
                                 catch (Exception e)
                                 {
@@ -142,6 +141,9 @@ public class SearchFragment extends Fragment {
                                     queryToast.show();
                                 }
                             }
+                            QRcAdapter qRcAdapter = new QRcAdapter(QRCodeList, getContext());
+                            qrListView.setAdapter(qRcAdapter);
+
 
                         }
                     });
