@@ -193,6 +193,7 @@ public class SearchFragment extends Fragment {
     }
 
     // Compute the distance between two GeoPoint objects using the Haversine formula
+    // Source: https://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula
     private double distanceBetweenPoints(GeoPoint point1, GeoPoint point2) {
         double earthRadius = 6371; // Earth's radius in kilometers
         double dLat = Math.toRadians(point2.getLatitude() - point1.getLatitude());
