@@ -37,7 +37,7 @@ public class MainFragment extends Fragment {
 
         //link list AND listview to a listadapter
         mListView = contentView.findViewById(R.id.item_listview);
-        ListViewAdapter = new ArrayAdapter<>(contentView.getContext(), R.layout.item_qrc, qrcs);
+        ListViewAdapter = new ArrayAdapter<>(contentView.getContext(), R.layout.item_qrc, R.id.QRCName, qrcs);
         mListView.setAdapter(ListViewAdapter);
 
         //notify adapter of list updates
