@@ -1,33 +1,32 @@
 package com.example.qrapp;
 
+import com.google.firebase.firestore.GeoPoint;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class QRCode {
 
-    public HashMap<String, String> comments;
+    public Object comments;
     public Integer points;
     public String name;
     public String icon;
-    public ArrayList<String> playersScanned;
-    public ArrayList<String> photos;
-    public ArrayList<Float> geolocation;
+    public Object playersScanned;
+    public GeoPoint geolocation;
 
-    public QRCode(HashMap<String, String> comments, Integer points, String name, String icon, ArrayList<String> playersScanned, ArrayList<String> photos, ArrayList<Float> geolocation) {
+    public QRCode(Object comments, Integer points, String name, String icon, Object playersScanned, GeoPoint geolocation) {
         this.comments = comments;
         this.points = points;
         this.name = name;
         this.icon = icon;
         this.playersScanned = playersScanned;
-        this.photos = photos;
         this.geolocation = geolocation;
     }
 
     // getters and setters
-    public HashMap<String, String> getComments() {
+    public Object getComments() {
         return comments;
     }
-    public void setComments(HashMap<String, String> comments) {
+    public void setComments(Object comments) {
         this.comments = comments;
     }
     public Integer getPoints() {
@@ -48,23 +47,18 @@ public class QRCode {
     public void setIcon(String icon) {
         this.icon = icon;
     }
-    public ArrayList<String> getPlayersScanned() {
+    public Object getPlayersScanned() {
         return playersScanned;
     }
-    public void setPlayersScanned(ArrayList<String> playersScanned) {
+    public void setPlayersScanned(Object playersScanned) {
         this.playersScanned = playersScanned;
     }
-    public ArrayList<Float> getGeolocation() {
+    public GeoPoint getGeolocation() {
         return geolocation;
     }
-    public void setGeolocation(ArrayList<Float> geolocation) {
+    public void setGeolocation(GeoPoint geolocation) {
         this.geolocation = geolocation;
     }
-    public ArrayList<String> getPhotos() {
-        return photos;
-    }
-    public void setPhotos(ArrayList<String> photos) {
-        this.photos = photos;
-    }
+
 
 }
