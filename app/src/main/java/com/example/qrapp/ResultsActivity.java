@@ -38,7 +38,12 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
 
@@ -50,8 +55,8 @@ public class ResultsActivity extends AppCompatActivity {
     String name;
     String visual;
     Boolean includeGeolocation = false; // init false
-    String[] comments;
-    String[] playersScanned;
+    List<String> comments = new ArrayList<>();
+    List<String> playersScanned = new ArrayList<>();
     TextView textView;
     CheckBox checkBox;
     Button addPhoto; // TODO: addPhotoFragment -> CameraX integration
@@ -127,7 +132,7 @@ public class ResultsActivity extends AppCompatActivity {
         name = createName(hashed);
         visual = createVisual(hashed);
 
-        // TODO: FIGURE THE FUCK OUT HOW THIS WORKS IS IT THIS ONE OR THE OTHER ONE...
+        // TODO: FIGURE OUT PERMISSIONS (I THINK ITS GOOD NOW)
         ActivityResultLauncher<String[]> locationPermissionRequest =
                 registerForActivityResult(new ActivityResultContracts
                                 .RequestMultiplePermissions(), result -> {
@@ -154,10 +159,10 @@ public class ResultsActivity extends AppCompatActivity {
         checkBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (includeGeolocation == false) {
+                if (!includeGeolocation) {
                     includeGeolocation = true;
 
-                    // TODO: FIGURE OUT HOW THE FUCK THIS ONE WORKS TOO I DON'T KNOW WHICH ONE IS ACTUALLY GETTING THE PERMISSION...
+                    // TODO: FIGURED OUT FOR NOW?
 
                     if (ActivityCompat.checkSelfPermission(ResultsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ResultsActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                         locationPermissionRequest.launch(new String[]{
@@ -168,7 +173,7 @@ public class ResultsActivity extends AppCompatActivity {
                         return;
                     }
                     CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-                    fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, cancellationTokenSource.getToken())
+                    fusedLocationClient.getCurrentLocation(Priority.PRIORITY_BALANCED_POWER_ACCURACY, cancellationTokenSource.getToken())
                             .addOnSuccessListener(ResultsActivity.this, new OnSuccessListener<Location>() {
                                 @Override
                                 public void onSuccess(Location location) {
@@ -219,11 +224,11 @@ public class ResultsActivity extends AppCompatActivity {
 
                 // TODO: Image gets sent into its own collection to be implemented...
                 // TODO: playersScanned array contains UserID...
+                // TODO: Update User's scannedQRCs' array...
                 newQRC.put("Comments", comments);
                 newQRC.put("playersScanned", playersScanned);
 
                 // Write new QRC to DB
-                // TODO: Update User's scannedQRCs' array...
                 db.collection("QRCodes").document(hashed) // DocIDs will be set to hashed
                         .set(newQRC)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
