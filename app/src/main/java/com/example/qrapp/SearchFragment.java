@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -57,7 +58,6 @@ public class SearchFragment extends Fragment {
         Button QRSearch = (Button) view.findViewById(R.id.button2);
         SearchView searchView = (SearchView) view.findViewById(R.id.searchView);
         ListView qrListView = view.findViewById(R.id.listView);
-
         // qr code list contains the qr codes, but you cannot put those on screen
         // you need to use an adapter to do that
         // the adapter is a class that you create that extends BaseAdapter
