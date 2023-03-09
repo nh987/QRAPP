@@ -19,6 +19,11 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+    android {
+        packagingOptions {
+            resources.excludes.add("META-INF/*")
+        }
+    }
 
     buildTypes {
         release {
@@ -48,6 +53,7 @@ dependencies {
     // FIRESTORE
     implementation platform('com.google.firebase:firebase-bom:31.2.0')
     implementation 'com.google.firebase:firebase-firestore:24.4.2'
+    implementation 'com.google.api:gax:1.63.0'
 
 
     implementation 'com.google.android.gms:play-services-location:21.0.1'
