@@ -1,10 +1,12 @@
 package com.example.qrapp;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -63,8 +65,6 @@ public class SearchFragment extends Fragment {
         // the adapter is a class that you create that extends BaseAdapter
         // qrListView is actually what shows up on screen
 
-        ArrayList<QRCode> QRCodeList = new ArrayList<>();
-        qRcAdapter = new QRcAdapter(QRCodeList, this.getContext());
 
         //adding DB instance
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -114,7 +114,6 @@ public class SearchFragment extends Fragment {
                         ArrayList<Map.Entry<QRCode, Double>> QRCodeListWithDistances = new ArrayList<>();
                         if (task.isSuccessful()) {
                             List<DocumentSnapshot> documents = task.getResult().getDocuments();
-                            System.out.println("_------------------------------------");
                             for (DocumentSnapshot document : documents) {
                                 // Get the GeoPoint object from the document
                                 GeoPoint location = document.getGeoPoint("Geolocation");
@@ -146,11 +145,31 @@ public class SearchFragment extends Fragment {
 
                             QRcAdapter qRcAdapter = new QRcAdapter(QRCodeList, getContext());
                             qrListView.setAdapter(qRcAdapter);
+
+                            qrListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                                    System.out.println(QRCodeList.size());
+                                    QRCode qrCode = QRCodeList.get(i);
+//                                    Intent intent = new Intent(getContext(), QRCodeFragment.class);
+                                    System.out.println(qrCode.getComments());
+                                    System.out.println(qrCode.getPoints());
+                                    System.out.println(qrCode.getName());
+                                    System.out.println(qrCode.getIcon());
+                                    System.out.println(qrCode.getPlayersScanned());
+                                    System.out.println(qrCode.getGeolocation());
+
+//                                    startActivity(intent);
+                                }
+                            });
+
                         } else {
                             Toast queryToast = Toast.makeText(getContext(), "Your search returned no results", Toast.LENGTH_SHORT);
                             queryToast.show();
                         }
                     });
+
+
 
 
                 }
