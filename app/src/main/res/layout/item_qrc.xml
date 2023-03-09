@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <ImageView
-        android:id="@+id/icon"
+        android:id="@+id/visual"
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:contentDescription="@string/app_name"
@@ -13,10 +13,10 @@
         app:srcCompat="@drawable/ic_baseline_scan2" />
 
     <TextView
-        android:id="@+id/title"
+        android:id="@+id/QRCName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/icon"
+        android:layout_toRightOf="@+id/visual"
         android:textColor="#824a5a"
         android:padding = "10dp"
         android:fontFamily="sans-serif-black"
@@ -24,11 +24,11 @@
         android:text = "hot GloUltraSonicShark"/>
 
     <TextView
-        android:id="@+id/desc"
+        android:id="@+id/score"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/title"
-        android:layout_toRightOf="@+id/icon"
+        android:layout_below="@+id/QRCName"
+        android:layout_toRightOf="@+id/visual"
         android:textColor="#000000"
         android:fontFamily="sans-serif-black"
         android:paddingLeft = "10dp"

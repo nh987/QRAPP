@@ -58,7 +58,7 @@
 
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/username"
+                    android:id="@+id/usernameLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -72,48 +72,29 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="380dp"
                         android:layout_height="60dp"
+                        android:id = "@+id/username"
                         android:text="user123"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/relativeLayout" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/email"
+                    android:id="@+id/emailLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:hint="Email"
                     android:paddingBottom="8dp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/username"
+                    app:layout_constraintTop_toBottomOf="@+id/usernameLayout"
                     app:layout_constraintVertical_bias="0.0"
                     tools:layout_editor_absoluteX="0dp">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="380dp"
                         android:layout_height="60dp"
+                        android:id = "@+id/email"
                         android:text="user123@gmail.com"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/relativeLayout" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/location"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:hint="Location"
-                    android:paddingBottom="8dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/email"
-                    app:layout_constraintVertical_bias="0.0"
-                    tools:layout_editor_absoluteX="0dp">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="380dp"
-                        android:layout_height="60dp"
-                        android:text="Edmonton"
-                        android:clickable="false"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/relativeLayout" />
                 </com.google.android.material.textfield.TextInputLayout>
