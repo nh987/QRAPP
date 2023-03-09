@@ -24,8 +24,6 @@ public class MyProfileFragment extends Fragment {
 
     TextView usernameText;
     TextView emailText;
-    TextView phoneText;
-    TextView locationText;
 
     //TODO Stats section
     public MyProfileFragment() {
@@ -42,13 +40,11 @@ public class MyProfileFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_my_profile, container, false);
+        View view = inflater.inflate(R.layout.profile_user, container, false);
 
         //get the text views
-        usernameText = view.findViewById(R.id.myp_username_text);
-        emailText = view.findViewById(R.id.myp_email_text);
-        phoneText = view.findViewById(R.id.myp_phone_text);
-        locationText = view.findViewById(R.id.myp_location_text);
+        usernameText = view.findViewById(R.id.username);
+        emailText = view.findViewById(R.id.email);
 
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -63,7 +59,6 @@ public class MyProfileFragment extends Fragment {
                 //set the text views to the user's info
                 usernameText.setText(document.getString("Username"));
                 emailText.setText(document.getString("Email"));
-                phoneText.setText(document.getString("Phone"));
             }
         });
 
