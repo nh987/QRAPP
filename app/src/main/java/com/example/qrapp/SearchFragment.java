@@ -115,17 +115,16 @@ public class SearchFragment extends Fragment {
 
                     GeoPoint searchLocation = new GeoPoint(Double.parseDouble(locationParts[0].trim()), Double.parseDouble(locationParts[1].trim()));
                     db.collection("QrCodes").whereNotEqualTo("Geolocation", null).orderBy("Geolocation", Query.Direction.ASCENDING).get().addOnCompleteListener(task -> {
+                        QRCodeList.clear();
                         if (task.isSuccessful()) {
                             List<DocumentSnapshot> documents = task.getResult().getDocuments();
+                            System.out.println("_------------------------------------");
                             for (DocumentSnapshot document : documents) {
                                 // Get the GeoPoint object from the document
                                 GeoPoint location = document.getGeoPoint("Geolocation");
                                 double distance = distanceBetweenPoints(searchLocation, location);
-                                System.out.println("Document ID: " + document.getId() + ", Distance: " + distance);
-                                System.out.print("hello");
-
                                 Object comments =  document.get("Comments");
-                                int points = document.getLong("Points").intValue();
+                                Integer points = document.getLong("Points").intValue();
                                 String name = document.getString("Name");
                                 String icon = document.getString("icon");
                                 Object playersScanned = document.get("playersScanned");
@@ -148,26 +147,6 @@ public class SearchFragment extends Fragment {
                         }
                     });
 
-
-                    // this im assuming gets the first result of this list
-//                            String username = document.getString("Username");
-//                            String email = document.getString("Email");
-//                            String phoneNumber = document.getString("PhoneNumber");
-//                            String location = "edmonton"; // TODO  This is currently NOT in the db
-//                            Player queriedPlayer = new Player(username, email, location, phoneNumber);
-//                            try {
-//                                QRCodeList.add(queriedPlayer);
-//                                PlayerListAdapter playerListAdapter = new PlayerListAdapter(playerList, getContext());
-//                                qrListView.setAdapter(playerListAdapter);
-//                            }
-//                            catch (Exception e)
-//                            {
-//                                Toast queryToast = Toast.makeText(getContext(), "Your search returned no results", Toast.LENGTH_SHORT);
-//                                queryToast.show();
-//                            }
-//                        else {
-//                            Toast errorToast = Toast.makeText(getContext(), "An error occurred, please try again", Toast.LENGTH_SHORT);
-//                            errorToast.show();
                 }
 
 
@@ -206,13 +185,6 @@ public class SearchFragment extends Fragment {
         });
         return view;
     }
-    public float calculateDistance(ArrayList<Float> location1, ArrayList<Float> location2) {
-        float x1 = location1.get(0);
-        float y1 = location1.get(1);
-        float x2 = location2.get(0);
-        float y2 = location2.get(1);
-        return (float) Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
-    }
 
     // Compute the distance between two GeoPoint objects using the Haversine formula
     private double distanceBetweenPoints(GeoPoint point1, GeoPoint point2) {
@@ -226,52 +198,3 @@ public class SearchFragment extends Fragment {
     }
 
 }
-
-//    HashMap<String, String> comments1 = new HashMap<>();
-//        comments1.put("Comment 1", "This is comment 1");
-//                ArrayList<String> playersScanned1 = new ArrayList<>(Arrays.asList("Player 1", "Player 2"));
-//        ArrayList<String> photos1 = new ArrayList<>(Arrays.asList("photo"));
-//        ArrayList<Float> geolocation1 = new ArrayList<>(Arrays.asList(50.2f, 45.2f));
-//        QRCode qrCode1 = new QRCode(comments1, 10, "QR Code 1", "https://www.example.com/icon1.jpg", playersScanned1, photos1, geolocation1);
-//
-//        HashMap<String, String> comments2 = new HashMap<>();
-//        comments2.put("Comment 1", "This is comment 2");
-//        comments2.put("Comment 2", "Another comment");
-//        ArrayList<String> playersScanned2 = new ArrayList<>(Arrays.asList("Player 3", "Player 4", "Player 5"));
-//        ArrayList<String> photos2 = new ArrayList<>(Arrays.asList("photo1", "photo2"));
-//        ArrayList<Float> geolocation2 = new ArrayList<>(Arrays.asList(51.3f, 48.7f));
-//        QRCode qrCode2 = new QRCode(comments2, 20, "QR Code 2", "https://www.example.com/icon2.jpg", playersScanned2, photos2, geolocation2);
-//
-//        QRCodeList.add(qrCode1);
-//        QRCodeList.add(qrCode2);
-
-//    // Find the closest QR code based on the search location
-//    QRCode closestQRCode = null;
-//    float closestDistance = Float.MAX_VALUE;
-//
-//// iterate through QR collection and order and display from there
-//                    for (QRCode qrCode : QRCodeList) {
-//                            float distance = calculateDistance(qrCode.getGeolocation(), searchLocation);
-//                            if (distance < closestDistance) {
-//        closestQRCode = qrCode;
-//        closestDistance = distance;
-//        }
-//        }
-//        ArrayList<QRCode> sortedQRCodeList = new ArrayList<>(QRCodeList);
-//        Collections.sort(sortedQRCodeList, new Comparator<QRCode>() {
-//@Override
-//public int compare(QRCode qrCode1, QRCode qrCode2) {
-//        float distance1 = calculateDistance(qrCode1.getGeolocation(), searchLocation);
-//        float distance2 = calculateDistance(qrCode2.getGeolocation(), searchLocation);
-//        return Float.compare(distance1, distance2);
-//        }
-//        });
-//
-//        // Display the QR codes in order of increasing distance
-//        if (closestQRCode != null) {
-//        sortedQRCodeList.remove(closestQRCode);
-//        sortedQRCodeList.add(0, closestQRCode);
-//        }
-//
-//        QRcAdapter qRcAdapter = new QRcAdapter(sortedQRCodeList, getContext());
-//        qrListView.setAdapter(qRcAdapter);
