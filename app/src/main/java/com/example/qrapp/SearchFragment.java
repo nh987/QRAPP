@@ -103,9 +103,6 @@ public class SearchFragment extends Fragment {
                      });
                 }
 
-
-                // Just don't touch this William you giraffe
-                //*******************************************
                 else if (QrFilterButtonClicked) {
                     String searchLocationStr = searchView.getQuery().toString().trim();
                     String[] locationParts = searchLocationStr.split(",");
@@ -142,8 +139,6 @@ public class SearchFragment extends Fragment {
                             }
                             QRcAdapter qRcAdapter = new QRcAdapter(QRCodeList, getContext());
                             qrListView.setAdapter(qRcAdapter);
-
-
                         }
                     });
 
