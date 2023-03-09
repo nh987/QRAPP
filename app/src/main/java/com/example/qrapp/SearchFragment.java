@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -33,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 
@@ -105,14 +108,10 @@ public class SearchFragment extends Fragment {
 
                 else if (QrFilterButtonClicked) {
                     String searchLocationStr = searchView.getQuery().toString().trim();
-                    String[] locationParts = searchLocationStr.split(",");
-                    if (locationParts.length != 2) {
-                        // handle exception instead of crash
-                    }
-
+                    String[] locationParts = searchLocationStr.split("[\\s,]+");
                     GeoPoint searchLocation = new GeoPoint(Double.parseDouble(locationParts[0].trim()), Double.parseDouble(locationParts[1].trim()));
-                    db.collection("QrCodes").whereNotEqualTo("Geolocation", null).orderBy("Geolocation", Query.Direction.ASCENDING).get().addOnCompleteListener(task -> {
-                        QRCodeList.clear();
+                    db.collection("QrCodes").whereNotEqualTo("Geolocation", null).get().addOnCompleteListener(task -> {
+                        ArrayList<Map.Entry<QRCode, Double>> QRCodeListWithDistances = new ArrayList<>();
                         if (task.isSuccessful()) {
                             List<DocumentSnapshot> documents = task.getResult().getDocuments();
                             System.out.println("_------------------------------------");
@@ -120,27 +119,39 @@ public class SearchFragment extends Fragment {
                                 // Get the GeoPoint object from the document
                                 GeoPoint location = document.getGeoPoint("Geolocation");
                                 double distance = distanceBetweenPoints(searchLocation, location);
-                                Object comments =  document.get("Comments");
+                                Object comments = document.get("Comments");
                                 Integer points = document.getLong("Points").intValue();
                                 String name = document.getString("Name");
                                 String icon = document.getString("icon");
                                 Object playersScanned = document.get("playersScanned");
                                 GeoPoint geolocation = document.getGeoPoint("Geolocation");
 
-                                QRCode queriedQR = new QRCode(comments,  points,  name,  icon, playersScanned, geolocation);
-                                try {
-                                    QRCodeList.add(queriedQR);
-                                }
-                                catch (Exception e)
-                                {
-                                    Toast queryToast = Toast.makeText(getContext(), "Your search returned no results", Toast.LENGTH_SHORT);
-                                    queryToast.show();
-                                }
+                                QRCode queriedQR = new QRCode(comments, points, name, icon, playersScanned, geolocation);
+                                Map.Entry<QRCode, Double> entry = new AbstractMap.SimpleEntry<>(queriedQR, distance);
+                                QRCodeListWithDistances.add(entry);
                             }
+
+                            // Sort the list by distance in ascending order
+                            Collections.sort(QRCodeListWithDistances, new Comparator<Map.Entry<QRCode, Double>>() {
+                                public int compare(Map.Entry<QRCode, Double> a, Map.Entry<QRCode, Double> b) {
+                                    return a.getValue().compareTo(b.getValue());
+                                }
+                            });
+
+                            // Convert the list of map entries back to a list of QRCode objects
+                            ArrayList<QRCode> QRCodeList = new ArrayList<>();
+                            for (Map.Entry<QRCode, Double> entry : QRCodeListWithDistances) {
+                                QRCodeList.add(entry.getKey());
+                            }
+
                             QRcAdapter qRcAdapter = new QRcAdapter(QRCodeList, getContext());
                             qrListView.setAdapter(qRcAdapter);
+                        } else {
+                            Toast queryToast = Toast.makeText(getContext(), "Your search returned no results", Toast.LENGTH_SHORT);
+                            queryToast.show();
                         }
                     });
+
 
                 }
 
