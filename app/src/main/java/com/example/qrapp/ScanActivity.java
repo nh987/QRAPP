@@ -49,7 +49,10 @@ import java.util.concurrent.Executor;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
+/**
+ *  Scan activity uses CameraX and ML Kit to scan a barcode using the back-facing camera that is then hashed into SHA-256 hexadecimal using Guava.
+ *  Data is then sent into ResultsActivity for score display and additional options.
+ */
 public class ScanActivity extends AppCompatActivity implements ImageAnalysis.Analyzer {
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private ImageButton BACK_ARROW;
@@ -115,9 +118,7 @@ public class ScanActivity extends AppCompatActivity implements ImageAnalysis.Ana
     @Override
     public void analyze(@NonNull ImageProxy imageProxy) {
         Log.d("ScanActivity_analyze", "analyze: got the frame at: " + imageProxy.getImageInfo().getTimestamp());
-//        boolean scannedCode = false;
-//        long score;
-//        String hashed;
+
         @SuppressLint("UnsafeOptInUsageError") Image mediaImage = imageProxy.getImage();
         if (mediaImage != null) {
             InputImage image = InputImage.fromMediaImage(mediaImage, imageProxy.getImageInfo().getRotationDegrees());
@@ -140,7 +141,6 @@ public class ScanActivity extends AppCompatActivity implements ImageAnalysis.Ana
                                 int valueType = barcode.getValueType();
 
                                 Log.d("barcode", "extractBarCodeInfo: "+rawValue+", extractBarCodeRawBytes: "+rawData+", extractBarCodeType: "+valueType);
-                                // TODO: PASS SHA-256 HASHED SCORE, NAME, VISUAL INTO RESULTS VIEW
 
                                 hashed = Hashing.sha256()
                                         .hashString(rawValue, StandardCharsets.UTF_8)
@@ -155,7 +155,7 @@ public class ScanActivity extends AppCompatActivity implements ImageAnalysis.Ana
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            Log.d("TAG", "Failed: "+ e);
+                            Log.d("Failed", "Exception: "+ e);
                         }
                     }) .addOnCompleteListener(new OnCompleteListener<List<Barcode>>() {
                         @Override
@@ -177,7 +177,7 @@ public class ScanActivity extends AppCompatActivity implements ImageAnalysis.Ana
     public long score(String hex) {
         long score = 0;
         HashMap<Character, Integer> hexMap = new HashMap<Character, Integer>();
-        hexMap.put('0', 20); // handle 0 differently because it is built differently
+        hexMap.put('0', 20); // handle 0 as 20^X based on proposed scoring system
         hexMap.put('1', 1);
         hexMap.put('2', 2);
         hexMap.put('3', 3);
@@ -194,7 +194,7 @@ public class ScanActivity extends AppCompatActivity implements ImageAnalysis.Ana
         hexMap.put('e', 14);
         hexMap.put('f', 15);
 
-        Pattern pattern = Pattern.compile("([0-9a-f])(\\1+)",  2);
+        Pattern pattern = Pattern.compile("([0-9a-f])(\\1+)",  2); // regex expression and flag for repeated substrings in hash
         Matcher matcher = pattern.matcher(hex);
         while (matcher.find()) {
             String repeated = matcher.group();
