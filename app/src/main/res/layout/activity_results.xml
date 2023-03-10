@@ -3,19 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/purple_200">
+    android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/results_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/purple_500"
         android:padding="15dp"
         android:text="1D/2D Code Scan Results"
         android:textAlignment="center"
-        android:textColor="@color/white"
         android:textSize="20dp"
+        android:fontFamily="sans-serif-black"
+        android:background = "@drawable/gradient_bg"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -23,68 +22,121 @@
     <TextView
         android:id="@+id/results_points"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/purple_500"
+        android:layout_height="100dp"
+        android:background="@drawable/button_shape2"
         android:padding="15dp"
-        android:text="Scanned code is worth: \n X points!"
+        android:text="Scanned code is worth:"
         android:textAlignment="center"
-        android:textColor="@color/white"
-        android:textSize="20dp"
+        android:textColor="#824a5a"
+        android:textSize="25dp"
         app:layout_constraintBottom_toTopOf="@+id/results_checkbox"
-        app:layout_constraintEnd_toEndOf="@+id/results_options"
-        app:layout_constraintStart_toStartOf="@+id/results_options"
-        app:layout_constraintTop_toBottomOf="@+id/results_header" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/results_header"
+        app:layout_constraintVertical_bias="0.148" /> />
 
+    <!--
     <TextView
         android:id="@+id/results_options"
-        android:layout_width="match_parent"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:background="@color/purple_500"
+        android:background="@drawable/button_shape2"
         android:padding="15dp"
-        android:text="Options:"
+        android:text="Options"
         android:textAlignment="center"
-        android:textColor="@color/white"
+        android:textColor="#824a5a
         android:textSize="20dp"
-
         app:layout_constraintBottom_toTopOf="@+id/results_checkbox"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/results_points" />
+        -->
 
     <CheckBox
         android:id="@+id/results_checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/purple_500"
+        android:background="@drawable/gradient_bg"
         android:padding="15dp"
         android:text="Include geolocation?"
-        android:textColor="@color/white"
-        android:textSize="20dp"
+        android:textColor="#824a5a"
+        android:textSize="22dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/results_options"
-        app:layout_constraintStart_toStartOf="@+id/results_options"
-        app:layout_constraintTop_toBottomOf="@+id/results_header" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/results_header"
+        app:layout_constraintVertical_bias="0.586" /> />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/results_add_photo_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/button_shape2"
         android:padding="15dp"
         android:text="Add photo"
-        android:textSize="15dp"
+        android:textSize="20dp"
         app:layout_constraintEnd_toEndOf="@+id/results_checkbox"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="@+id/results_checkbox"
         app:layout_constraintTop_toBottomOf="@+id/results_checkbox" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/results_continue_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="15dp"
         android:text="Continue to post"
-        android:textSize="15dp"
+        android:textSize="20dp"
+        android:background = "@drawable/button_shape2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/results_add_photo_btn"
         app:layout_constraintStart_toStartOf="@+id/results_add_photo_btn"
         app:layout_constraintTop_toBottomOf="@+id/results_add_photo_btn" />
 
+    <TextView
+        android:id="@+id/points"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:gravity="center"
+        android:text="100,000 points!"
+        android:textSize="35dp"
+        android:fontFamily="sans-serif-black"
+        app:layout_constraintEnd_toEndOf="@+id/results_points"
+        app:layout_constraintHorizontal_bias="0.48"
+        app:layout_constraintStart_toStartOf="@+id/results_points"
+        app:layout_constraintTop_toTopOf="@+id/results_points" />
+
+    <ImageView
+        android:id="@+id/representation"
+        android:layout_width="170dp"
+        android:layout_height="122dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/results_points"
+        app:srcCompat="@drawable/ic_baseline_scan2" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="17dp"
+        android:text="hot GLoUltraSonicShark"
+        android:textSize="30dp"
+        android:textColor = "#824a5a"
+        android:fontFamily="sans-serif-black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/representation" />
+
+    <ImageView
+        android:id="@+id/back"
+        android:layout_width="55dp"
+        android:layout_height="45dp"
+        android:paddingTop="15dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="?attr/actionModeCloseDrawable"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
