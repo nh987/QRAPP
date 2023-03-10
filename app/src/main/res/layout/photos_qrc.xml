@@ -14,8 +14,8 @@
             android:layout_width="match_parent"
             android:layout_height="730dp"
             android:orientation="vertical"
-            android:layout_constraintTop_toTopof = "parent"
-            android:layout_constraintBottom_toBottomof = "parent">
+            app:layout_constraintTop_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
