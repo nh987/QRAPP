@@ -17,6 +17,8 @@ import android.widget.Toast;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 
@@ -26,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     BottomNavigationView nav_bar;//nav bar object
     ImageButton SCAN;// scan button object
     ImageButton MYPROFILE;// get to myprofile page
+    private FirebaseAuth mAuth;
 
 
     @Override
@@ -45,7 +48,15 @@ public class MainActivity extends AppCompatActivity {
         // start at menu
         nav_bar.setSelectedItemId(R.id.main_tab);
 
+        mAuth = FirebaseAuth.getInstance();
 
+        // Check if user is signed in (non-null) and update UI accordingly.
+//        FirebaseUser currentUser = mAuth.getCurrentUser();
+//        if (currentUser == null) {
+//            // User is not signed in, force them to sign up using Firebase
+//            startActivity(new Intent(MainActivity.this, SignUpActivity.class));
+//            finish();
+//        }
 
         //SCAN BUTTON
         //This takes the player to the Scanning[and Picture] activity
