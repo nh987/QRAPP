@@ -14,6 +14,8 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
@@ -48,16 +50,37 @@ public class MainActivity extends AppCompatActivity {
         // start at menu
         nav_bar.setSelectedItemId(R.id.main_tab);
 
-        auth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = auth.getCurrentUser();
-        if (currentUser == null) {
-            // User is not signed in, force them to sign up using Firebase
-            System.out.println("User is not signed in");
-            startActivity(new Intent(MainActivity.this, SignUpActivity.class));
-        }
-        else {
-            System.out.println("User is signed in");
-        }
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
+
+        auth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+                if (currentUser == null) {
+                    // User is not signed in, force them to sign up using Firebase
+                    System.out.println("User is not signed in");
+                    startActivity(new Intent(MainActivity.this, SignUpActivity.class));
+
+                } else {
+                    System.out.println("User is signed in");
+                    currentUser.reload().addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                FirebaseUser updatedUser = auth.getCurrentUser();
+                                if (updatedUser == null) {
+                                    // User account has been deleted
+                                    System.out.println("User account has been deleted");
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        });
+
+
 
         //SCAN BUTTON
         //This takes the player to the Scanning[and Picture] activity
