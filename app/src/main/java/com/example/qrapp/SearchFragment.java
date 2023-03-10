@@ -158,17 +158,11 @@ public class SearchFragment extends Fragment {
                     return;
                 }
                 Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                double userLatitude = location.getLatitude();
-                double userLongitude = location.getLongitude();
-                System.out.println("user latitude" + userLatitude);
-                System.out.println(userLongitude);
-//                double userLatitude = 55;
-//                double userLongitude = 137;
+//                double userLatitude = location.getLatitude();
+//                double userLongitude = location.getLongitude();
+                double userLatitude = 55;
+                double userLongitude = 137;
                 GeoPoint geoPoint = new GeoPoint(userLatitude, userLongitude);
-                double maxLat = geoPoint.getLatitude() + toDegrees(maxDistance / 6371.0);
-                double minLat = geoPoint.getLatitude() - toDegrees(maxDistance / 6371.0);
-                double maxLon = geoPoint.getLongitude() + toDegrees(maxDistance / 6371.0 / cos(toRadians(geoPoint.getLatitude())));
-                double minLon = geoPoint.getLongitude() - toDegrees(maxDistance / 6371.0 / cos(toRadians(geoPoint.getLatitude())));
                 db.collection("QrCodes")
                         .whereNotEqualTo("Geolocation", null)
                         .get()
@@ -228,18 +222,12 @@ public class SearchFragment extends Fragment {
                                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                                         System.out.println(QRCodeList.size());
                                         QRCode qrCode = QRCodeList.get(i);
-                                        Intent intent = new Intent(getContext(), QRCodeFragment.class);
-                                        System.out.println(qrCode.getComments());
-                                        System.out.println(qrCode.getPoints());
-                                        System.out.println(qrCode.getName());
-                                        System.out.println(qrCode.getIcon());
-                                        System.out.println(qrCode.getPlayersScanned());
-                                        System.out.println(qrCode.getGeolocation());
+                                        Intent intent = new Intent(getActivity(), QRProfile.class);
+                                        intent.putExtra("qr_code", qrCode); // pass the clicked item to the QRCProfile class
                                         startActivity(intent);
-
-                                        // startActivity(intent);
                                     }
                                 });
+
 
                             } else {
                                 Toast queryToast = Toast.makeText(getContext(), "Your search returned no results", Toast.LENGTH_SHORT);

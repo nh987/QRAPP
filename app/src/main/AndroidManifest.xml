@@ -32,10 +32,17 @@
             android:exported="false"
             android:launchMode="singleInstance">
 
+
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+
+        <activity
+            android:name=".QRProfile"
+            android:label="@string/app_name">
+        </activity>
+
 
         <activity
             android:name=".ScanActivity"
