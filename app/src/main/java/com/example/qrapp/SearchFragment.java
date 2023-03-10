@@ -187,12 +187,13 @@ public class SearchFragment extends Fragment {
                                     double distance = Math.sqrt(x * x + y * y) * 6371;
                                     System.out.println("Distance: " + distance);
                                     if (distance <= maxDistance) {
-                                        Object comments = document.get("Comments");
                                         Integer points = document.getLong("Points").intValue();
                                         String name = document.getString("Name");
                                         String icon = document.getString("icon");
                                         Object playersScanned = document.get("playersScanned");
                                         GeoPoint geolocation = document.getGeoPoint("Geolocation");
+                                        Object comments =  document.get("Comments");
+
 
                                         QRCode queriedQR = new QRCode(comments, points, name, icon, playersScanned, geolocation);
                                         Map.Entry<QRCode, Double> entry = new AbstractMap.SimpleEntry<>(queriedQR, distance);

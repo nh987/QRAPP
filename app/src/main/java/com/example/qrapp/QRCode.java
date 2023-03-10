@@ -6,6 +6,7 @@ import android.os.Parcelable;
 import com.google.firebase.firestore.GeoPoint;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class QRCode implements Parcelable {
 
@@ -32,9 +33,14 @@ public class QRCode implements Parcelable {
     public void setComments(Object comments) {
         this.comments = comments;
     }
-    public Integer getPoints() {
-        return points;
+    public String getPoints() {
+        if (points != null) {
+            return points.toString();
+        } else {
+            return "0"; // or any other default value you want to use
+        }
     }
+
     public void setPoints(Integer points) {
         this.points = points;
     }
@@ -66,6 +72,9 @@ public class QRCode implements Parcelable {
     protected QRCode(Parcel in) {
         name = in.readString();
         points = Integer.parseInt(in.readString());
+        icon = in.readString();
+        // pass the comments list
+        comments = in.readArrayList(String.class.getClassLoader());
     }
 
     public static final Creator<QRCode> CREATOR = new Creator<QRCode>() {
@@ -89,6 +98,8 @@ public class QRCode implements Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(name);
         parcel.writeString(String.valueOf(points));
+        parcel.writeString(icon);
+        parcel.writeList((ArrayList<String>) comments);
     }
 }
 

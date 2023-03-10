@@ -43,6 +43,9 @@
             android:label="@string/app_name">
         </activity>
 
+        <activity android:name=".SignUpActivity"/>
+
+
 
         <activity
             android:name=".ScanActivity"

@@ -61,14 +61,18 @@
                 app:layout_constraintStart_toEndOf="@+id/icon"
                 app:layout_constraintTop_toTopOf="@+id/icon" />
 
-            <ImageView
+            <TextView
                 android:id="@+id/icon"
                 android:layout_width="174dp"
                 android:layout_height="184dp"
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="184dp"
                 android:contentDescription="@string/app_name"
+                android:gravity="center"
                 android:padding="10dp"
+                android:text=":)"
+                android:textColor="#000000"
+                android:textSize="96sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_baseline_scan2" />
@@ -78,53 +82,26 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
+                android:layout_marginTop="40dp"
                 android:text="Comments"
                 android:textColor="@color/black"
                 android:textSize="25dp"
-                app:layout_constraintBottom_toTopOf="@+id/comment1"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <TextView
-                android:id="@+id/comment1"
-                android:layout_width="346dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:background="#EFEFEF"
-                android:text="Yerrrrr"
-                android:textColor="@color/black"
-                android:textSize="25dp"
-                app:layout_constraintBottom_toTopOf="@+id/comment2"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.492"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <TextView
-                android:id="@+id/comment2"
-                android:layout_width="346dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="124dp"
-                android:background="#EFEFEF"
-                android:text="LETS GOOOOOO"
-                android:textColor="@color/black"
-                android:textSize="25dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.492"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <TextView
-                android:id="@+id/comment3"
-                android:layout_width="346dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:background="#EFEFEF"
-                android:text="This QR Code can be found at the Telus Lightpost."
-                android:textColor="@color/black"
-                android:textSize="25dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.492"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/comment2" />
+                app:layout_constraintTop_toBottomOf="@+id/icon" />
+
+            <ListView
+                android:id="@+id/commentsList"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="32dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/commentsText" />
+
+
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

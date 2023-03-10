@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
     BottomNavigationView nav_bar;//nav bar object
     ImageButton SCAN;// scan button object
     ImageButton MYPROFILE;// get to myprofile page
-    private FirebaseAuth mAuth;
+    private FirebaseAuth auth;
 
 
     @Override
@@ -48,15 +48,16 @@ public class MainActivity extends AppCompatActivity {
         // start at menu
         nav_bar.setSelectedItemId(R.id.main_tab);
 
-        mAuth = FirebaseAuth.getInstance();
-
-        // Check if user is signed in (non-null) and update UI accordingly.
-//        FirebaseUser currentUser = mAuth.getCurrentUser();
-//        if (currentUser == null) {
-//            // User is not signed in, force them to sign up using Firebase
-//            startActivity(new Intent(MainActivity.this, SignUpActivity.class));
-//            finish();
-//        }
+        auth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = auth.getCurrentUser();
+        if (currentUser == null) {
+            // User is not signed in, force them to sign up using Firebase
+            System.out.println("User is not signed in");
+            startActivity(new Intent(MainActivity.this, SignUpActivity.class));
+        }
+        else {
+            System.out.println("User is signed in");
+        }
 
         //SCAN BUTTON
         //This takes the player to the Scanning[and Picture] activity
