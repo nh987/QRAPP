@@ -16,10 +16,12 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -61,27 +63,39 @@ import java.util.concurrent.ExecutionException;
 
 
 public class SearchFragment extends Fragment {
-
     Boolean playerFilterButtonClicked = true;
     Boolean QrFilterButtonClicked = false;
-    private QRcAdapter qRcAdapter;
-
-    public ArrayList<QRCode> dataList;
+    View view;
+    Button playerSearch;
+    Button QRSearch;
+    SearchView searchView;
+    Spinner spinner;
+    ListView qrListView;
     public ArrayList<Player> playerList;
+
     @Nullable
     @Override
-
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View view = LayoutInflater.from(getContext()).inflate(R.layout.search, null);
-        Button playerSearch = (Button) view.findViewById(R.id.button);
-        Button QRSearch = (Button) view.findViewById(R.id.button2);
-        SearchView searchView = (SearchView) view.findViewById(R.id.searchView);
-        Spinner spinner = (Spinner) view.findViewById(R.id.spinner);
+        view = LayoutInflater.from(getContext()).inflate(R.layout.search, null);
+        playerSearch = view.findViewById(R.id.button);
+        QRSearch = view.findViewById(R.id.button2);
+        searchView = view.findViewById(R.id.searchView);
+        spinner = view.findViewById(R.id.spinner);
         spinner.setVisibility(View.GONE);
-        ListView qrListView = view.findViewById(R.id.listView);
+        spinner.clearAnimation();
+        qrListView = view.findViewById(R.id.listView);
+
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this.getActivity(),
+                R.array.numbers, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
+
+
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -89,6 +103,7 @@ public class SearchFragment extends Fragment {
                 // you actually have to click on the magnifying glass..
                 // TODO, hook in database  now
                 if (playerFilterButtonClicked) {
+                    ArrayList<Player> playerList = new ArrayList<>();
                     String searchText = searchView.getQuery().toString();
                     // not sure why this the query returns null atm, i'll figure that out later.
                     db.collection("Users").whereEqualTo("Username", searchText).get().addOnCompleteListener(task -> {
@@ -131,7 +146,9 @@ public class SearchFragment extends Fragment {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Integer maxDistance = 1000; // move this to user input
+                System.out.println(spinner.getSelectedItem().toString());
+                // get the value from the spinner
+                double maxDistance = Double.parseDouble(spinner.getSelectedItem().toString());
                 double userLatitude = 55;
                 double userLongitude = 137;
                 GeoPoint geoPoint = new GeoPoint(userLatitude, userLongitude);
@@ -143,15 +160,29 @@ public class SearchFragment extends Fragment {
                 GeoPoint northeast = new GeoPoint(maxLat, maxLon);
                 GeoPoint southwest = new GeoPoint(minLat, minLon);
                 db.collection("QrCodes")
-                        .whereGreaterThanOrEqualTo("Geolocation", southwest)
-                        .whereLessThanOrEqualTo("Geolocation", northeast)
+                        .whereNotEqualTo("Geolocation", null)
                         .get()
                         .addOnCompleteListener(task -> {
                             ArrayList<Map.Entry<QRCode, Double>> QRCodeListWithDistances = new ArrayList<>();
                             if (task.isSuccessful()) {
-                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                List<DocumentSnapshot> documents = task.getResult().getDocuments();
+                                System.out.println(documents.size());
+                                for (DocumentSnapshot document : documents) {
+                                    System.out.println("Document: " + document);
                                     GeoPoint qrCodeLocation = document.getGeoPoint("Geolocation");
-                                    double distance = distanceInKm(userLatitude, userLongitude, qrCodeLocation.getLatitude(), qrCodeLocation.getLongitude());
+                                    double lat1 = toRadians(geoPoint.getLatitude());
+                                    double lon1 = toRadians(geoPoint.getLongitude());
+                                    double lat2 = toRadians(qrCodeLocation.getLatitude());
+                                    double lon2 = toRadians(qrCodeLocation.getLongitude());
+                                    // print the latitude and longitude of all of these points
+                                    System.out.println("Latitude: " + qrCodeLocation.getLatitude());
+                                    System.out.println("Longitude: " + qrCodeLocation.getLongitude());
+                                    System.out.println("Latitude: " + geoPoint.getLatitude());
+                                    System.out.println("Longitude: " + geoPoint.getLongitude());
+                                    double x = (lon2 - lon1) * Math.cos((lat1 + lat2) / 2);
+                                    double y = (lat2 - lat1);
+                                    double distance = Math.sqrt(x * x + y * y) * 6371;
+                                    System.out.println("Distance: " + distance);
                                     if (distance <= maxDistance) {
                                         Object comments = document.get("Comments");
                                         Integer points = document.getLong("Points").intValue();
@@ -213,15 +244,17 @@ public class SearchFragment extends Fragment {
             }
         });
 
+
         playerSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 playerFilterButtonClicked = true;
                 QrFilterButtonClicked = false;
                 QRSearch.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FFFFFF")));
-                playerSearch.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF0000")));
-                // change Qr color to standard
-                // change player color to coloured
+                playerSearch.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#ffafbd")));
+                searchView.setVisibility(View.VISIBLE);
+                spinner.setVisibility(View.INVISIBLE);
+                // clear on screen display
             }
         });
         QRSearch.setOnClickListener(new View.OnClickListener() {
@@ -232,9 +265,9 @@ public class SearchFragment extends Fragment {
             public void onClick(View view) {
                 QrFilterButtonClicked = true;
                 playerFilterButtonClicked = false;
-                QRSearch.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF0000")));
+                QRSearch.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#ffafbd")));
                 playerSearch.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FFFFFF")));
-                searchView.setVisibility(View.GONE);
+                searchView.setVisibility(View.INVISIBLE);
                 spinner.setVisibility(View.VISIBLE);
             }
         });
@@ -244,21 +277,4 @@ public class SearchFragment extends Fragment {
 
     // Compute the distance between two GeoPoint objects using the Haversine formula
     // Source: https://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula
-    public static double distanceInKm(double lat1, double lon1, double lat2, double lon2) {
-        double R = 6371.0;
-        double radLat1 = toRadians(lat1);
-        double radLon1 = toRadians(lon1);
-        double radLat2 = toRadians(lat2);
-        double radLon2 = toRadians(lon2);
-        double dLon = radLon2 - radLon1;
-        double dLat = radLat2 - radLat1;
-
-        // apply the Haversine formula to calculate the distance between the two points
-        double a = pow(sin(dLat / 2), 2) + cos(radLat1) * cos(radLat2) * pow(sin(dLon / 2), 2);
-        double c = 2 * atan2(sqrt(a), sqrt(1 - a));
-        double distance = R * c;
-
-        return distance;
-    }
-
 }
