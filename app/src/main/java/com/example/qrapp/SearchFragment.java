@@ -1,4 +1,5 @@
 package com.example.qrapp;
+
 import static java.lang.Math.atan2;
 import static java.lang.Math.cos;
 import static java.lang.Math.pow;
@@ -31,8 +32,8 @@ import android.widget.Toast;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.HashMap;
-import android.Manifest;
 
+import android.Manifest;
 
 
 import androidx.annotation.NonNull;
@@ -71,6 +72,7 @@ public class SearchFragment extends Fragment {
     SearchView searchView;
     Spinner spinner;
     ListView qrListView;
+    QRcAdapter qRcAdapter;
     public ArrayList<Player> playerList;
 
     @Nullable
@@ -95,8 +97,6 @@ public class SearchFragment extends Fragment {
         spinner.setAdapter(adapter);
 
 
-
-
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -118,18 +118,15 @@ public class SearchFragment extends Fragment {
                                 playerList.add(queriedPlayer);
                                 PlayerListAdapter playerListAdapter = new PlayerListAdapter(playerList, getContext());
                                 qrListView.setAdapter(playerListAdapter);
-                            }
-                            catch (Exception e)
-                            {
+                            } catch (Exception e) {
                                 Toast queryToast = Toast.makeText(getContext(), "Your search returned no results", Toast.LENGTH_SHORT);
                                 queryToast.show();
                             }
-                        }
-                        else {
+                        } else {
                             Toast errorToast = Toast.makeText(getContext(), "An error occurred, please try again", Toast.LENGTH_SHORT);
                             errorToast.show();
                         }
-                     });
+                    });
                 } else {
                     Toast toast = Toast.makeText(getContext(), "Please select a filter", Toast.LENGTH_SHORT);
                     toast.show();
@@ -147,18 +144,31 @@ public class SearchFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 System.out.println(spinner.getSelectedItem().toString());
-                // get the value from the spinner
                 double maxDistance = Double.parseDouble(spinner.getSelectedItem().toString());
-                double userLatitude = 55;
-                double userLongitude = 137;
+                // TODO, get the location of the user
+                LocationManager locationManager = (LocationManager) getActivity().getSystemService(getContext().LOCATION_SERVICE);
+                if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return;
+                }
+                Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                double userLatitude = location.getLatitude();
+                double userLongitude = location.getLongitude();
+                System.out.println("user latitude" + userLatitude);
+                System.out.println(userLongitude);
+//                double userLatitude = 55;
+//                double userLongitude = 137;
                 GeoPoint geoPoint = new GeoPoint(userLatitude, userLongitude);
                 double maxLat = geoPoint.getLatitude() + toDegrees(maxDistance / 6371.0);
                 double minLat = geoPoint.getLatitude() - toDegrees(maxDistance / 6371.0);
                 double maxLon = geoPoint.getLongitude() + toDegrees(maxDistance / 6371.0 / cos(toRadians(geoPoint.getLatitude())));
                 double minLon = geoPoint.getLongitude() - toDegrees(maxDistance / 6371.0 / cos(toRadians(geoPoint.getLatitude())));
-
-                GeoPoint northeast = new GeoPoint(maxLat, maxLon);
-                GeoPoint southwest = new GeoPoint(minLat, minLon);
                 db.collection("QrCodes")
                         .whereNotEqualTo("Geolocation", null)
                         .get()
@@ -174,11 +184,10 @@ public class SearchFragment extends Fragment {
                                     double lon1 = toRadians(geoPoint.getLongitude());
                                     double lat2 = toRadians(qrCodeLocation.getLatitude());
                                     double lon2 = toRadians(qrCodeLocation.getLongitude());
-                                    // print the latitude and longitude of all of these points
-                                    System.out.println("Latitude: " + qrCodeLocation.getLatitude());
-                                    System.out.println("Longitude: " + qrCodeLocation.getLongitude());
-                                    System.out.println("Latitude: " + geoPoint.getLatitude());
-                                    System.out.println("Longitude: " + geoPoint.getLongitude());
+                                    System.out.println("QR Latitude: " + qrCodeLocation.getLatitude());
+                                    System.out.println("QR Longitude: " + qrCodeLocation.getLongitude());
+                                    System.out.println("User Latitude: " + geoPoint.getLatitude());
+                                    System.out.println("User Longitude: " + geoPoint.getLongitude());
                                     double x = (lon2 - lon1) * Math.cos((lat1 + lat2) / 2);
                                     double y = (lat2 - lat1);
                                     double distance = Math.sqrt(x * x + y * y) * 6371;
@@ -211,7 +220,7 @@ public class SearchFragment extends Fragment {
                                     QRCodeList.add(entry.getKey());
                                 }
 
-                                QRcAdapter qRcAdapter = new QRcAdapter(QRCodeList, getContext());
+                                qRcAdapter = new QRcAdapter(QRCodeList, getContext());
                                 qrListView.setAdapter(qRcAdapter);
 
                                 qrListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -219,13 +228,14 @@ public class SearchFragment extends Fragment {
                                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                                         System.out.println(QRCodeList.size());
                                         QRCode qrCode = QRCodeList.get(i);
-                                        // Intent intent = new Intent(getContext(), QRCodeFragment.class);
+                                        Intent intent = new Intent(getContext(), QRCodeFragment.class);
                                         System.out.println(qrCode.getComments());
                                         System.out.println(qrCode.getPoints());
                                         System.out.println(qrCode.getName());
                                         System.out.println(qrCode.getIcon());
                                         System.out.println(qrCode.getPlayersScanned());
                                         System.out.println(qrCode.getGeolocation());
+                                        startActivity(intent);
 
                                         // startActivity(intent);
                                     }
@@ -254,7 +264,7 @@ public class SearchFragment extends Fragment {
                 playerSearch.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#ffafbd")));
                 searchView.setVisibility(View.VISIBLE);
                 spinner.setVisibility(View.INVISIBLE);
-                // clear on screen display
+                qrListView.setAdapter(null);
             }
         });
         QRSearch.setOnClickListener(new View.OnClickListener() {
@@ -269,6 +279,8 @@ public class SearchFragment extends Fragment {
                 playerSearch.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FFFFFF")));
                 searchView.setVisibility(View.INVISIBLE);
                 spinner.setVisibility(View.VISIBLE);
+                qrListView.setAdapter(qRcAdapter);
+
             }
         });
 
