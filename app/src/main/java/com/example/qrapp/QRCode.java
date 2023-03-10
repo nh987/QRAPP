@@ -74,7 +74,7 @@ public class QRCode implements Parcelable {
         points = Integer.parseInt(in.readString());
         icon = in.readString();
         // pass the comments list
-        comments = in.readArrayList(String.class.getClassLoader());
+//        comments = in.readArrayList(String.class.getClassLoader());
     }
 
     public static final Creator<QRCode> CREATOR = new Creator<QRCode>() {
@@ -99,7 +99,7 @@ public class QRCode implements Parcelable {
         parcel.writeString(name);
         parcel.writeString(String.valueOf(points));
         parcel.writeString(icon);
-        parcel.writeList((ArrayList<String>) comments);
+//        parcel.writeList((ArrayList<String>) comments);
     }
 }
 

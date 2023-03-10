@@ -1,11 +1,6 @@
 package com.example.qrapp;
 
-import static java.lang.Math.atan2;
-import static java.lang.Math.cos;
-import static java.lang.Math.pow;
-import static java.lang.Math.sin;
-import static java.lang.Math.sqrt;
-import static java.lang.Math.toDegrees;
+
 import static java.lang.Math.toRadians;
 
 import android.content.Context;
@@ -14,24 +9,20 @@ import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.util.AbstractMap;
-import java.util.Arrays;
-import java.util.HashMap;
+
 
 import android.Manifest;
 
@@ -42,25 +33,16 @@ import androidx.appcompat.widget.SearchView;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.api.core.ApiFuture;
 
-
-import org.checkerframework.common.returnsreceiver.qual.This;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 
 public class SearchFragment extends Fragment {
@@ -144,24 +126,30 @@ public class SearchFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 System.out.println(spinner.getSelectedItem().toString());
-                double maxDistance = Double.parseDouble(spinner.getSelectedItem().toString());
-                // TODO, get the location of the user
+                // take the input and remove any non numeric characters
+                String selectedDistance = spinner.getSelectedItem().toString();
+                selectedDistance = selectedDistance.replaceAll("[^0-9]", "");
+                double maxDistance = Double.parseDouble(selectedDistance);
                 LocationManager locationManager = (LocationManager) getActivity().getSystemService(getContext().LOCATION_SERVICE);
                 if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
+                    // requirement to check permission
                     return;
                 }
                 Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-//                double userLatitude = location.getLatitude();
-//                double userLongitude = location.getLongitude();
-                double userLatitude = 55;
-                double userLongitude = 137;
+                // print the location
+                System.out.println(location);
+                double userLatitude;
+                double userLongitude;
+                if (location == null) {
+                    userLatitude = 53.5444;
+                    userLongitude = -113.4909;
+                    Toast.makeText(getContext(), "Location not being shared, location set to default", Toast.LENGTH_SHORT).show();
+
+                }
+                else {
+                    userLatitude = location.getLatitude();
+                    userLongitude = location.getLongitude();
+                }
                 GeoPoint geoPoint = new GeoPoint(userLatitude, userLongitude);
                 db.collection("QrCodes")
                         .whereNotEqualTo("Geolocation", null)
@@ -172,16 +160,11 @@ public class SearchFragment extends Fragment {
                                 List<DocumentSnapshot> documents = task.getResult().getDocuments();
                                 System.out.println(documents.size());
                                 for (DocumentSnapshot document : documents) {
-                                    System.out.println("Document: " + document);
                                     GeoPoint qrCodeLocation = document.getGeoPoint("Geolocation");
                                     double lat1 = toRadians(geoPoint.getLatitude());
                                     double lon1 = toRadians(geoPoint.getLongitude());
                                     double lat2 = toRadians(qrCodeLocation.getLatitude());
                                     double lon2 = toRadians(qrCodeLocation.getLongitude());
-                                    System.out.println("QR Latitude: " + qrCodeLocation.getLatitude());
-                                    System.out.println("QR Longitude: " + qrCodeLocation.getLongitude());
-                                    System.out.println("User Latitude: " + geoPoint.getLatitude());
-                                    System.out.println("User Longitude: " + geoPoint.getLongitude());
                                     double x = (lon2 - lon1) * Math.cos((lat1 + lat2) / 2);
                                     double y = (lat2 - lat1);
                                     double distance = Math.sqrt(x * x + y * y) * 6371;
@@ -275,7 +258,4 @@ public class SearchFragment extends Fragment {
 
         return view;
     }
-
-    // Compute the distance between two GeoPoint objects using the Haversine formula
-    // Source: https://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula
 }

@@ -51,21 +51,6 @@ public class QRProfile extends AppCompatActivity {
         points.setText(qrCode.getPoints());
         icon.setText(qrCode.getIcon());
 
-        // set the comments list
-        List<Object> commentObjects = (List<Object>) qrCode.getComments(); // get the comments list
-        List<String> commentStrings = new ArrayList<>();
-
-        for (Object comment : commentObjects) {
-            if (comment != null) {
-                commentStrings.add(comment.toString());
-            }
-        }
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, commentStrings);
-        comments.setAdapter(adapter);
-
-
-
-
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override

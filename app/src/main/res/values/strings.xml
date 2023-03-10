@@ -24,8 +24,8 @@
         item
     </string>
     <string-array name="numbers">
-        <item>5</item>
-        <item>10</item>
-        <item>25</item>
+        <item>5 km</item>
+        <item>10 km</item>
+        <item>25 km</item>
     </string-array>-array>
 </resources>
