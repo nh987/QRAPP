@@ -2,9 +2,11 @@ package com.example.qrapp;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -71,39 +73,65 @@ public class SearchFragment extends Fragment {
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
+            /**
+             * Method for searching for players, uses the searchview functionality
+             * @param query is the inputted text
+             * @return a boolean to signify success
+             */
             public boolean onQueryTextSubmit(String query) {
                 // you actually have to click on the magnifying glass..
-                // TODO, hook in database  now
-                String searchText = searchView.getQuery().toString();
                 if (playerFilterButtonClicked) {
-                    // query the database, store results in a database
+                    ArrayList<Player> playerList = new ArrayList<>();
+                    String searchText = searchView.getQuery().toString();
+                    // query all users based on partial string matching
+                    // works for partial string matching (i.e search:"User" --> "User1", "User2"
+                    db.collection("Users").orderBy("Username").startAt(searchText).endAt(searchText + "\uf8ff").get().addOnCompleteListener(task -> {
 
-
-                    // not sure why this the query returns null atm, i'll figure that out later.
-                    db.collection("Users").whereEqualTo("Username", searchText).get().addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
-                            DocumentSnapshot document = task.getResult().getDocuments().get(0); // this im assuming gets the first result of this list
-                            String username = document.getString("Username");
-                            String email = document.getString("Email");
-                            String phoneNumber = document.getString("PhoneNumber");
-                            String location = "edmonton"; // TODO  This is currently NOT in the db
-                            Player queriedPlayer = new Player(username, email, location, phoneNumber);
+                            // Handle out of bounds error with document snapshot.
                             try {
-                                playerList.add(queriedPlayer);
-                                PlayerListAdapter playerListAdapter = new PlayerListAdapter(playerList, getContext());
-                                qrListView.setAdapter(playerListAdapter);
-                            }
-                            catch (Exception e)
-                            {
-                                Toast queryToast = Toast.makeText(getContext(), "Your search returned no results", Toast.LENGTH_SHORT);
+                                DocumentSnapshot test = task.getResult().getDocuments().get(0);
+                            } catch (IndexOutOfBoundsException e) {
+                                Toast queryToast = Toast.makeText(getContext(), "User not found!", Toast.LENGTH_LONG);
                                 queryToast.show();
+                                Log.d("myTag", "User not found in db");
+                                return;
                             }
-                        }
-                        else {
+                            List<DocumentSnapshot> documents = task.getResult().getDocuments();
+                            // loop through all queried users, create player objects
+                            for (DocumentSnapshot document : documents) {
+                                Log.d("myTag", document.getString("Username"));
+                                String username = document.getString("Username");
+                                String email = document.getString("Email");
+                                String phoneNumber = document.getString("PhoneNumber");
+                                String location = "edmonton"; // TODO  This is currently NOT in the db
+                                Player queriedPlayer = new Player(username, email, location, phoneNumber);
+                                playerList.add(queriedPlayer);
+                            }
+                            // So its making it here before the query even finishes executing...
+                            String test = String.valueOf(playerList.size());
+                            Log.d("myTag", test + " playerListSizeTest");
+                            // set adapter and display the listview with queried data
+
+                            PlayerListAdapter playerListAdapter = new PlayerListAdapter(playerList, getContext());
+                            qrListView.setAdapter(playerListAdapter); // why the fuck isn't this displaying (I don't think its an adapter problem but alas...)
+
+
+                            // Listener for Listview
+                            qrListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                                    // set buttons in listview, s.t it opens profile_user.xml
+                                }
+                            });
+
+                        } else {
+                            Log.d("myTag", "This shouldn't be logged");
                             Toast errorToast = Toast.makeText(getContext(), "An error occurred, please try again", Toast.LENGTH_SHORT);
                             errorToast.show();
                         }
-                     });
+                    });
+
                 }
 
                 else if (QrFilterButtonClicked) {
@@ -169,6 +197,11 @@ public class SearchFragment extends Fragment {
                 return false;
             }
         });
+        /**
+         * Method for playerSearch button filter, which acts as a way to filter what is queried
+         * @param view represents the current view
+         * @return nothing
+         */
         playerSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -180,6 +213,11 @@ public class SearchFragment extends Fragment {
                 // change player color to coloured
             }
         });
+        /**
+         * Method for qrSearch button filter, which acts as a way to filter what is queried
+         * @param view represents the current view
+         * @return nothing
+         */
         QRSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

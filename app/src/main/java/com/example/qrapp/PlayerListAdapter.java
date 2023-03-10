@@ -4,22 +4,26 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-
-public class PlayerListAdapter extends BaseAdapter
+/**
+ * Class for playerList (search functionality) to display queried users in a listview
+ *
+ *
+ */
+public class PlayerListAdapter extends ArrayAdapter<Player>
 {
     Context context;
     ArrayList<Player> plys;
 
     public PlayerListAdapter(ArrayList<Player> players, Context cxt)
     {
-        super();
+        super(cxt, R.layout.text_layout, players);
+        //LayoutInflater view = LayoutInflater.from(context);
         this.plys = players;
         this.context = cxt;
-
     }
 
     @Override
@@ -28,7 +32,7 @@ public class PlayerListAdapter extends BaseAdapter
     }
 
     @Override
-    public Object getItem(int i) {
+    public Player getItem(int i) {
         return null;
     }
 
@@ -44,6 +48,7 @@ public class PlayerListAdapter extends BaseAdapter
         Player player = plys.get(i);
         TextView playerUserName = row.findViewById(R.id.textinlist);
         playerUserName.setText(player.getUsername());
+        // might have to set button listener here
         return row;
     }
 }
