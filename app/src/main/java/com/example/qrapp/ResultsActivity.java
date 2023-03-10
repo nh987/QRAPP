@@ -224,7 +224,7 @@ public class ResultsActivity extends AppCompatActivity {
 
                 // TODO: Image gets sent into its own collection to be implemented...
                 // TODO: playersScanned array contains UserID...
-                // TODO: Update User's scannedQRCs' array...
+                // TODO: Update User's scannedQRCs' array to contain QRC's hash...
                 newQRC.put("Comments", comments);
                 newQRC.put("playersScanned", playersScanned);
 
@@ -255,35 +255,35 @@ public class ResultsActivity extends AppCompatActivity {
         String hashedSubstring = hashed.substring(0,6);
         String QRName = "";
 
-        // 16^6 = 16.8 million unique combos.
+        // 16^5 = 1.04 million unique combos.
         HashMap<Character, String> hexMapName = new HashMap<Character, String>();
-        hexMapName.put('0', "Listy");
-        hexMapName.put('1', "City");
-        hexMapName.put('2', "Alpha");
-        hexMapName.put('3', "Bravo");
-        hexMapName.put('4', "Charlie");
-        hexMapName.put('5', "Delta");
-        hexMapName.put('6', "Echo");
-        hexMapName.put('7', "Foxtrot");
-        hexMapName.put('8', "Golf");
-        hexMapName.put('9', "Hotel");
-        hexMapName.put('a', "India");
-        hexMapName.put('b', "Juliet");
-        hexMapName.put('c', "Kilo");
-        hexMapName.put('d', "Lima");
-        hexMapName.put('e', "Mike");
-        hexMapName.put('f', "November");
+        hexMapName.put('0', "getCity");
+        hexMapName.put('1', "setCity");
+        hexMapName.put('2', "addCity");
+        hexMapName.put('3', "deleteCity");
+        hexMapName.put('4', "hasCity");
+        hexMapName.put('5', "countCities");
+        hexMapName.put('6', "editCity");
+        hexMapName.put('7', "clearCities");
+        hexMapName.put('8', "appendCity");
+        hexMapName.put('9', "popCity");
+        hexMapName.put('a', "pushCity");
+        hexMapName.put('b', "sizeCities");
+        hexMapName.put('c', "removeCity");
+        hexMapName.put('d', "reverseCities");
+        hexMapName.put('e', "sortCities");
+        hexMapName.put('f', "insertCity");
 
-        QRName = hexMapName.get(hashedSubstring.charAt(0))+" "+hexMapName.get(hashedSubstring.charAt(1))+hexMapName.get(hashedSubstring.charAt(2))+hexMapName.get(hashedSubstring.charAt(3))+hexMapName.get(hashedSubstring.charAt(4))+hexMapName.get(hashedSubstring.charAt(5));
+        QRName = "listyCity."+hexMapName.get(hashedSubstring.charAt(0))+hexMapName.get(hashedSubstring.charAt(1))+hexMapName.get(hashedSubstring.charAt(2))+hexMapName.get(hashedSubstring.charAt(3))+hexMapName.get(hashedSubstring.charAt(4))+hexMapName.get(hashedSubstring.charAt(5))+"()";
         Log.d("QRName:", QRName);
         return QRName;
     }
 
     private String createVisual (String hashed){
-        String hashedSubstring = hashed.substring(0,6);
+        String hashedSubstring = hashed.substring(0,4);
         String QRVisual = "";
 
-        // 16^4 = 65K combos (65K X 16.8 Million = 1.1*10^12 combos)
+        // 16^4 = 65K combos (65K X 1.04 Million = 1.1*10^12 combos)
         HashMap<Character, String> hexMapHead = new HashMap<Character, String>();
         hexMapHead.put('0', "C|");
         hexMapHead.put('1', "[|");
