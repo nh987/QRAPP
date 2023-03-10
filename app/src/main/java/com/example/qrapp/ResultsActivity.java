@@ -57,7 +57,9 @@ public class ResultsActivity extends AppCompatActivity {
     Boolean includeGeolocation = false; // init false
     List<String> comments = new ArrayList<>();
     List<String> playersScanned = new ArrayList<>();
-    TextView textView;
+    TextView textViewScore;
+    TextView textViewVisual;
+    TextView textViewName;
     CheckBox checkBox;
     Button addPhoto; // TODO: addPhotoFragment -> CameraX integration
     Image image; //  init as null
@@ -123,14 +125,19 @@ public class ResultsActivity extends AppCompatActivity {
         // TODO: Add photo (fml)
         addPhoto = (Button) findViewById(R.id.results_add_photo_btn);
 
-        // Display score:
-        setContentView(R.layout.activity_results);
-        textView = (TextView) findViewById(R.id.results_points);
-        textView.setText("Scanned code is worth:\n" + score + " points!");
-
         // Create name and visual icon for new QRCode
         name = createName(hashed);
         visual = createVisual(hashed);
+
+        // Display score:
+        setContentView(R.layout.activity_results);
+        textViewName = (TextView) findViewById(R.id.results_name);
+        textViewScore = (TextView) findViewById(R.id.results_score);
+        textViewVisual = (TextView) findViewById(R.id.results_visual);
+
+        textViewName.setText(name);
+        textViewScore.setText(""+score+" points!");
+        textViewVisual.setText(visual);
 
         // TODO: FIGURE OUT PERMISSIONS (I THINK ITS GOOD NOW)
         ActivityResultLauncher<String[]> locationPermissionRequest =
@@ -257,24 +264,24 @@ public class ResultsActivity extends AppCompatActivity {
 
         // 16^5 = 1.04 million unique combos.
         HashMap<Character, String> hexMapName = new HashMap<Character, String>();
-        hexMapName.put('0', "getCity");
-        hexMapName.put('1', "setCity");
-        hexMapName.put('2', "addCity");
-        hexMapName.put('3', "deleteCity");
-        hexMapName.put('4', "hasCity");
-        hexMapName.put('5', "countCities");
-        hexMapName.put('6', "editCity");
-        hexMapName.put('7', "clearCities");
-        hexMapName.put('8', "appendCity");
-        hexMapName.put('9', "popCity");
-        hexMapName.put('a', "pushCity");
-        hexMapName.put('b', "sizeCities");
-        hexMapName.put('c', "removeCity");
-        hexMapName.put('d', "reverseCities");
-        hexMapName.put('e', "sortCities");
-        hexMapName.put('f', "insertCity");
+        hexMapName.put('0', "Alpha");
+        hexMapName.put('1', "Bravo");
+        hexMapName.put('2', "Charlie");
+        hexMapName.put('3', "Delta");
+        hexMapName.put('4', "Echo");
+        hexMapName.put('5', "Foxtrot");
+        hexMapName.put('6', "Golf");
+        hexMapName.put('7', "Hotel");
+        hexMapName.put('8', "India");
+        hexMapName.put('9', "Juliet");
+        hexMapName.put('a', "Kilo");
+        hexMapName.put('b', "Lima");
+        hexMapName.put('c', "Mike");
+        hexMapName.put('d', "November");
+        hexMapName.put('e', "Oscar");
+        hexMapName.put('f', "Papa");
 
-        QRName = "listyCity."+hexMapName.get(hashedSubstring.charAt(0))+hexMapName.get(hashedSubstring.charAt(1))+hexMapName.get(hashedSubstring.charAt(2))+hexMapName.get(hashedSubstring.charAt(3))+hexMapName.get(hashedSubstring.charAt(4))+hexMapName.get(hashedSubstring.charAt(5))+"()";
+        QRName = hexMapName.get(hashedSubstring.charAt(0))+" "+hexMapName.get(hashedSubstring.charAt(1))+hexMapName.get(hashedSubstring.charAt(2))+hexMapName.get(hashedSubstring.charAt(3))+hexMapName.get(hashedSubstring.charAt(4))+hexMapName.get(hashedSubstring.charAt(5));
         Log.d("QRName:", QRName);
         return QRName;
     }
