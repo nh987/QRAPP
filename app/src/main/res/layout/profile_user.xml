@@ -70,10 +70,11 @@
                     tools:layout_editor_absoluteX="0dp">
 
                     <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/username"
                         android:layout_width="380dp"
                         android:layout_height="60dp"
-                        android:id = "@+id/username"
-                        android:text="user123"
+                        android:inputType="text"
+                        android:text="Loading..."
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/relativeLayout" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -91,10 +92,11 @@
                     tools:layout_editor_absoluteX="0dp">
 
                     <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/email"
                         android:layout_width="380dp"
                         android:layout_height="60dp"
-                        android:id = "@+id/email"
-                        android:text="user123@gmail.com"
+                        android:inputType="textEmailAddress"
+                        android:text="Loading..."
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/relativeLayout" />
                 </com.google.android.material.textfield.TextInputLayout>

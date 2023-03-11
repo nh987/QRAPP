@@ -106,10 +106,9 @@ public class MainActivity extends AppCompatActivity {
         MYPROFILE.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.frame, new MyProfileFragment())
-                        .commit();
+               //start myprofile activity
+                Intent myprofileIntent = new Intent(MainActivity.this, MyProfile.class);
+                startActivity(myprofileIntent);
             }
         });
 
