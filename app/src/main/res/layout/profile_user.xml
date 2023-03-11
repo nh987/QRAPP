@@ -70,9 +70,10 @@
                     tools:layout_editor_absoluteX="0dp">
 
                     <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/username"
                         android:layout_width="380dp"
                         android:layout_height="60dp"
-                        android:id = "@+id/username"
+                        android:inputType="text"
                         android:text="user123"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/relativeLayout" />
@@ -91,9 +92,10 @@
                     tools:layout_editor_absoluteX="0dp">
 
                     <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/email"
                         android:layout_width="380dp"
                         android:layout_height="60dp"
-                        android:id = "@+id/email"
+                        android:inputType="textEmailAddress"
                         android:text="user123@gmail.com"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/relativeLayout" />
@@ -236,11 +238,12 @@
                     android:text="My QR Codes"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent" />
-                <ImageView
+                <ImageButton
                     android:id="@+id/back"
                     android:layout_width="55dp"
                     android:layout_height="45dp"
                     android:paddingTop="15dp"
+                    android:background="@null"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="?attr/actionModeCloseDrawable" />
