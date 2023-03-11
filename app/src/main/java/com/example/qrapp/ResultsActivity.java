@@ -1,6 +1,7 @@
 package com.example.qrapp;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.media.Image;
@@ -27,6 +28,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -47,7 +49,9 @@ import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
 
+import android.provider.Settings.Secure;
 import android.Manifest;
+import android.widget.Toast;
 
 public class ResultsActivity extends AppCompatActivity {
     String hashed;
@@ -57,6 +61,8 @@ public class ResultsActivity extends AppCompatActivity {
     Boolean includeGeolocation = false; // init false
     List<String> comments = new ArrayList<>();
     List<String> playersScanned = new ArrayList<>();
+    Boolean hasScanned = false;
+    Boolean doesExist = false;
     TextView textViewScore;
     TextView textViewVisual;
     TextView textViewName;
@@ -69,6 +75,7 @@ public class ResultsActivity extends AppCompatActivity {
     Button continueToPost;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FusedLocationProviderClient fusedLocationClient;
+//    private String android_id = Secure.getString(getContext().getContentResolver(), Secure.ANDROID_ID);
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -79,6 +86,7 @@ public class ResultsActivity extends AppCompatActivity {
             score = extras.getLong("score");
         }
 
+        FirebaseAuth.getInstance().getCurrentUser();
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         // Init db collectionsRefs
@@ -93,10 +101,20 @@ public class ResultsActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
-                    if (document.exists()) { // QRCode already exists...
+                    if (document.exists()) { // Check if QRCode already exists in DB
                         Log.d("TAG", "DocumentSnapshot data: " + document.getData());
+                        Log.d("TAG", "QR Code already exists in DB!");
+                        Toast.makeText(ResultsActivity.this, "QR Code already exists", Toast.LENGTH_SHORT).show();
+                        doesExist = true;
+                        List<String> scannedPlayers = (List<String>) document.get("playersScanned");
+                        if (scannedPlayers != null) {
+                            if (scannedPlayers.contains(FirebaseAuth.getInstance().getCurrentUser().getUid())) { // Check if user has already scanned QRCode
+                                Toast.makeText(ResultsActivity.this, "User has already scanned this QRCode", Toast.LENGTH_SHORT).show();
+                                hasScanned = true;
+                                // return to main TODO: GOTO: QRProfile...
+                            }
+                        }
 
-                        // TODO: Query collection QRCodes' Users or collection Users' QRCodes to see if player has already scanned...
 
                     }
                 } else {
@@ -105,31 +123,14 @@ public class ResultsActivity extends AppCompatActivity {
             }
         });
 
-//        db.collection("QRCodes")
-//                .whereEqualTo("hashed",true)
-//                .get()
-//        if (QRCExists.get() != null) { // does this QRC already exist in the db
-//            Query playerScannedQRC = collectionReferencePlayer.whereEqualTo("QRCodes", hashed);
-//            if (playerScannedQRC.get() != null) { // has player scanned this QRC
-//                finish(); // TODO: GOTO QRProfile instead of returning to MainFeed (later)
-//                Log.d("TAG", "fuck up 1"+QRCExists.get());
-//            }
-//            else {
-//                // add user to QRC's playersScanned, add QRC to user's QRCs..
-//                Log.d("TAG", "fuck up 2");
-//                finish();
-//            }
-//        }
-
-
-        // TODO: Add photo (fml)
+        // TODO: Add photo (frick man)
         addPhoto = (Button) findViewById(R.id.results_add_photo_btn);
 
         // Create name and visual icon for new QRCode
         name = createName(hashed);
         visual = createVisual(hashed);
 
-        // Display score:
+        // Display score, name. visual:
         setContentView(R.layout.activity_results);
         textViewName = (TextView) findViewById(R.id.results_name);
         textViewScore = (TextView) findViewById(R.id.results_score);
@@ -139,7 +140,6 @@ public class ResultsActivity extends AppCompatActivity {
         textViewScore.setText(""+score+" points!");
         textViewVisual.setText(visual);
 
-        // TODO: FIGURE OUT PERMISSIONS (I THINK ITS GOOD NOW)
         ActivityResultLauncher<String[]> locationPermissionRequest =
                 registerForActivityResult(new ActivityResultContracts
                                 .RequestMultiplePermissions(), result -> {
@@ -169,8 +169,7 @@ public class ResultsActivity extends AppCompatActivity {
                 if (!includeGeolocation) {
                     includeGeolocation = true;
 
-                    // TODO: FIGURED OUT FOR NOW?
-
+                    // check location permissions
                     if (ActivityCompat.checkSelfPermission(ResultsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ResultsActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                         locationPermissionRequest.launch(new String[]{
                                 Manifest.permission.ACCESS_FINE_LOCATION,
@@ -197,7 +196,6 @@ public class ResultsActivity extends AppCompatActivity {
                     includeGeolocation =  false;
                     lat = null;
                     lon = null;
-                    //geolocation = null;
 
                 }
             }
@@ -208,51 +206,73 @@ public class ResultsActivity extends AppCompatActivity {
         continueToPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: Send new QRCode to DB, update Player scanned QRCodes
-                Map<String,Object> newQRC = new HashMap<>();
+                if (!hasScanned && !doesExist) {
+                    // TODO: Send new QRCode to DB, update Player scanned QRCodes
+                    Map<String,Object> newQRC = new HashMap<>();
 
 //                HashMap<String, String> nameDB = new HashMap<>();
-                newQRC.put("Name", name);
+                    newQRC.put("Name", name);
 //                HashMap<String, String> visualDB = new HashMap<>();
-                newQRC.put("icon",visual);
+                    newQRC.put("icon",visual);
 //                HashMap<String, Number> scoreDB = new HashMap<>();
-                newQRC.put("Points",score);
+                    newQRC.put("Points",score);
 //                HashMap<String, String> hashedDB = new HashMap<>();
-                newQRC.put("Hash", hashed);
+                    newQRC.put("Hash", hashed);
 //                HashMap<String, Location> locationDB = new HashMap<>();
-                if (includeGeolocation && lat != null && lon != null) { // TODO: WHY THE FUCK IS IT NULL SOMETIMES??? MAYBE SLOW TO GET COORDS?? - CORDS ARE SET TO GOOGLE'S LOCATION FOR EMULATOR BTW.
-                    GeoPoint geolocation = new GeoPoint(lat,lon);
-                    Log.d("TAG", "GEOLOCATION "+geolocation);
-                    newQRC.put("Geolocation", geolocation);
+                    if (includeGeolocation && lat != null && lon != null) { // TODO: WHY THE FUCK IS IT NULL SOMETIMES??? MAYBE SLOW TO GET COORDS?? - CORDS ARE SET TO GOOGLE'S LOCATION FOR EMULATOR BTW.
+                        GeoPoint geolocation = new GeoPoint(lat,lon);
+                        Log.d("TAG", "GEOLOCATION "+geolocation);
+                        newQRC.put("Geolocation", geolocation);
+                    }
+                    else {
+                        newQRC.put("Geolocation", null);
+                    }
+
+                    newQRC.put("Comments", comments);
+                    playersScanned.add(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                    newQRC.put("playersScanned", playersScanned);
+
+                    // Write new QRC to DB
+                    db.collection("QRCodes").document(hashed) // DocIDs will be set to hashed
+                            .set(newQRC)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void unused) {
+
+                                    Log.d("TAG", "DocumentSnapshot successfully written!");
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.w("TAG", "Error writing document", e);
+                                }
+                            });
                 }
-                else {
-                    newQRC.put("Geolocation", null);
+                else if (!hasScanned) {
+                    Map<String,Object> newQRC = new HashMap<>();
+                    playersScanned.add(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                    newQRC.put("playersScanned", playersScanned);
+                    // Write new QRC to DB
+                    db.collection("QRCodes").document(hashed) // DocIDs will be set to hashed
+                            .set(newQRC)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void unused) {
+
+                                    Log.d("TAG", "DocumentSnapshot successfully written!");
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.w("TAG", "Error writing document", e);
+                                }
+                            });
+
                 }
-
-                // TODO: Image gets sent into its own collection to be implemented...
-                // TODO: playersScanned array contains UserID...
-                // TODO: Update User's scannedQRCs' array to contain QRC's hash...
-                newQRC.put("Comments", comments);
-                newQRC.put("playersScanned", playersScanned);
-
-                // Write new QRC to DB
-                db.collection("QRCodes").document(hashed) // DocIDs will be set to hashed
-                        .set(newQRC)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void unused) {
-
-                                        Log.d("TAG", "DocumentSnapshot successfully written!");
-                                    }
-                                })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.w("TAG", "Error writing document", e);
-                            }
-                        });
-
                 finish();
+
             }
         });
 
