@@ -1,36 +1,72 @@
 package com.example.qrapp;
 
+import android.annotation.SuppressLint;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.media.Image;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
+import com.google.android.gms.tasks.CancellationTokenSource;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.Locale;
+import java.util.Map;
+
+import android.Manifest;
 
 public class ResultsActivity extends AppCompatActivity {
     String hashed;
     long score;
+    String name;
+    String visual;
+    Boolean includeGeolocation = false; // init false
+    List<String> comments = new ArrayList<>();
+    List<String> playersScanned = new ArrayList<>();
     TextView textView;
     CheckBox checkBox;
-    Button addPhoto;
+    Button addPhoto; // TODO: addPhotoFragment -> CameraX integration
+    Image image; //  init as null
+    //GeoPoint geolocation = null;
+    Double lat;
+    Double lon;
     Button continueToPost;
-
-    HashMap<Character, Integer> converter;
-    //to convert to name
-    HashMap<Character, String> Title, Descriptor, A, B, C, D, E;
-    //to convert to face
-    char nline = '\n';
-    String right_roof = " /",
-            centre_roof = "| ",
-            left_roof = " \\";
-    HashMap<Character, Character> RoofnFloor, Eyes, Nose, Mouth;
-    HashMap<Character, String> Walls, Hat, FaceHair;
-    //QRc Personality
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private FusedLocationProviderClient fusedLocationClient;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,329 +76,293 @@ public class ResultsActivity extends AppCompatActivity {
             hashed = extras.getString("hashed");
             score = extras.getLong("score");
         }
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        // Init db collectionsRefs
+        db = FirebaseFirestore.getInstance();
+        final CollectionReference collectionReferenceQR = db.collection("QRCodes");
+        final CollectionReference collectionReferencePlayer = db.collection("Users");
+
+        // TODO: Check hashed value here with DB query (Check if exists and if player has already scanned it) GOTO: QRProfile if exists and/or already scanned...
+        DocumentReference QRCExists = db.collection("QRCodes").document(hashed);
+        QRCExists.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) { // QRCode already exists...
+                        Log.d("TAG", "DocumentSnapshot data: " + document.getData());
+
+                        // TODO: Query collection QRCodes' Users or collection Users' QRCodes to see if player has already scanned...
+
+                    }
+                } else {
+                    Log.d("TAG", "get failed with ", task.getException());
+                }
+            }
+        });
+
+//        db.collection("QRCodes")
+//                .whereEqualTo("hashed",true)
+//                .get()
+//        if (QRCExists.get() != null) { // does this QRC already exist in the db
+//            Query playerScannedQRC = collectionReferencePlayer.whereEqualTo("QRCodes", hashed);
+//            if (playerScannedQRC.get() != null) { // has player scanned this QRC
+//                finish(); // TODO: GOTO QRProfile instead of returning to MainFeed (later)
+//                Log.d("TAG", "fuck up 1"+QRCExists.get());
+//            }
+//            else {
+//                // add user to QRC's playersScanned, add QRC to user's QRCs..
+//                Log.d("TAG", "fuck up 2");
+//                finish();
+//            }
+//        }
+
+
+        // TODO: Add photo (fml)
+        addPhoto = (Button) findViewById(R.id.results_add_photo_btn);
+
+        // Display score:
         setContentView(R.layout.activity_results);
         textView = (TextView) findViewById(R.id.results_points);
-        textView.setText("Scanned code is worth:\n"+score+" points!");
+        textView.setText("Scanned code is worth:\n" + score + " points!");
 
-        // return to main
+        // Create name and visual icon for new QRCode
+        name = createName(hashed);
+        visual = createVisual(hashed);
+
+        // TODO: FIGURE OUT PERMISSIONS (I THINK ITS GOOD NOW)
+        ActivityResultLauncher<String[]> locationPermissionRequest =
+                registerForActivityResult(new ActivityResultContracts
+                                .RequestMultiplePermissions(), result -> {
+                            Boolean fineLocationGranted = result.getOrDefault(
+                                    Manifest.permission.ACCESS_FINE_LOCATION, false);
+                            Boolean coarseLocationGranted = result.getOrDefault(
+                                    Manifest.permission.ACCESS_COARSE_LOCATION, false);
+                            if (fineLocationGranted != null && fineLocationGranted) {
+                                // Precise location access granted.
+                            } else if (coarseLocationGranted != null && coarseLocationGranted) {
+                                // Only approximate location access granted.
+                            } else {
+                                // No location access granted.
+                            }
+                        }
+                );
+
+        locationPermissionRequest.launch(new String[]{
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+        });
+        // Get geolocation...
+        checkBox = (CheckBox) findViewById(R.id.results_checkbox);
+        checkBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!includeGeolocation) {
+                    includeGeolocation = true;
+
+                    // TODO: FIGURED OUT FOR NOW?
+
+                    if (ActivityCompat.checkSelfPermission(ResultsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ResultsActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        locationPermissionRequest.launch(new String[]{
+                                Manifest.permission.ACCESS_FINE_LOCATION,
+                                Manifest.permission.ACCESS_COARSE_LOCATION
+                        });
+
+                        return;
+                    }
+                    CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+                    fusedLocationClient.getCurrentLocation(Priority.PRIORITY_BALANCED_POWER_ACCURACY, cancellationTokenSource.getToken())
+                            .addOnSuccessListener(ResultsActivity.this, new OnSuccessListener<Location>() {
+                                @Override
+                                public void onSuccess(Location location) {
+                                    // Got last known location. In some rare situations this can be null.
+                                    if (location != null) {
+                                        lat = location.getLatitude();
+                                        lon = location.getLongitude();
+                                    }
+                                    Log.w("TAG", "No current location could be found");
+                                }
+                            });
+                }
+                else { // reset
+                    includeGeolocation =  false;
+                    lat = null;
+                    lon = null;
+                    //geolocation = null;
+
+                }
+            }
+        });
+
+        // Update DB and return to MainFeed
         continueToPost = (Button) findViewById(R.id.results_continue_btn);
         continueToPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // TODO: Send new QRCode to DB, update Player scanned QRCodes
+                Map<String,Object> newQRC = new HashMap<>();
+
+//                HashMap<String, String> nameDB = new HashMap<>();
+                newQRC.put("Name", name);
+//                HashMap<String, String> visualDB = new HashMap<>();
+                newQRC.put("icon",visual);
+//                HashMap<String, Number> scoreDB = new HashMap<>();
+                newQRC.put("Points",score);
+//                HashMap<String, String> hashedDB = new HashMap<>();
+                newQRC.put("Hash", hashed);
+//                HashMap<String, Location> locationDB = new HashMap<>();
+                if (includeGeolocation && lat != null && lon != null) { // TODO: WHY THE FUCK IS IT NULL SOMETIMES??? MAYBE SLOW TO GET COORDS?? - CORDS ARE SET TO GOOGLE'S LOCATION FOR EMULATOR BTW.
+                    GeoPoint geolocation = new GeoPoint(lat,lon);
+                    Log.d("TAG", "GEOLOCATION "+geolocation);
+                    newQRC.put("Geolocation", geolocation);
+                }
+                else {
+                    newQRC.put("Geolocation", null);
+                }
+
+                // TODO: Image gets sent into its own collection to be implemented...
+                // TODO: playersScanned array contains UserID...
+                // TODO: Update User's scannedQRCs' array to contain QRC's hash...
+                newQRC.put("Comments", comments);
+                newQRC.put("playersScanned", playersScanned);
+
+                // Write new QRC to DB
+                db.collection("QRCodes").document(hashed) // DocIDs will be set to hashed
+                        .set(newQRC)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void unused) {
+
+                                        Log.d("TAG", "DocumentSnapshot successfully written!");
+                                    }
+                                })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w("TAG", "Error writing document", e);
+                            }
+                        });
+
                 finish();
             }
         });
-        //QRc Personality
-        /*Overview We want each QRc to have a unique name and face . The hash function create a unique hex for each QRc content
-        We pass the QRc content into a hashfunction to generate a unique hash
-        Unique hash used to generate unique name and face
-        -> Convert hex to oct
-        ->use dictionaries to map particular values to strings that form the name and face respectively
-        ->7 choices for the first 7 values of the oct, 8 options at each choice for both name and face
 
-        The score of the QRc is also calculated
-         */
-
-        //QRcView = findViewById(R.id.textview_score); // show it in the Listview
-
-        //convert values for chars to their respective numeric: '0'==0
-        int max = 20; //for 0 since 0 is actually 20 in this scoring sys
-        converter = new HashMap<>();
-        converter.put('O', max);
-        for (int c = '1'; c <= '9'; c++)
-            converter.put((char) c, c - '0');
-        for (int c = 'a'; c <= 'f'; c++)
-            converter.put((char) c, c - 'a' + 10);
-
-        //NAMING
-        //>2,000,000: (8^7) unique names
-        //~1% chance: (1/2^k, k=7) that 2 distinct QRc have the same name
-        Title = new HashMap<>();
-        setTitles(Title);
-
-        Descriptor = new HashMap<>();
-        setDescriptors(Descriptor);
-
-        A = new HashMap<>();
-        setFirstName(A);
-
-        B = new HashMap<>();
-        setSecondName(B);
-
-        C = new HashMap<>();
-        setThirdName(C);
-
-        D = new HashMap<>();
-        setFourthName(D);
-
-        E = new HashMap<>();
-        setLastName(E);
-
-
-        //DRAWING
-        //>2,000,000: (8^7) unique images
-        //~1% chance: (1/2^k, k=7) that 2 distinct QRc have the same image
-        RoofnFloor = new HashMap<>();
-        setRnF(RoofnFloor);
-
-        Hat = new HashMap<>();
-        setHat(Hat);
-
-        Walls = new HashMap<>();
-        setWalls(Walls);
-
-        Eyes = new HashMap<>();
-        setEyes(Eyes);
-
-        Nose = new HashMap<>();
-        setNose(Nose);
-
-        Mouth = new HashMap<>();
-        setMouth(Mouth);
-
-        FaceHair = new HashMap<>();
-        setFaceHair(FaceHair);
-
-
-        //QRc Personality
-    }
-    //QRc Personality
-    //IMAGE of a QRc "calculation"
-    private String imageQRc(String hash_8) {
-
-        //first line
-        String RRoof = hash_8.charAt(0) - '0' == 0 ? "  " : right_roof;
-        Character RCeilnFloor = RoofnFloor.get(hash_8.charAt(0));
-        String RWall = Walls.get(hash_8.charAt(1));
-        String first = String.format(Locale.CANADA, "%s%c%s%c",
-                RRoof,
-                RCeilnFloor,
-                RWall,
-                RCeilnFloor);
-
-
-        //second/middle/face line
-        String CRoof = hash_8.charAt(0) - '0' == 0 ? "  " : centre_roof;
-        //char CCeilnFloor = RCeilnFloor;
-        String face = faceQRc(hash_8);
-        String second = String.format(Locale.CANADA, "%s%c%s%c",
-                CRoof,
-                RCeilnFloor,
-                face,
-                RCeilnFloor);
-
-        //third/last line
-        String LRoof = hash_8.charAt(0) - '0' == 0 ? "  " : left_roof;
-        //char LCeilnFloor = RCeilnFloor;
-        //String LWall = RWall;
-        String third = String.format(Locale.CANADA, "%s%c%s%c",
-                LRoof,
-                RCeilnFloor,
-                RWall,
-                RCeilnFloor
-        );
-
-        return String.format(Locale.CANADA, "%s%c%s%c%s%c",
-                first,
-                nline,
-                second,
-                nline,
-                third,
-                nline);
     }
 
-    //FACE of a QRc "calculation"
-    private String faceQRc(String hash_8) {
-        //chars of index 2 to 6 handle face. 0 and 1 for Frame/House
-        return String.format(Locale.CANADA, "%c%s%c%c%c%s%c",
-                ' ',
-                Hat.get(hash_8.charAt(2)),
-                Eyes.get(hash_8.charAt(3)),
-                Nose.get(hash_8.charAt(4)),
-                Mouth.get(hash_8.charAt(5)),
-                FaceHair.get(hash_8.charAt(6)),
-                ' ');
+    private String createName(String hashed) {
+        String hashedSubstring = hashed.substring(0,6);
+        String QRName = "";
+
+        // 16^5 = 1.04 million unique combos.
+        HashMap<Character, String> hexMapName = new HashMap<Character, String>();
+        hexMapName.put('0', "getCity");
+        hexMapName.put('1', "setCity");
+        hexMapName.put('2', "addCity");
+        hexMapName.put('3', "deleteCity");
+        hexMapName.put('4', "hasCity");
+        hexMapName.put('5', "countCities");
+        hexMapName.put('6', "editCity");
+        hexMapName.put('7', "clearCities");
+        hexMapName.put('8', "appendCity");
+        hexMapName.put('9', "popCity");
+        hexMapName.put('a', "pushCity");
+        hexMapName.put('b', "sizeCities");
+        hexMapName.put('c', "removeCity");
+        hexMapName.put('d', "reverseCities");
+        hexMapName.put('e', "sortCities");
+        hexMapName.put('f', "insertCity");
+
+        QRName = "listyCity."+hexMapName.get(hashedSubstring.charAt(0))+hexMapName.get(hashedSubstring.charAt(1))+hexMapName.get(hashedSubstring.charAt(2))+hexMapName.get(hashedSubstring.charAt(3))+hexMapName.get(hashedSubstring.charAt(4))+hexMapName.get(hashedSubstring.charAt(5))+"()";
+        Log.d("QRName:", QRName);
+        return QRName;
     }
 
+    private String createVisual (String hashed){
+        String hashedSubstring = hashed.substring(0,4);
+        String QRVisual = "";
 
-    //All possible FaceHair in IMAGING dict
-    private void setFaceHair(HashMap<Character, String> FaceHair) {
-        FaceHair.put('0', "  ");
-        FaceHair.put('1', "- ");
-        FaceHair.put('2', "= ");
-        FaceHair.put('3', "~ ");
-        FaceHair.put('4', "~~");
-        FaceHair.put('5', "-~");
-        FaceHair.put('6', "=-");
-        FaceHair.put('7', ". ");
+        // 16^4 = 65K combos (65K X 1.04 Million = 1.1*10^12 combos)
+        HashMap<Character, String> hexMapHead = new HashMap<Character, String>();
+        hexMapHead.put('0', "C|");
+        hexMapHead.put('1', "[|");
+        hexMapHead.put('2', "<|");
+        hexMapHead.put('3', "E|");
+        hexMapHead.put('4', "#|");
+        hexMapHead.put('5', "(|");
+        hexMapHead.put('6', "F|");
+        hexMapHead.put('7', "{|");
+        hexMapHead.put('8', "d");
+        hexMapHead.put('9', "[I");
+        hexMapHead.put('a', "<=|");
+        hexMapHead.put('b', "+=|");
+        hexMapHead.put('c', "*(|");
+        hexMapHead.put('d', "<)");
+        hexMapHead.put('e', "c|");
+        hexMapHead.put('f', "*=|");
+
+        HashMap<Character, String> hexMapEyes = new HashMap<Character, String>();
+        hexMapEyes.put('0', ":");
+        hexMapEyes.put('1', ";");
+        hexMapEyes.put('2', "$");
+        hexMapEyes.put('3', "B");
+        hexMapEyes.put('4', "X");
+        hexMapEyes.put('5', "K");
+        hexMapEyes.put('6', ">:");
+        hexMapEyes.put('7', ">;");
+        hexMapEyes.put('8', ">B");
+        hexMapEyes.put('9', ">X");
+        hexMapEyes.put('a', "=");
+        hexMapEyes.put('b', "%");
+        hexMapEyes.put('c', ">%");
+        hexMapEyes.put('d', ">=");
+        hexMapEyes.put('e', "D");
+        hexMapEyes.put('f', ">D");
+
+        HashMap<Character, String> hexMapNose = new HashMap<Character, String>();
+        hexMapNose.put('0', "c");
+        hexMapNose.put('1', "<");
+        hexMapNose.put('2', ">");
+        hexMapNose.put('3', "v");
+        hexMapNose.put('4', "O");
+        hexMapNose.put('5', "o");
+        hexMapNose.put('6', "*");
+        hexMapNose.put('7', "-");
+        hexMapNose.put('8', "u");
+        hexMapNose.put('9', ")");
+        hexMapNose.put('a', "(");
+        hexMapNose.put('b', "7");
+        hexMapNose.put('c', ".");
+        hexMapNose.put('d', ",");
+        hexMapNose.put('e', "^");
+        hexMapNose.put('f', "'");
+
+        HashMap<Character, String> hexMapMouth = new HashMap<Character, String>();
+        hexMapMouth.put('0', "b");
+        hexMapMouth.put('1', "B");
+        hexMapMouth.put('2', "]");
+        hexMapMouth.put('3', "[");
+        hexMapMouth.put('4', ")");
+        hexMapMouth.put('5', "(");
+        hexMapMouth.put('6', "|");
+        hexMapMouth.put('7', "L");
+        hexMapMouth.put('8', "6");
+        hexMapMouth.put('9', "{]"); // Mustaches
+        hexMapMouth.put('a', "{[");
+        hexMapMouth.put('b', "{)");
+        hexMapMouth.put('c', "{(");
+        hexMapMouth.put('d', "{|");
+        hexMapMouth.put('e', "D");
+        hexMapMouth.put('f', "{D");
+
+        QRVisual = hexMapHead.get(hashedSubstring.charAt(0))+hexMapEyes.get(hashedSubstring.charAt(1))+hexMapNose.get(hashedSubstring.charAt(2))+hexMapMouth.get(hashedSubstring.charAt(3));
+        Log.d("QRVisual:", QRVisual);
+        return QRVisual;
     }
 
-    //All possible Mouths in IMAGING dict
-    private void setMouth(HashMap<Character, Character> Mouth) {
-        Mouth.put('0', 'O');
-        Mouth.put('1', '1');
-        Mouth.put('2', 'D');
-        Mouth.put('3', '3');
-        Mouth.put('4', ')');
-        Mouth.put('5', '\\');
-        Mouth.put('6', '#');
-        Mouth.put('7', '(');
-    }
+    // TODO: Functions
+    private void getImage() {} // will return Image from CameraX fragment...
 
-    //All possible Noses in IMAGING dict
-    private void setNose(HashMap<Character, Character> Nose) {
-        Nose.put('0', '*');
-        Nose.put('1', '<');
-        Nose.put('2', '>');
-        Nose.put('3', '\'');
-        Nose.put('4', '4');
-        Nose.put('5', '\"');
-        Nose.put('6', '^');
-        Nose.put('7', 'c');
-    }
 
-    //All possible Eye sets in IMAGING dict
-    private void setEyes(HashMap<Character, Character> Eyes) {
-        Eyes.put('0', '0');
-        Eyes.put('1', '=');
-        Eyes.put('2', 'B');
-        Eyes.put('3', '8');
-        Eyes.put('4', 'X');
-        Eyes.put('5', ':');
-        Eyes.put('6', ';');
-        Eyes.put('7', 'K');
-    }
-
-    //All possible Walls in IMAGING dict
-    private void setWalls(HashMap<Character, String> Walls) {
-        Walls.put('0', "         ");
-        Walls.put('1', "---------");
-        Walls.put('2', "=========");
-        Walls.put('3', "-o-o-o-o-");
-        Walls.put('4', "x~o~x~o~x");
-        Walls.put('5', "x-o-x-o-x");
-        Walls.put('6', "~o~o~o~o~");
-        Walls.put('7', "<>~<>~<>~");
-    }
-
-    //All possible Hats in IMAGING dict
-    private void setHat(HashMap<Character, String> Hat) {
-        Hat.put('0', "  ");
-        Hat.put('1', " q");
-        Hat.put('2', "(|");
-        Hat.put('3', "{|");
-        Hat.put('4', "[|");
-        Hat.put('5', "C|");
-        Hat.put('6', " d");
-        Hat.put('7', "<|");
-    }
-
-    //All possible Ceilings/Floors in IMAGING dict
-    private void setRnF(HashMap<Character, Character> RoofnFloor) {
-        RoofnFloor.put('0', ' ');
-        RoofnFloor.put('1', '+');
-        RoofnFloor.put('2', 'o');
-        RoofnFloor.put('3', '|');
-        RoofnFloor.put('4', '%');
-        RoofnFloor.put('5', '@');
-        RoofnFloor.put('6', '&');
-        RoofnFloor.put('7', 'H');
-    }
-
-    //NAME OF A QRc "calculation"
-    private String nameQRc(String base8) {
-
-        return String.format(Locale.CANADA, "%s %s %s%s%s%s%s",
-                Title.get(base8.charAt(0)),
-                Descriptor.get(base8.charAt(1)),
-                A.get(base8.charAt(2)),
-                B.get(base8.charAt(3)),
-                C.get(base8.charAt(4)),
-                D.get(base8.charAt(5)),
-                E.get(base8.charAt(6)));
-    }
-
-    //All possible Lastnames in NAMING dict
-    private void setLastName(HashMap<Character, String> E) {
-        E.put('0', "Crab");
-        E.put('1', "Shark");
-        E.put('2', "Shrimp");
-        E.put('3', "Squid");
-        E.put('4', "Clam");
-        E.put('5', "Trout");
-        E.put('6', "Cod");
-        E.put('7', "Bass");
-    }
-
-    //All possible Fourth in NAMING dict
-    private void setFourthName(HashMap<Character, String> D) {
-        D.put('0', "Sonic");
-        D.put('1', "Spectral");
-        D.put('2', "Spastic");
-        D.put('3', "Salient");
-        D.put('4', "Sacred");
-        D.put('5', "Scented");
-        D.put('6', "Seamless");
-        D.put('7', "Seasoned");
-    }
-
-    //All possible Thirdnames in NAMING dict
-    private void setThirdName(HashMap<Character, String> C) {
-        C.put('0', "Mega");
-        C.put('1', "Ultra");
-        C.put('2', "Super");
-        C.put('3', "Contra");
-        C.put('4', "Gamma");
-        C.put('5', "Monsta");
-        C.put('6', "Monga");
-        C.put('7', "Monka");
-    }
-
-    //All possible Secondnames in NAMING dict
-    private void setSecondName(HashMap<Character, String> B) {
-        B.put('0', "Mo");
-        B.put('1', "Lo");
-        B.put('2', "No");
-        B.put('3', "Po");
-        B.put('4', "Ro");
-        B.put('5', "Yo");
-        B.put('6', "Go");
-        B.put('7', "Jo");
-    }
-
-    //All possible Firstnames in NAMING dict
-    private void setFirstName(HashMap<Character, String> A) {
-        A.put('0', "Fro");
-        A.put('1', "Glo");
-        A.put('2', "Sno");
-        A.put('3', "Dro");
-        A.put('4', "Slo");
-        A.put('5', "Zro");
-        A.put('6', "Pro");
-        A.put('7', "Cro");
-    }
-
-    //All possible descriptors in NAMING dict
-    private void setDescriptors(HashMap<Character, String> Descriptor) {
-        Descriptor.put('0', "cold");
-        Descriptor.put('1', "hot");
-        Descriptor.put('2', "warm");
-        Descriptor.put('3', "cool");
-        Descriptor.put('4', "smart");
-        Descriptor.put('5', "black");
-        Descriptor.put('6', "white");
-        Descriptor.put('7', "strong");
-    }
-
-    //All possible titles in NAMING dict
-    private void setTitles(HashMap<Character, String> Title) {
-        Title.put('0', "King");
-        Title.put('1', "Queen");
-        Title.put('2', "Sir");
-        Title.put('3', "Madam");
-        Title.put('4', "Don");
-        Title.put('5', "Cpt");
-        Title.put('6', "Emperor");
-        Title.put('7', "Empress");
-    }
 }

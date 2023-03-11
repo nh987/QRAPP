@@ -48,10 +48,12 @@ class QRcAdapter extends BaseAdapter {
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         LayoutInflater inflater = LayoutInflater.from(mycontext);
-        View row = inflater.inflate(R.layout.text_layout, viewGroup, false);
+        View row = inflater.inflate(R.layout.item_qrc, viewGroup, false);
         QRCode qrCode = items.get(i);
-        TextView qrCodeName = row.findViewById(R.id.textinlist);
+        TextView qrCodeName = row.findViewById(R.id.QRCName);
+        TextView qrCodePoints = row.findViewById(R.id.score);
         qrCodeName.setText(qrCode.getName());
+        qrCodePoints.setText(qrCode.getPoints().toString());
         return row;
     }
 
