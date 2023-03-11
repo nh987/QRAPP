@@ -62,6 +62,14 @@ public class SearchFragment extends Fragment {
 
     PlayerListAdapter playerListAdapter;
 
+    /*
+    ListView qrListView;
+    QRcAdapter qRcAdapter;
+
+
+
+     */
+
     @SuppressLint("CutPasteId")
     @Nullable
     @Override

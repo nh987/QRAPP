@@ -52,8 +52,10 @@ class QRcAdapter extends BaseAdapter {
         QRCode qrCode = items.get(i);
         TextView qrCodeName = row.findViewById(R.id.QRCName);
         TextView qrCodePoints = row.findViewById(R.id.score);
+        TextView qrCodeIcon = row.findViewById(R.id.visual);
         qrCodeName.setText(qrCode.getName());
         qrCodePoints.setText(qrCode.getPoints().toString());
+        qrCodeIcon.setText(qrCode.getIcon());
         return row;
     }
 
