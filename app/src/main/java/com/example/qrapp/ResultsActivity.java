@@ -250,26 +250,10 @@ public class ResultsActivity extends AppCompatActivity {
                             });
                 }
                 else if (!hasScanned) {
-                    Map<String,Object> newQRC = new HashMap<>();
-                    playersScanned.add(FirebaseAuth.getInstance().getCurrentUser().getUid());
-                    newQRC.put("playersScanned", playersScanned);
-                    // Write new QRC to DB
-                    db.collection("QRCodes").document(hashed) // DocIDs will be set to hashed
-                            .set(newQRC)
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void unused) {
-
-                                    Log.d("TAG", "DocumentSnapshot successfully written!");
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Log.w("TAG", "Error writing document", e);
-                                }
-                            });
-
+                    Map<String,Object> addUser = new HashMap<>();
+                    addUser.put("playersScanned",FirebaseAuth.getInstance().getCurrentUser().getUid());
+                    db.collection("QRCodes").document(hashed)
+                            .update(addUser);
                 }
                 finish();
 
