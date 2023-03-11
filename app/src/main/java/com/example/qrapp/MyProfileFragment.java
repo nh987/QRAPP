@@ -25,6 +25,7 @@ public class MyProfileFragment extends Fragment {
     TextView usernameText;
     TextView emailText;
 
+
     //TODO Stats section
     public MyProfileFragment() {
 
