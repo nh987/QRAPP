@@ -2,11 +2,13 @@ package com.example.qrapp;
 
 import static java.lang.Math.toRadians;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -59,6 +61,16 @@ public class MainFragment extends Fragment {
             }
 
             qRcAdapter.notifyDataSetChanged();
+            qrListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    System.out.println(QRCodeList.size());
+                    QRCode qrCode = QRCodeList.get(i);
+                    Intent intent = new Intent(getActivity(), QRProfile.class);
+                    intent.putExtra("qr_code", qrCode); // pass the clicked item to the QRCProfile class
+                    startActivity(intent);
+                }
+            });
         });
 
         qRcAdapter = new QRcAdapter(QRCodeList, getContext());
