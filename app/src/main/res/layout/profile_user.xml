@@ -74,7 +74,7 @@
                         android:layout_width="380dp"
                         android:layout_height="60dp"
                         android:inputType="text"
-                        android:text="user123"
+                        android:text="Loading..."
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/relativeLayout" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -96,7 +96,7 @@
                         android:layout_width="380dp"
                         android:layout_height="60dp"
                         android:inputType="textEmailAddress"
-                        android:text="user123@gmail.com"
+                        android:text="Loading..."
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/relativeLayout" />
                 </com.google.android.material.textfield.TextInputLayout>
