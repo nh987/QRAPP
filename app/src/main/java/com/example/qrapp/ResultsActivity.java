@@ -33,6 +33,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.GeoPoint;
@@ -94,24 +95,24 @@ public class ResultsActivity extends AppCompatActivity {
         final CollectionReference collectionReferenceQR = db.collection("QRCodes");
         final CollectionReference collectionReferencePlayer = db.collection("Users");
 
-        // TODO: Check hashed value here with DB query (Check if exists and if player has already scanned it) GOTO: QRProfile if exists and/or already scanned...
+       // Checking if QR Code exists..
         DocumentReference QRCExists = db.collection("QRCodes").document(hashed);
         QRCExists.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
-                    if (document.exists()) { // Check if QRCode already exists in DB
+                    if (document.exists()) { // if QRCode already exists in DB
                         Log.d("TAG", "DocumentSnapshot data: " + document.getData());
                         Log.d("TAG", "QR Code already exists in DB!");
                         Toast.makeText(ResultsActivity.this, "QR Code already exists", Toast.LENGTH_SHORT).show();
                         doesExist = true;
                         List<String> scannedPlayers = (List<String>) document.get("playersScanned");
                         if (scannedPlayers != null) {
-                            if (scannedPlayers.contains(FirebaseAuth.getInstance().getCurrentUser().getUid())) { // Check if user has already scanned QRCode
+                            if (scannedPlayers.contains(FirebaseAuth.getInstance().getCurrentUser().getUid())) { // if user has already scanned QRCode
                                 Toast.makeText(ResultsActivity.this, "User has already scanned this QRCode", Toast.LENGTH_SHORT).show();
                                 hasScanned = true;
-                                // return to main TODO: GOTO: QRProfile...
+                                // TODO: GOTO: QRProfile...
                             }
                         }
 
@@ -122,9 +123,6 @@ public class ResultsActivity extends AppCompatActivity {
                 }
             }
         });
-
-        // TODO: Add photo (frick man)
-        addPhoto = (Button) findViewById(R.id.results_add_photo_btn);
 
         // Create name and visual icon for new QRCode
         name = createName(hashed);
@@ -139,6 +137,16 @@ public class ResultsActivity extends AppCompatActivity {
         textViewName.setText(name);
         textViewScore.setText(""+score+" points!");
         textViewVisual.setText(visual);
+
+        // TODO: Add photo (frick man)
+        addPhoto = (Button) findViewById(R.id.results_add_photo_btn);
+        addPhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
 
         ActivityResultLauncher<String[]> locationPermissionRequest =
                 registerForActivityResult(new ActivityResultContracts
@@ -161,6 +169,7 @@ public class ResultsActivity extends AppCompatActivity {
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION
         });
+
         // Get geolocation...
         checkBox = (CheckBox) findViewById(R.id.results_checkbox);
         checkBox.setOnClickListener(new View.OnClickListener() {
@@ -250,8 +259,8 @@ public class ResultsActivity extends AppCompatActivity {
                             });
                 }
                 else if (!hasScanned) {
-                    Map<String,Object> addUser = new HashMap<>();
-                    addUser.put("playersScanned",FirebaseAuth.getInstance().getCurrentUser().getUid());
+                    final Map<String,Object> addUser = new HashMap<>();
+                    addUser.put("playersScanned", FieldValue.arrayUnion(FirebaseAuth.getInstance().getCurrentUser().getUid()));
                     db.collection("QRCodes").document(hashed)
                             .update(addUser);
                 }
