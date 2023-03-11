@@ -3,6 +3,7 @@ package com.example.qrapp;
 
 import static java.lang.Math.toRadians;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -55,9 +56,21 @@ public class SearchFragment extends Fragment {
     SearchView searchView;
     Spinner spinner;
     ListView qrListView;
-    QRcAdapter qRcAdapter;
-    public ArrayList<Player> playerList;
 
+    ListView playerListView;
+    QRcAdapter qRcAdapter;
+
+    PlayerListAdapter playerListAdapter;
+
+    /*
+    ListView qrListView;
+    QRcAdapter qRcAdapter;
+
+
+
+     */
+
+    @SuppressLint("CutPasteId")
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -71,14 +84,12 @@ public class SearchFragment extends Fragment {
         spinner.clearAnimation();
         qrListView = view.findViewById(R.id.listView);
 
-
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this.getActivity(),
                 R.array.numbers, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -123,17 +134,11 @@ public class SearchFragment extends Fragment {
                             Log.d("myTag", test + " playerListSizeTest");
                             // set adapter and display the listview with queried data
 
-                            PlayerListAdapter playerListAdapter = new PlayerListAdapter(playerList, getContext());
-                            qrListView.setAdapter(playerListAdapter); // why the fuck isn't this displaying (I don't think its an adapter problem but alas...)
+                            playerListAdapter = new PlayerListAdapter(playerList, getContext());
+                            qrListView.setAdapter(playerListAdapter);
+                            playerListAdapter.notifyDataSetChanged();
 
-
-                            // Listener for Listview
-                            qrListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                @Override
-                                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                                    // set buttons in listview, s.t it opens profile_user.xml
-                                }
-                            });
+                           // listview button listeners are in PlayerListAdapter.java
 
                         } else {
                             Log.d("myTag", "This shouldn't be logged");
@@ -146,6 +151,7 @@ public class SearchFragment extends Fragment {
                 return false;
             }
 
+            // this is here because it is required by interface, but it is not used.
             @Override
             public boolean onQueryTextChange(String newText) {
                 return false;
@@ -262,6 +268,7 @@ public class SearchFragment extends Fragment {
          * @return nothing
          */
         playerSearch.setOnClickListener(new View.OnClickListener() {
+            Context mContext = getContext();
             @Override
             public void onClick(View view) {
                 playerFilterButtonClicked = true;
@@ -270,7 +277,7 @@ public class SearchFragment extends Fragment {
                 playerSearch.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#ffafbd")));
                 searchView.setVisibility(View.VISIBLE);
                 spinner.setVisibility(View.INVISIBLE);
-                qrListView.setAdapter(null);
+                qrListView.setAdapter(playerListAdapter);
             }
         });
         /**

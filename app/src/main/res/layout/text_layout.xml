@@ -6,19 +6,20 @@
     <TextView xmlns:android = "http://schemas.android.com/apk/res/android"
         android:id = "@+id/textinlist"
         android:text = "User_6666"
-        android:textSize = "35sp"
+        android:textSize = "20sp"
         android:textColor = "#824a5a"
         android:fontFamily= "sans-serif-black"
         android:paddingLeft="15dp"
         android:layout_width = "400dp"
+        android:layout_marginTop="11dp"
         android:layout_height = "wrap_content"/>
 
     <Button
         android:id="@+id/viewProfile"
         android:layout_width="89dp"
-        android:layout_height="50dp"
-        android:layout_marginLeft="-90dp"
-        android:layout_marginTop="-15dp"
+        android:layout_height="45dp"
+        android:layout_marginLeft="-150dp"
+        android:layout_marginTop="4dp"
         android:layout_marginRight="50dp"
         android:text="View Profile"
         android:textSize="10sp" />
