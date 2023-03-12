@@ -1,6 +1,7 @@
 package com.example.qrapp;
 
 
+import static android.location.LocationRequest.*;
 import static com.google.android.gms.location.Priority.*;
 
 import android.Manifest;
@@ -9,7 +10,6 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationRequest;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -30,6 +30,7 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
@@ -111,10 +112,15 @@ public class MapFragment extends Fragment {
         int update_interval=10; // these are used to update location after a certain amount of secs
         int fastest_update_interval = 5; // I times these by 100o because apparently, the function accepts time in millisecs
 
+//        LRequest = new Builder(PRIORITY_BALANCED_POWER_ACCURACY)
+//                .setIntervalMillis(update_interval * 1000) //set location requesting params
+//                .setMinUpdateIntervalMillis(fastest_update_interval * 1000)
+//                .build();
         LRequest = new LocationRequest.Builder(PRIORITY_BALANCED_POWER_ACCURACY)
-                .setIntervalMillis(update_interval * 1000) //set location requesting params
-                .setMinUpdateIntervalMillis(fastest_update_interval * 1000)
+                .setIntervalMillis(10 * 1000)
+                .setMinUpdateIntervalMillis(5 * 1000)
                 .build();
+
 
 
         View view = inflater.inflate(R.layout.fragment_map, container, false);
@@ -138,12 +144,12 @@ public class MapFragment extends Fragment {
     }
 
 
-    @SuppressLint("MissingPermission")
+
     private void update() {
 
         //Client allows retrieval of location
         FLPC = LocationServices.getFusedLocationProviderClient(getContext());
-
+        FLPC.requestLocationUpdates(LRequest,locationCallback,null);
         //Ask permission
         if (ActivityCompat
                 .checkSelfPermission(getContext(),
