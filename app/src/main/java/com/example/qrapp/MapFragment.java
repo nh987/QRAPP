@@ -243,5 +243,12 @@ public class MapFragment extends Fragment {
         return new LatLng(geo.getLatitude(),geo.getLongitude());
     }
 
+
+    @Override
+    public void onDestroyView() {
+        FLPC.removeLocationUpdates(locationCallback);
+        FLPC=null;
+        super.onDestroyView();
+    }
 }
 
