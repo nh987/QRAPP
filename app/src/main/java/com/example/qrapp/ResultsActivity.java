@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.media.Image;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -19,6 +20,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -141,11 +144,13 @@ public class ResultsActivity extends AppCompatActivity {
         textViewScore.setText(""+score+" points!");
         textViewVisual.setText(visual);
 
-        // TODO: Add photo (frick man)
         addPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent toResults = new Intent(ResultsActivity.this, PictureActivity.class);
+                toResults.putExtra("hashed", hashed);
+                startActivity(toResults);
+                addPhoto.setVisibility(View.INVISIBLE);
             }
         });
 
