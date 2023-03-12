@@ -44,7 +44,7 @@
 
             <ImageView
                 android:id="@+id/imageView2"
-                android:layout_width="345dp"
+                android:layout_width="370dp"
                 android:layout_height="95dp"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentEnd="true"
@@ -62,15 +62,15 @@
                 android:layout_alignStart="@+id/imageView2"
                 android:layout_alignEnd="@+id/imageView2"
                 android:layout_alignBottom="@+id/imageView2"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="20dp"
                 android:fontFamily="sans-serif-black"
                 android:gravity="center"
                 android:text="hot GloUltraSonicShark"
                 android:textColor="#824a5a"
                 android:textSize="20dp"
                 app:layout_constraintEnd_toEndOf="@+id/imageView2"
-                app:layout_constraintHorizontal_bias="0.784"
-                app:layout_constraintStart_toStartOf="@+id/imageView2"
+                app:layout_constraintHorizontal_bias="0.222"
+                app:layout_constraintStart_toEndOf="@+id/icon"
                 app:layout_constraintTop_toTopOf="@+id/imageView2" />
 
             <TextView
@@ -87,8 +87,8 @@
                 android:textColor="#824a5a"
                 android:textSize="17dp"
                 app:layout_constraintEnd_toEndOf="@+id/imageView2"
-                app:layout_constraintHorizontal_bias="0.447"
-                app:layout_constraintStart_toStartOf="@+id/imageView2"
+                app:layout_constraintHorizontal_bias="0.088"
+                app:layout_constraintStart_toEndOf="@+id/icon"
                 app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
             <ImageView
@@ -148,8 +148,8 @@
 
             <TextView
                 android:id="@+id/post"
-                android:layout_width="191dp"
-                android:layout_height="45dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentBottom="true"
                 android:layout_marginEnd="114dp"
