@@ -10,7 +10,6 @@ import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -247,42 +246,17 @@ public class SearchFragment extends Fragment {
                 return Double.parseDouble(selectedDistance);
             }
 
+            @SuppressLint("MissingPermission")
             private Location getCurrentLocation() {
-                LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-                final long MIN_TIME_BETWEEN_UPDATES = 1000 * 60 * 1;
-                final float MIN_DISTANCE_CHANGE_FOR_UPDATES = 10;
-                final int PERMISSION_REQUEST_CODE = 1001;
-
-                LocationListener locationListener = new LocationListener() {
-                    @Override
-                    public void onLocationChanged(Location location) {
-                        // Called when the location has changed
-                        // You can use the new location here
-                    }
-
-                    @Override
-                    public void onStatusChanged(String provider, int status, Bundle extras) {
-                        // Called when the provider status changes
-                    }
-
-                    @Override
-                    public void onProviderEnabled(String provider) {
-                        // Called when the provider is enabled by the user
-                    }
-
-                    @Override
-                    public void onProviderDisabled(String provider) {
-                        // Called when the provider is disabled by the user
-                    }
-                };
-
+                Integer PERMISSION_REQUEST_CODE = 1;
+                LocationManager locationManager = (LocationManager) getActivity().getSystemService(getContext().LOCATION_SERVICE);
                 if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     // Request permission from the user
                     ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_REQUEST_CODE);
                     return null;
                 } else {
-                    // Permission already granted, so register the location listener and get the current location
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BETWEEN_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener);
+                    // Permission already granted, so get the last known location
+
                     return locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                 }
             }
