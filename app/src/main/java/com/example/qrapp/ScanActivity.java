@@ -148,6 +148,7 @@ public class ScanActivity extends AppCompatActivity implements ImageAnalysis.Ana
                                 Log.d("encoded", "sha256 hex string: "+hashed);
                                 score = score(hashed);
                                 scannedCode = true;
+
                             }
 
                         }

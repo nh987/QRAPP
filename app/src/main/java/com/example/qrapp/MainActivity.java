@@ -14,9 +14,13 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 
@@ -26,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     BottomNavigationView nav_bar;//nav bar object
     ImageButton SCAN;// scan button object
     ImageButton MYPROFILE;// get to myprofile page
+    private FirebaseAuth auth;
 
 
     @Override
@@ -44,6 +49,36 @@ public class MainActivity extends AppCompatActivity {
 
         // start at menu
         nav_bar.setSelectedItemId(R.id.main_tab);
+
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
+
+        auth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+                if (currentUser == null) {
+                    // User is not signed in, force them to sign up using Firebase
+                    System.out.println("User is not signed in");
+                    startActivity(new Intent(MainActivity.this, SignUpActivity.class));
+
+                } else {
+                    System.out.println("User is signed in");
+                    currentUser.reload().addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                FirebaseUser updatedUser = auth.getCurrentUser();
+                                if (updatedUser == null) {
+                                    // User account has been deleted
+                                    System.out.println("User account has been deleted");
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        });
 
 
 
@@ -71,10 +106,9 @@ public class MainActivity extends AppCompatActivity {
         MYPROFILE.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.frame, new MyProfileFragment())
-                        .commit();
+               //start myprofile activity
+                Intent myprofileIntent = new Intent(MainActivity.this, MyProfile.class);
+                startActivity(myprofileIntent);
             }
         });
 

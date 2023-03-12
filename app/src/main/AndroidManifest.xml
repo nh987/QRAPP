@@ -4,38 +4,51 @@
 
     <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- FOR SCANNING -->
+    <uses-feature android:name="android.hardware.camera.any" />
 
-<!-- FOR SCANNING -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- FOR SCANNING -->
     <uses-feature android:name="android.hardware.camera.any"/>
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.location.gps" />
 
-
     <application
         android:name=".QRAPP"
         android:allowBackup="true"
-        android:requestLegacyExternalStorage="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.QRAPP"
         tools:targetApi="32">
-
-<!--    FOR SCANNING RESULTS -->
+        <activity
+            android:name=".MyProfile"
+            android:exported="false" />
+        <!-- FOR SCANNING RESULTS -->
         <activity
             android:name=".ResultsActivity"
             android:exported="false"
             android:launchMode="singleInstance">
 
+
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+        <activity
+            android:name=".QRProfile"
+            android:label="@string/app_name">
+        </activity>
+
+        <activity android:name=".SignUpActivity"/>
+
+
 
         <activity
             android:name=".ScanActivity"
@@ -44,6 +57,10 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+
+        <activity
+            android:name=".PlayerProfileActivity"
+            />
 
         <activity
             android:name=".MainActivity"
