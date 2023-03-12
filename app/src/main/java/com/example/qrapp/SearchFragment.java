@@ -138,7 +138,7 @@ public class SearchFragment extends Fragment {
                             qrListView.setAdapter(playerListAdapter);
                             playerListAdapter.notifyDataSetChanged();
 
-                           // listview button listeners are in PlayerListAdapter.java
+                            // listview button listeners are in PlayerListAdapter.java
 
                         } else {
                             Log.d("myTag", "This shouldn't be logged");
@@ -157,36 +157,20 @@ public class SearchFragment extends Fragment {
                 return false;
             }
         });
-
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                System.out.println(spinner.getSelectedItem().toString());
-                // take the input and remove any non numeric characters
                 String selectedDistance = spinner.getSelectedItem().toString();
-                selectedDistance = selectedDistance.replaceAll("[^0-9]", "");
-                double maxDistance = Double.parseDouble(selectedDistance);
-                LocationManager locationManager = (LocationManager) getActivity().getSystemService(getContext().LOCATION_SERVICE);
-                if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    // requirement to check permission
-                    return;
-                }
-                Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                // print the location
-                System.out.println(location);
-                double userLatitude;
-                double userLongitude;
+                double maxDistance = extractMaxDistance(selectedDistance);
+                Location location = getCurrentLocation();
+                ArrayList<QRCode> qrCodeList = new ArrayList<>();
                 if (location == null) {
-                    userLatitude = 53.5444;
-                    userLongitude = -113.4909;
                     Toast.makeText(getContext(), "Location not being shared, location set to default", Toast.LENGTH_SHORT).show();
-
+                    location = new Location("");
+                    location.setLatitude(53.5444);
+                    location.setLongitude(-113.4909);
                 }
-                else {
-                    userLatitude = location.getLatitude();
-                    userLongitude = location.getLongitude();
-                }
-                GeoPoint geoPoint = new GeoPoint(userLatitude, userLongitude);
+                GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
+                System.out.println("Location" + geoPoint);
                 db.collection("QrCodes")
                         .whereNotEqualTo("Geolocation", null)
                         .get()
@@ -194,67 +178,79 @@ public class SearchFragment extends Fragment {
                             ArrayList<Map.Entry<QRCode, Double>> QRCodeListWithDistances = new ArrayList<>();
                             if (task.isSuccessful()) {
                                 List<DocumentSnapshot> documents = task.getResult().getDocuments();
-                                System.out.println(documents.size());
                                 for (DocumentSnapshot document : documents) {
                                     GeoPoint qrCodeLocation = document.getGeoPoint("Geolocation");
-                                    double lat1 = toRadians(geoPoint.getLatitude());
-                                    double lon1 = toRadians(geoPoint.getLongitude());
-                                    double lat2 = toRadians(qrCodeLocation.getLatitude());
-                                    double lon2 = toRadians(qrCodeLocation.getLongitude());
-                                    double x = (lon2 - lon1) * Math.cos((lat1 + lat2) / 2);
-                                    double y = (lat2 - lat1);
-                                    double distance = Math.sqrt(x * x + y * y) * 6371;
-                                    System.out.println("Distance: " + distance);
+                                    double distance = calculateDistance(geoPoint, qrCodeLocation);
                                     if (distance <= maxDistance) {
+                                        System.out.println("Found QR CODE!!");
                                         Integer points = document.getLong("Points").intValue();
                                         String name = document.getString("Name");
                                         String icon = document.getString("icon");
                                         Object playersScanned = document.get("playersScanned");
                                         GeoPoint geolocation = document.getGeoPoint("Geolocation");
                                         Object comments =  document.get("Comments");
-
-
                                         QRCode queriedQR = new QRCode(comments, points, name, icon, playersScanned, geolocation);
                                         Map.Entry<QRCode, Double> entry = new AbstractMap.SimpleEntry<>(queriedQR, distance);
                                         QRCodeListWithDistances.add(entry);
+                                        System.out.println("QRCodeListWithDistances size" + QRCodeListWithDistances.size());
                                     }
-
                                 }
-
-                                // Sort the list by distance in ascending order
                                 Collections.sort(QRCodeListWithDistances, new Comparator<Map.Entry<QRCode, Double>>() {
                                     public int compare(Map.Entry<QRCode, Double> a, Map.Entry<QRCode, Double> b) {
                                         return a.getValue().compareTo(b.getValue());
                                     }
                                 });
-
-                                // Convert the list of map entries back to a list of QRCode objects
-                                ArrayList<QRCode> QRCodeList = new ArrayList<>();
                                 for (Map.Entry<QRCode, Double> entry : QRCodeListWithDistances) {
-                                    QRCodeList.add(entry.getKey());
+                                    qrCodeList.add(entry.getKey());
                                 }
-
-                                qRcAdapter = new QRcAdapter(QRCodeList, getContext());
-                                qrListView.setAdapter(qRcAdapter);
-
-                                qrListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                    @Override
-                                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                                        System.out.println(QRCodeList.size());
-                                        QRCode qrCode = QRCodeList.get(i);
-                                        Intent intent = new Intent(getActivity(), QRProfile.class);
-                                        intent.putExtra("qr_code", qrCode); // pass the clicked item to the QRCProfile class
-                                        startActivity(intent);
-                                    }
-                                });
-
-
+                                System.out.println("QRCodeList size" + qrCodeList.size());
+                                displayQRCodeList(qrCodeList);
                             } else {
                                 Toast queryToast = Toast.makeText(getContext(), "Your search returned no results", Toast.LENGTH_SHORT);
                                 queryToast.show();
                             }
                         });
             }
+
+
+            private void displayQRCodeList(ArrayList<QRCode> QRCodeList) {
+                qRcAdapter = new QRcAdapter(QRCodeList, getContext());
+                qrListView.setAdapter(qRcAdapter);
+
+                qrListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                        QRCode qrCode = QRCodeList.get(i);
+                        Intent intent = new Intent(getActivity(), QRProfile.class);
+                        intent.putExtra("qr_code", qrCode); // pass the clicked item to the QRCProfile class
+                        startActivity(intent);
+                    }
+                });
+            }
+
+
+            private double extractMaxDistance(String selectedDistance) {
+                selectedDistance = selectedDistance.replaceAll("[^0-9]", "");
+                return Double.parseDouble(selectedDistance);
+            }
+
+            private Location getCurrentLocation() {
+                LocationManager locationManager = (LocationManager) getActivity().getSystemService(getContext().LOCATION_SERVICE);
+                if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    return null;
+                }
+                return locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            }
+            private double calculateDistance(GeoPoint point1, GeoPoint point2) {
+                double lat1 = toRadians(point1.getLatitude());
+                double lon1 = toRadians(point1.getLongitude());
+                double lat2 = toRadians(point2.getLatitude());
+                double lon2 = toRadians(point2.getLongitude());
+                double x = (lon2 - lon1) * Math.cos((lat1 + lat2) / 2);
+                double y = (lat2 - lat1);
+                return Math.sqrt(x * x + y * y) * 6371;
+            }
+
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
@@ -305,5 +301,3 @@ public class SearchFragment extends Fragment {
         return view;
     }
 }
-
-
