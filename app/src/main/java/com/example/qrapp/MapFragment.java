@@ -34,6 +34,7 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.GeoPoint;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -45,8 +46,9 @@ public class MapFragment extends Fragment {
     LocationRequest LRequest; //Used to set Location requesting Parameters
     LocationCallback locationCallback;//Used to get an update of the phones location
 
-    QRAPP MyApp; //This helps to keep a global updated list of all locations so they can be access acroos the app
+
     Location curr_location;
+    ArrayList<LatLng> QRcLocations;
 
     TextView points; //shows how many locations are saved
     Button UPDATE; //update locations
@@ -79,7 +81,7 @@ public class MapFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        MyApp = (QRAPP) getActivity().getApplicationContext(); //App object used to get/store locations
+        QRcLocations = new ArrayList<>();
 
         //for location updates every 10 or 5 secs
         locationCallback = new LocationCallback() {
@@ -183,7 +185,7 @@ public class MapFragment extends Fragment {
 
         Bundle LocationBundle = new Bundle(); //to pass location data into fragment
         String LocationDataKey = "LB";
-        LocationBundle.putSerializable(LocationDataKey, MyApp.getQRcLocations());
+        LocationBundle.putSerializable(LocationDataKey, QRcLocations);
         HMFragment.setArguments(LocationBundle);
 
         getChildFragmentManager()
@@ -194,23 +196,26 @@ public class MapFragment extends Fragment {
 
 
     //add new set of nearby locations
+    //TODO: This is where the db/a list of the closest  QRc locations to the phone is set
+    //If i can get a list of all the QRcodes from a db or something, I can show the closest within a given range
     private void addLocationsToMap(Location location) {
         curr_location = location; //set/update phone location
 
 
-        ArrayList<LatLng> myLocations = MyApp.getQRcLocations();
+
         double Lat = curr_location.getLatitude(), Long = curr_location.getLatitude();
-        myLocations.clear(); //clear whatever is there.
+        QRcLocations.clear(); //clear whatever is there.
 
         //add random nearby locations
         for (int i = 10; i > 0; i--) {
-            MyApp.addQRcLocation(
+            QRcLocations.add(
                     new LatLng(
                             ThreadLocalRandom.current().nextDouble(Lat - 0.2, Lat + 0.2),
                             ThreadLocalRandom.current().nextDouble(Long - 0.2, Long + 0.2)
                     ));
         }
-        MyApp.addQRcLocation(new LatLng(Lat, Long)); //add current location as well as a referecne point
+        //QRcLocations(new LatLng(Lat, Long)); //add current location as well as a referecne point
+        QRcLocations.add(new LatLng(Lat,Long));
     }
 
 
@@ -224,7 +229,13 @@ public class MapFragment extends Fragment {
         //put location values in view
 
         //update points total
-        points.setText(String.format(Locale.CANADA, "%d", MyApp.getQRcLocations().size()));
+        points.setText(String.format(Locale.CANADA, "%d", QRcLocations.size()));
     }
+
+    // convert from GeoPoint to LatLng, maps used LatLng
+    private LatLng LatLngify(GeoPoint geo){
+        return new LatLng(geo.getLatitude(),geo.getLongitude());
+    }
+
 }
 
