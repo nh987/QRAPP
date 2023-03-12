@@ -48,7 +48,7 @@ public class QRProfile extends AppCompatActivity {
         icon = findViewById(R.id.icon);
 
         QRCName.setText(qrCode.getName()); // set the name text
-        points.setText(qrCode.getPoints());
+        points.setText(qrCode.getPoints() + " Points"); // set the points text
         icon.setText(qrCode.getIcon());
 
 

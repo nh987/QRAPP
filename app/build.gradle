@@ -35,11 +35,6 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-
-    buildFeatures {
-        viewBinding true
-    }
-
 }
 
 dependencies {
@@ -59,6 +54,7 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:31.2.0')
     implementation 'com.google.firebase:firebase-firestore:24.4.2'
     implementation 'com.google.api:gax:1.63.0'
+    implementation 'com.google.firebase:firebase-storage'
 
 
     implementation 'com.google.android.gms:play-services-location:21.0.1'
