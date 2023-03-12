@@ -19,6 +19,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -38,7 +39,7 @@ public class HelperMapFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         String LocationDataKey = "LB";
-        QRcLocations = (ArrayList<LatLng>) getArguments().getSerializable(LocationDataKey); //location list object passed as bundle
+        QRcLocations = (ArrayList<LatLng>) getArguments().getSerializable(LocationDataKey); //location list object passed as bundle so get the bundle
         N = QRcLocations.size();
         Toast.makeText(getContext(), String.format(Locale.CANADA,"%d locations shown", N), Toast.LENGTH_LONG).show();
 
@@ -72,8 +73,12 @@ public class HelperMapFragment extends Fragment {
                 for (LatLng ll : QRcLocations) { //add a marker for each location
                     MarkerOptions MOptions = new MarkerOptions();
                     MOptions.position(ll);
-                    MOptions.title(ll.latitude + ", " + ll.longitude);
-
+                    if(QRcLocations.indexOf(ll)==N-1) {
+                        MOptions.title("YOU ARE HERE");
+                        MOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+                    }else {
+                        MOptions.title(ll.latitude + ", " + ll.longitude);
+                    }
 
                     googleMap.addMarker(MOptions);
                 }
