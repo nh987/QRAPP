@@ -134,7 +134,7 @@ public class SearchFragment extends Fragment {
                             Log.d("myTag", test + " playerListSizeTest");
                             // set adapter and display the listview with queried data
 
-                            playerListAdapter = new PlayerListAdapter(playerList, getContext());
+                            playerListAdapter = new PlayerListAdapter(playerList, getContext(), getActivity());
                             qrListView.setAdapter(playerListAdapter);
                             playerListAdapter.notifyDataSetChanged();
 

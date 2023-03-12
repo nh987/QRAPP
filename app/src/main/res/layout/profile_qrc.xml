@@ -72,7 +72,7 @@
                 android:padding="10dp"
                 android:text=":)"
                 android:textColor="#000000"
-                android:textSize="96sp"
+                android:textSize="48dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_baseline_scan2" />
