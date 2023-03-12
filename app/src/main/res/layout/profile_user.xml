@@ -16,6 +16,25 @@
         app:layout_constraintTop_toBottomOf="parent">
 
 
+        <ImageButton
+            android:id="@+id/viewLowestQRCButton"
+            android:layout_width="40dp"
+            android:layout_height="20dp"
+            android:background="@android:color/transparent"
+            app:layout_constraintStart_toEndOf="@+id/lowestQRC"
+            app:layout_constraintTop_toTopOf="@+id/lowestQRC"
+            app:srcCompat="@android:drawable/ic_menu_view"
+            />
+
+        <ImageButton
+            android:id="@+id/viewHighestQRCButton"
+            android:layout_width="40dp"
+            android:layout_height="20dp"
+            android:background="@android:color/transparent"
+            app:layout_constraintStart_toEndOf="@+id/highestQRC"
+            app:layout_constraintTop_toTopOf="@+id/highestQRC"
+            app:srcCompat="@android:drawable/ic_menu_view" />
+
         <RelativeLayout
             android:id="@+id/relativeLayout"
             android:layout_width="match_parent"
@@ -50,12 +69,14 @@
 
         </RelativeLayout>
 
+
         <RelativeLayout
             android:layout_width="411dp"
             android:layout_height="730dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
 
+        </RelativeLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/usernameLayout"
@@ -126,6 +147,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.054"
+            app:layout_constraintStart_toEndOf="@+id/viewHighestQRCButton"
             app:layout_constraintStart_toStartOf="parent" />
 
         <TextView

@@ -2,6 +2,7 @@ package com.example.qrapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -24,8 +25,9 @@ public class MyProfile extends AppCompatActivity {
     private TextView lowestQRCvalue;
     private TextView totalscoreValue;
 
-
     private ImageButton backButton;
+    private ImageButton viewHighestQRCButton;
+    private ImageButton viewLowestQRCButton;
 
     private String userID;
 
@@ -43,13 +45,15 @@ public class MyProfile extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile_user);
 
-        //get the text views
+        //get the views
         usernameText = findViewById(R.id.username);
         emailText = findViewById(R.id.email);
         backButton = findViewById(R.id.back);
         highestQRCvalue = findViewById(R.id.highestQRCvalue);
         lowestQRCvalue = findViewById(R.id.lowestQRCvalue);
         totalscoreValue = findViewById(R.id.totalscoreValue);
+        viewHighestQRCButton = findViewById(R.id.viewHighestQRCButton);
+        viewLowestQRCButton = findViewById(R.id.viewLowestQRCButton);
 
         db = FirebaseFirestore.getInstance();
 
@@ -114,30 +118,55 @@ public class MyProfile extends AppCompatActivity {
     }
 
     private void updateScores(){
-        //print qr codes at time of calling to console
-        System.out.println("QR Codes:");
-        for (QRCode qrCode : QRCodeList) {
-            System.out.println(qrCode.getName() + " " + qrCode.getPoints());
+
+        if (QRCodeList.size() == 0){
+            //if the user has not scanned any QR codes, set the text views to 0
+            highestQRCvalue.setText("N/A");
+            lowestQRCvalue.setText("N/A");
+            totalscoreValue.setText("0");
+
+            // set the buttons to do nothing & be invisible
+            viewHighestQRCButton.setOnClickListener(v -> {});
+            viewHighestQRCButton.setVisibility(ImageButton.INVISIBLE);
+            viewLowestQRCButton.setOnClickListener(v -> {});
+            viewLowestQRCButton.setVisibility(ImageButton.INVISIBLE);
+            return;
         }
 
-        //find the highest, lowest and total scores
-        int highest = 0;
-        int lowest = 0;
+        //find the highest, lowest QR code and total scores
+        QRCode highestQR = QRCodeList.get(0);
+        QRCode lowestQR = QRCodeList.get(0);
         int total = 0;
         for (QRCode qrCode : QRCodeList) {
-            int codePoints = Integer.parseInt(qrCode.getPoints());
-            if (codePoints > highest) {
-                highest = codePoints;
+            int currentScore = Integer.parseInt(qrCode.getPoints());
+            int highestScore = Integer.parseInt(highestQR.getPoints());
+            int lowestScore = Integer.parseInt(lowestQR.getPoints());
+            if (currentScore > highestScore){
+                highestQR = qrCode;
             }
-            if (codePoints < lowest) {
-                lowest = codePoints;
+            if (currentScore < lowestScore){
+                lowestQR = qrCode;
             }
-            total += codePoints;
+            total += currentScore;
         }
         //set the text views
-        highestQRCvalue.setText(String.valueOf(highest));
-        lowestQRCvalue.setText(String.valueOf(lowest));
+        highestQRCvalue.setText(String.valueOf(highestQR.getPoints()));
+        lowestQRCvalue.setText(String.valueOf(lowestQR.getPoints()));
         totalscoreValue.setText(String.valueOf(total));
+
+        //set the buttons to open the QRProfile activity
+        final QRCode finalLowestQR = lowestQR;
+        final QRCode finalHighestQR = highestQR;
+        viewHighestQRCButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MyProfile.this, QRProfile.class);
+            intent.putExtra("qr_code", finalHighestQR);
+            startActivity(intent);
+        });
+        viewLowestQRCButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MyProfile.this, QRProfile.class);
+            intent.putExtra("qr_code", finalLowestQR);
+            startActivity(intent);
+        });
     }
 
     /**
