@@ -24,6 +24,7 @@ public class MyProfile extends AppCompatActivity {
     private TextView highestQRCvalue;
     private TextView lowestQRCvalue;
     private TextView totalscoreValue;
+    private TextView codesScannedValue;
 
     private ImageButton backButton;
     private ImageButton viewHighestQRCButton;
@@ -52,6 +53,7 @@ public class MyProfile extends AppCompatActivity {
         highestQRCvalue = findViewById(R.id.highestQRCvalue);
         lowestQRCvalue = findViewById(R.id.lowestQRCvalue);
         totalscoreValue = findViewById(R.id.totalscoreValue);
+        codesScannedValue = findViewById(R.id.codesScannedValue);
         viewHighestQRCButton = findViewById(R.id.viewHighestQRCButton);
         viewLowestQRCButton = findViewById(R.id.viewLowestQRCButton);
 
@@ -124,6 +126,7 @@ public class MyProfile extends AppCompatActivity {
             highestQRCvalue.setText("N/A");
             lowestQRCvalue.setText("N/A");
             totalscoreValue.setText("0");
+            codesScannedValue.setText("0");
 
             // set the buttons to do nothing & be invisible
             viewHighestQRCButton.setOnClickListener(v -> {});
@@ -153,6 +156,7 @@ public class MyProfile extends AppCompatActivity {
         highestQRCvalue.setText(String.valueOf(highestQR.getPoints()));
         lowestQRCvalue.setText(String.valueOf(lowestQR.getPoints()));
         totalscoreValue.setText(String.valueOf(total));
+        codesScannedValue.setText(String.valueOf(QRCodeList.size()));
 
         //set the buttons to open the QRProfile activity
         final QRCode finalLowestQR = lowestQR;
