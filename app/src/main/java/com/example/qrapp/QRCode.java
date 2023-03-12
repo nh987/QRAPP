@@ -3,6 +3,7 @@ package com.example.qrapp;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.firestore.GeoPoint;
 
 import java.util.ArrayList;
@@ -68,6 +69,7 @@ public class QRCode implements Parcelable {
     public void setGeolocation(GeoPoint geolocation) {
         this.geolocation = geolocation;
     }
+
 
     protected QRCode(Parcel in) {
         name = in.readString();
