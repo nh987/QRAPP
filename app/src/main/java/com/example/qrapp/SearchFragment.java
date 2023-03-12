@@ -29,12 +29,18 @@ import java.util.AbstractMap;
 import android.Manifest;
 
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
@@ -148,6 +154,9 @@ public class SearchFragment extends Fragment {
                     });
 
                 }
+                else if (QrFilterButtonClicked) {
+
+                }
                 return false;
             }
 
@@ -166,6 +175,7 @@ public class SearchFragment extends Fragment {
              @param position The position of the item selected.
              @param id The row id of the item that is selected.
              */
+            private FusedLocationProviderClient fusedLocationClient;
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedDistance = spinner.getSelectedItem().toString();
                 double maxDistance = extractMaxDistance(selectedDistance);
@@ -220,9 +230,7 @@ public class SearchFragment extends Fragment {
                         });
             }
             /**
-
              Displays a list of QR codes in a ListView and sets a click listener to each item in the list.
-
              @param QRCodeList the list of QRCode objects to display in the ListView
              */
             private void displayQRCodeList(ArrayList<QRCode> QRCodeList) {
@@ -250,24 +258,40 @@ public class SearchFragment extends Fragment {
                 return Double.parseDouble(selectedDistance);
             }
 
-            @SuppressLint("MissingPermission")
             /**
              This method gets the current location of the user. If the user has not granted permission to access their location, it will request permission from the user.
              @return the current location of the user
              */
+            @SuppressLint("MissingPermission")
             private Location getCurrentLocation() {
-                Integer PERMISSION_REQUEST_CODE = 1;
-                LocationManager locationManager = (LocationManager) getActivity().getSystemService(getContext().LOCATION_SERVICE);
-                if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    // Request permission from the user
-                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_REQUEST_CODE);
-                    return null;
-                } else {
-                    // Permission already granted, so get the last known location
+                LocationManager locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
 
-                    return locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                // Check if permissions are granted
+                if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                        ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    // Request for permissions
+                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+                    return null;
+                }
+
+                // Get last known location
+                Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                if (lastKnownLocation == null) {
+                    return null;
+                }
+
+                return lastKnownLocation;
+            }
+
+            private void requestLocationPermissions() {
+                if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                        && ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(getActivity(),
+                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                            1);
                 }
             }
+
 
             /**
              This method calculates the distance between two GeoPoints
