@@ -158,6 +158,14 @@ public class SearchFragment extends Fragment {
             }
         });
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            /**
+
+             This method is called when an item is selected from the spinner. It extracts the maximum distance from the selected item, gets the current location, and retrieves QR codes from Firestore that are within the maximum distance from the current location. The QR codes are then sorted by distance and displayed on the screen.
+             @param parent The AdapterView where the selection happened.
+             @param view The view within the AdapterView that was clicked.
+             @param position The position of the item selected.
+             @param id The row id of the item that is selected.
+             */
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedDistance = spinner.getSelectedItem().toString();
                 double maxDistance = extractMaxDistance(selectedDistance);
