@@ -240,13 +240,21 @@ public class SearchFragment extends Fragment {
                 });
             }
 
-
+            /**
+             This method parses the selected distance from the spinner and returns the maximum distance in kilometers.
+             @param selectedDistance the input from the spinner, [0-9]+km
+             @return the distance max distance in km to be searched
+             */
             private double extractMaxDistance(String selectedDistance) {
                 selectedDistance = selectedDistance.replaceAll("[^0-9]", "");
                 return Double.parseDouble(selectedDistance);
             }
 
             @SuppressLint("MissingPermission")
+            /**
+             This method gets the current location of the user. If the user has not granted permission to access their location, it will request permission from the user.
+             @return the current location of the user
+             */
             private Location getCurrentLocation() {
                 Integer PERMISSION_REQUEST_CODE = 1;
                 LocationManager locationManager = (LocationManager) getActivity().getSystemService(getContext().LOCATION_SERVICE);
@@ -261,6 +269,12 @@ public class SearchFragment extends Fragment {
                 }
             }
 
+            /**
+             This method calculates the distance between two GeoPoints
+             @param point1 the first GeoPoint
+             @param point2 the second GeoPoint
+             @return the distance between the two GeoPoints
+             */
             private double calculateDistance(GeoPoint point1, GeoPoint point2) {
                 double lat1 = toRadians(point1.getLatitude());
                 double lon1 = toRadians(point1.getLongitude());

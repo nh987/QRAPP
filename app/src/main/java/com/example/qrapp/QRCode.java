@@ -9,6 +9,9 @@ import com.google.firebase.firestore.GeoPoint;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * QRCode class that holds the information for a QR code.
+ */
 public class QRCode implements Parcelable {
 
     public Object comments;
@@ -18,6 +21,16 @@ public class QRCode implements Parcelable {
     public Object playersScanned;
     public GeoPoint geolocation;
 
+    /**
+
+     Constructs a new QRCode object with the specified comments, points, name, icon, playersScanned, and geolocation.
+     @param comments The comments associated with the QR code.
+     @param points The number of points the QR code is worth.
+     @param name The name of the QR code.
+     @param icon The icon associated with the QR code.
+     @param playersScanned The list of players who have scanned the QR code.
+     @param geolocation The geographical location of the QR code.
+     */
     public QRCode(Object comments, Integer points, String name, String icon, Object playersScanned, GeoPoint geolocation) {
         this.comments = comments;
         this.points = points;
@@ -27,7 +40,6 @@ public class QRCode implements Parcelable {
         this.geolocation = geolocation;
     }
 
-    // getters and setters
     public Object getComments() {
         return comments;
     }
