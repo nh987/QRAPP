@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.media.Image;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -19,6 +20,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -70,13 +73,12 @@ public class ResultsActivity extends AppCompatActivity {
     CheckBox checkBox;
     Button addPhoto; // TODO: addPhotoFragment -> CameraX integration
     Image image; //  init as null
-    //GeoPoint geolocation = null;
+
     Double lat;
     Double lon;
     Button continueToPost;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FusedLocationProviderClient fusedLocationClient;
-//    private String android_id = Secure.getString(getContext().getContentResolver(), Secure.ANDROID_ID);
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -87,11 +89,18 @@ public class ResultsActivity extends AppCompatActivity {
             score = extras.getLong("score");
         }
 
-        FirebaseAuth.getInstance().getCurrentUser();
+        // init clients and layout views
+        setContentView(R.layout.activity_results);
+        textViewName = (TextView) findViewById(R.id.results_name);
+        textViewScore = (TextView) findViewById(R.id.results_score);
+        textViewVisual = (TextView) findViewById(R.id.results_visual);
+        addPhoto = (Button) findViewById(R.id.results_add_photo_btn);
+        checkBox = (CheckBox) findViewById(R.id.results_checkbox);
+        continueToPost = (Button) findViewById(R.id.results_continue_btn);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
-        // Init db collectionsRefs
         db = FirebaseFirestore.getInstance();
+
+        // init db collectionsRefs
         final CollectionReference collectionReferenceQR = db.collection("QRCodes");
         final CollectionReference collectionReferencePlayer = db.collection("Users");
 
@@ -107,6 +116,8 @@ public class ResultsActivity extends AppCompatActivity {
                         Log.d("TAG", "QR Code already exists in DB!");
                         Toast.makeText(ResultsActivity.this, "QR Code already exists", Toast.LENGTH_SHORT).show();
                         doesExist = true;
+                        checkBox.setVisibility(View.INVISIBLE);
+                        addPhoto.setVisibility(View.INVISIBLE);
                         List<String> scannedPlayers = (List<String>) document.get("playersScanned");
                         if (scannedPlayers != null) {
                             if (scannedPlayers.contains(FirebaseAuth.getInstance().getCurrentUser().getUid())) { // if user has already scanned QRCode
@@ -129,25 +140,21 @@ public class ResultsActivity extends AppCompatActivity {
         visual = createVisual(hashed);
 
         // Display score, name. visual:
-        setContentView(R.layout.activity_results);
-        textViewName = (TextView) findViewById(R.id.results_name);
-        textViewScore = (TextView) findViewById(R.id.results_score);
-        textViewVisual = (TextView) findViewById(R.id.results_visual);
-
         textViewName.setText(name);
         textViewScore.setText(""+score+" points!");
         textViewVisual.setText(visual);
 
-        // TODO: Add photo (frick man)
-        addPhoto = (Button) findViewById(R.id.results_add_photo_btn);
         addPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent toResults = new Intent(ResultsActivity.this, PictureActivity.class);
+                toResults.putExtra("hashed", hashed);
+                startActivity(toResults);
+                addPhoto.setVisibility(View.INVISIBLE);
             }
         });
 
-
+        // Location permission handling
         ActivityResultLauncher<String[]> locationPermissionRequest =
                 registerForActivityResult(new ActivityResultContracts
                                 .RequestMultiplePermissions(), result -> {
@@ -171,7 +178,6 @@ public class ResultsActivity extends AppCompatActivity {
         });
 
         // Get geolocation...
-        checkBox = (CheckBox) findViewById(R.id.results_checkbox);
         checkBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -211,7 +217,6 @@ public class ResultsActivity extends AppCompatActivity {
         });
 
         // Update DB and return to MainFeed
-        continueToPost = (Button) findViewById(R.id.results_continue_btn);
         continueToPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -258,11 +263,16 @@ public class ResultsActivity extends AppCompatActivity {
                                 }
                             });
                 }
-                else if (!hasScanned) {
-                    final Map<String,Object> addUser = new HashMap<>();
-                    addUser.put("playersScanned", FieldValue.arrayUnion(FirebaseAuth.getInstance().getCurrentUser().getUid()));
-                    db.collection("QRCodes").document(hashed)
-                            .update(addUser);
+
+                else {
+
+                    if (!hasScanned) {
+                        final Map<String,Object> addUser = new HashMap<>();
+                        addUser.put("playersScanned", FieldValue.arrayUnion(FirebaseAuth.getInstance().getCurrentUser().getUid()));
+                        db.collection("QRCodes").document(hashed)
+                                .update(addUser);
+                    }
+
                 }
                 finish();
 
@@ -350,8 +360,8 @@ public class ResultsActivity extends AppCompatActivity {
         hexMapNose.put('6', "*");
         hexMapNose.put('7', "-");
         hexMapNose.put('8', "u");
-        hexMapNose.put('9', ")");
-        hexMapNose.put('a', "(");
+        hexMapNose.put('9', "x");
+        hexMapNose.put('a', "J");
         hexMapNose.put('b', "7");
         hexMapNose.put('c', ".");
         hexMapNose.put('d', ",");
@@ -366,7 +376,7 @@ public class ResultsActivity extends AppCompatActivity {
         hexMapMouth.put('4', ")");
         hexMapMouth.put('5', "(");
         hexMapMouth.put('6', "|");
-        hexMapMouth.put('7', "L");
+        hexMapMouth.put('7', "3");
         hexMapMouth.put('8', "6");
         hexMapMouth.put('9', "{]"); // Mustaches
         hexMapMouth.put('a', "{[");
