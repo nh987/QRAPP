@@ -78,5 +78,9 @@ dependencies {
     // SHA-256
     implementation("com.google.guava:guava:31.1-android")
 
+    // Mockito
+    testImplementation 'org.mockito:mockito-core:3.12.4'
 }
+
+
 
