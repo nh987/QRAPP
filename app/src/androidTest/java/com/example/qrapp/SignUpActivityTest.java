@@ -1,52 +1,55 @@
 package com.example.qrapp;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
-import static org.junit.Assert.assertNotNull;
-
-import android.provider.ContactsContract;
-
-import androidx.test.core.app.ActivityScenario;
-import androidx.test.espresso.intent.Intents;
-
+import android.app.Activity;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.rule.ActivityTestRule;
+import android.widget.EditText;
+import android.widget.ListView;
+import com.robotium.solo.Solo;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 public class SignUpActivityTest {
 
-    private ActivityScenario<SignUpActivity> scenario;
+    private Solo solo;
+
+    @Rule
+    public ActivityTestRule<SignUpActivity> rule =
+            new ActivityTestRule<>(SignUpActivity.class, true, true);
+
 
     @Before
-    public void setUp() {
-        scenario = ActivityScenario.launch(SignUpActivity.class);
+    public void setUp() throws Exception {
+
+        solo = new Solo(InstrumentationRegistry.getInstrumentation(), rule.getActivity());
     }
 
-    @Test
-    public void testActivityCreation() {
-        // Verify that the activity is created
-        scenario.onActivity(activity -> assertNotNull(activity));
-    }
 
     @Test
-    public void switchToMainActivityUsingSignUpButton() {
-        Intents.init();
+    public void testSignUp() throws Exception {
+        solo.waitForActivity(SignUpActivity.class);
+        solo.assertCurrentActivity("Wrong activity", SignUpActivity.class);
 
-        getInstrumentation().waitForIdleSync();
+        //Enter valid credentials and signup
+        solo.enterText((EditText) solo.getView(R.id.username), "testuser");
+        solo.enterText((EditText) solo.getView(R.id.email_field), "testuser@example.com");
+        solo.enterText((EditText) solo.getView(R.id.password_field), "password123");
+        solo.clickOnButton("Sign up");
 
-        scenario.onActivity(activity -> {});
-
-        onView(withId(R.id.signup_button)).perform(click());
-
-        Intents.intended(hasComponent(MainActivity.class.getCanonicalName()));
-        Intents.release();
+        //Check if toast message appears and the user is navigated to the main activity
+        assertTrue(solo.waitForText("Sign up successful", 1, 2000));
+        solo.assertCurrentActivity("Wrong activity", MainActivity.class);
     }
 
     @After
-    public void tearDown() {
-        scenario.close();
+    public void tearDown() throws Exception {
+        solo.finishOpenedActivities();
     }
 }

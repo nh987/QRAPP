@@ -84,7 +84,6 @@ dependencies {
     androidTestImplementation "com.jayway.android.robotium:robotium-solo:5.2.1"
 
     // implementation for intent
-    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.4.0'
 }
 
 
