@@ -24,6 +24,7 @@
             app:layout_constraintStart_toEndOf="@+id/lowestQRC"
             app:layout_constraintTop_toTopOf="@+id/lowestQRC"
             app:srcCompat="@android:drawable/ic_menu_view"
+
             />
 
         <ImageButton
@@ -96,15 +97,14 @@
             android:id="@+id/username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="312dp"
             android:fontFamily="sans-serif-black"
             android:gravity="center"
-            android:text="user123"
-            android:textColor = "#824a5a"
-            android:paddingLeft = "30dp"
+            android:paddingLeft="30dp"
+            android:text="@string/loading"
+            android:textColor="#824a5a"
             android:textSize="20sp"
-            app:layout_constraintTop_toBottomOf="@+id/usernameLayout"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/usernameLayout" />
 
         <TextView
             android:id="@+id/emailLayout"
@@ -124,15 +124,14 @@
             android:id="@+id/email"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="312dp"
             android:fontFamily="sans-serif-black"
             android:gravity="center"
-            android:text="user123@gmail.com"
-            android:paddingLeft = "30dp"
+            android:paddingLeft="30dp"
+            android:text="@string/loading"
+            android:textColor="#824a5a"
             android:textSize="20sp"
-            android:textColor = "#824a5a"
-            app:layout_constraintTop_toBottomOf="@+id/emailLayout"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/emailLayout" />
 
         <TextView
             android:id="@+id/playerstats"
@@ -169,7 +168,7 @@
             android:layout_marginBottom="268dp"
             android:fontFamily="sans-serif-black"
             android:gravity="center"
-            android:text="Loading..."
+            android:text="@string/loading"
             android:textSize="15sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@+id/lowestQRCvalue" />
@@ -196,7 +195,7 @@
             android:layout_marginBottom="232dp"
             android:fontFamily="sans-serif-black"
             android:gravity="center"
-            android:text="Loading..."
+            android:text="@string/loading"
             android:textSize="15sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@+id/totalscoreValue" />
@@ -223,7 +222,7 @@
             android:layout_marginBottom="196dp"
             android:fontFamily="sans-serif-black"
             android:gravity="center"
-            android:text="Loading..."
+            android:text="@string/loading"
             android:textSize="15sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@+id/rankingValue" />
@@ -235,7 +234,7 @@
             android:layout_marginBottom="124dp"
             android:fontFamily="sans-serif-black"
             android:gravity="center"
-            android:text="Loading..."
+            android:text="@string/loading"
             android:textSize="15sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@+id/rankingValue" />
