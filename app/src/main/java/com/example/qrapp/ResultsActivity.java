@@ -170,15 +170,12 @@ public class ResultsActivity extends AppCompatActivity {
         textViewScore.setText(""+score+" points!");
         textViewVisual.setText(visual);
 
-        // TODO: ADD PHOTO FUNCTIONALITY UNFINISHED DOES NOT WORK CORRECTLY RIGHT NOW NOT INCLUDED IN HALF-WAY POINT
         addPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 isIntentAvailable(ResultsActivity.this, MediaStore.ACTION_IMAGE_CAPTURE);
                 Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 startActivityForResult(takePictureIntent, CAMERA_REQUEST);
-//                handleSmallCameraPhoto(takePictureIntent);
-//                uploadImage();
                 addPhoto.setVisibility(View.INVISIBLE);
             }
         });
@@ -302,10 +299,10 @@ public class ResultsActivity extends AppCompatActivity {
                     }
 
                 }
-                if (results != null) {
-                    handleSmallCameraPhoto(results);
-                    uploadImage();
-                }
+//                if (results != null) {
+//                    handleSmallCameraPhoto(results);
+//                    uploadImage();
+//                }
                 finish(); // return to main activity TODO: go to QRProfile instead
             }
         });
@@ -450,17 +447,13 @@ public class ResultsActivity extends AppCompatActivity {
     /**
      * Get bitmap image from Intent bundle.
      */
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
-//            imageBitmap = (Bitmap) data.getExtras().get("data");
-//
-//        }
-//    }
-    public void handleSmallCameraPhoto(Intent intent) {
-        Bundle extras = intent.getExtras();
-        extras.get("data");
-        imageBitmap = (Bitmap) extras.get("data");
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
+            imageBitmap = (Bitmap) data.getExtras().get("data");
+            uploadImage();
+
+        }
     }
 
     /**
