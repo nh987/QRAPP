@@ -19,8 +19,8 @@ import java.util.ArrayList;
 public class MyProfile extends AppCompatActivity {
 
 
-    private TextInputEditText usernameText;
-    private TextInputEditText emailText;
+    private TextView usernameText;
+    private TextView emailText;
     private TextView highestQRCvalue;
     private TextView lowestQRCvalue;
     private TextView totalscoreValue;
