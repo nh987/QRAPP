@@ -302,10 +302,10 @@ public class ResultsActivity extends AppCompatActivity {
                     }
 
                 }
-                if (results != null) {
-                    handleSmallCameraPhoto(results);
-                    uploadImage();
-                }
+//                if (results != null) {
+//                    handleSmallCameraPhoto(results);
+//                    uploadImage();
+//                }
                 finish(); // return to main activity TODO: go to QRProfile instead
             }
         });
@@ -450,18 +450,19 @@ public class ResultsActivity extends AppCompatActivity {
     /**
      * Get bitmap image from Intent bundle.
      */
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
-//            imageBitmap = (Bitmap) data.getExtras().get("data");
-//
-//        }
-//    }
-    public void handleSmallCameraPhoto(Intent intent) {
-        Bundle extras = intent.getExtras();
-        extras.get("data");
-        imageBitmap = (Bitmap) extras.get("data");
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
+            imageBitmap = (Bitmap) data.getExtras().get("data");
+            uploadImage();
+
+        }
     }
+//    public void handleSmallCameraPhoto(Intent intent) {
+//        Bundle extras = intent.getExtras();
+//        extras.get("data");
+//        imageBitmap = (Bitmap) extras.get("data");
+//    }
 
     /**
      * Convert bitmap to bytes and upload to Cloud Storage.
