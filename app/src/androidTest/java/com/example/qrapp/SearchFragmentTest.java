@@ -3,10 +3,13 @@ package com.example.qrapp;
 
 import static org.junit.Assert.assertTrue;
 
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
@@ -44,7 +47,17 @@ public class SearchFragmentTest {
         solo.clickOnView(solo.getView(R.id.button2));
         Spinner spinner = (Spinner) solo.getView(R.id.spinner);
         assertTrue(solo.searchText("Juliet CharlieNovemberDeltaBravoDelta"));
-        solo.clickInList(1);
+        String searchText = "Juliet CharlieNovemberDeltaBravoDelta";
+        ListView listView = (ListView) solo.getView(R.id.listView);
+        Integer count = listView.getCount();
+        for (int i = 0; i < count; i++) {
+            View view = listView.getChildAt(i);
+            TextView textView = (TextView) view.findViewById(R.id.QRCName);
+            if (textView.getText().toString().contains(searchText)) {
+                solo.clickOnView(view);
+                break;
+            }
+        }
         solo.waitForActivity(QRProfile.class);
         solo.assertCurrentActivity("Wrong activity", QRProfile.class);
         assertTrue(solo.searchText("Juliet CharlieNovemberDeltaBravoDelta"));
