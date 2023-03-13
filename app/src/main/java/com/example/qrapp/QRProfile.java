@@ -34,6 +34,10 @@ public class QRProfile extends AppCompatActivity {
 
 
     @Override
+    /**
+     * On create method for QRProfile activity
+     * @param savedInstanceState
+     */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile_qrc);
@@ -54,6 +58,10 @@ public class QRProfile extends AppCompatActivity {
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
+            /**
+             * On click method for back button
+             * @param v
+             */
             public void onClick(View v) {
                 finish();
             }

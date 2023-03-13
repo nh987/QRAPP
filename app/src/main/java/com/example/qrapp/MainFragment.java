@@ -29,6 +29,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Main fragment for the app
+ * Acts as the home screen and main feed where all scans are delivered
+ */
 public class MainFragment extends Fragment {
 
     private ListView qrListView;
@@ -38,6 +42,13 @@ public class MainFragment extends Fragment {
 
     @Nullable
     @Override
+    /**
+     * Create the view for the fragment
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return contentView
+     */
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View contentView = inflater.inflate(R.layout.fragment_main, container, false);
         qrListView = contentView.findViewById(R.id.item_listview);
@@ -63,6 +74,13 @@ public class MainFragment extends Fragment {
             qRcAdapter.notifyDataSetChanged();
             qrListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
+                /**
+                 * On click listener for the list view
+                 * @param adapterView
+                 * @param view
+                 * @param i
+                 * @param l
+                 */
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                     System.out.println(QRCodeList.size());
                     QRCode qrCode = QRCodeList.get(i);
@@ -80,6 +98,9 @@ public class MainFragment extends Fragment {
     }
 
     @Override
+    /**
+     * On destroy view method for the fragment
+     */
     public void onDestroyView() {
         super.onDestroyView();
 

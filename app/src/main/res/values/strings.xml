@@ -24,8 +24,10 @@
         item
     </string>
     <string-array name="numbers">
+        <item>0.5 km</item>
+        <item>1 km</item>
+        <item>2 km</item>
         <item>5 km</item>
         <item>10 km</item>
-        <item>25 km</item>
     </string-array>-array>
 </resources>
