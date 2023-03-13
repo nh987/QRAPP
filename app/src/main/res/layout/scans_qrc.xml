@@ -36,8 +36,6 @@
             android:layout_width="match_parent"
             android:layout_height="160dp"
             android:background="@drawable/gradient_bg"
-            android:paddingLeft="20dp"
-            android:paddingTop="70dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -45,20 +43,21 @@
 
             <TextView
                 android:id="@+id/scans"
-                android:layout_width="147dp"
-                android:layout_height="56dp"
-
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentBottom="true"
-                android:layout_marginEnd="135dp"
-                android:layout_marginBottom="47dp"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="0dp"
+                android:layout_marginEnd="0dp"
+                android:layout_marginBottom="50dp"
                 android:fontFamily="sans-serif-black"
                 android:gravity="center"
                 android:includeFontPadding="false"
                 android:paddingLeft="5dp"
                 android:text="My Scans"
                 android:textSize="28sp" />
-
 
 
         </RelativeLayout>

@@ -39,7 +39,10 @@ public class PlayerProfileActivity extends AppCompatActivity {
 
     @Override
     /**
-     * OnCreate method, initalizes all fields
+     * OnCreate method, init all fields
+     * @param savedInstanceState this is used to pass a username from PlayerListAdapter so we can query the db for all player
+     * information
+     * @return void
      */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

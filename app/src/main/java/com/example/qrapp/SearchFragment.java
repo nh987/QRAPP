@@ -4,6 +4,7 @@ package com.example.qrapp;
 import static java.lang.Math.toRadians;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -65,7 +66,8 @@ public class SearchFragment extends Fragment {
 
     PlayerListAdapter playerListAdapter;
 
-    @SuppressLint("CutPasteId")
+
+    @SuppressLint({"CutPasteId", "InflateParams"})
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -119,7 +121,7 @@ public class SearchFragment extends Fragment {
                                 Log.d("myTag", document.getString("Username"));
                                 String username = document.getString("Username");
                                 String email = document.getString("Email");
-                                String phoneNumber = document.getString("PhoneNumber");
+                                String phoneNumber = document.getString("phoneNumber");
                                 String location = "edmonton"; // TODO  This is currently NOT in the db
                                 Player queriedPlayer = new Player(username, email, location, phoneNumber);
                                 playerList.add(queriedPlayer);
@@ -334,4 +336,5 @@ public class SearchFragment extends Fragment {
 
         return view;
     }
+
 }

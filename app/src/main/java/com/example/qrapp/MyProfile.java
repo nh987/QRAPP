@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,8 +20,8 @@ import java.util.ArrayList;
 public class MyProfile extends AppCompatActivity {
 
 
-    private TextInputEditText usernameText;
-    private TextInputEditText emailText;
+    private TextView usernameText;
+    private TextView emailText;
     private TextView highestQRCvalue;
     private TextView lowestQRCvalue;
     private TextView totalscoreValue;
@@ -70,24 +71,14 @@ public class MyProfile extends AppCompatActivity {
         getQRCodes();
 
 
-        //watch for the user updating their username
-        usernameText.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus && !usernameText.getText().toString().equals(username)){
-                //update the username in the database
-                db.collection("Users").document(userID).update("username", usernameText.getText().toString());
-            }
-        });
-
-        // watch for the user updating their email
-        emailText.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus && !emailText.getText().toString().equals(email)){
-                //update the email in the database
-                db.collection("Users").document(userID).update("email", emailText.getText().toString());
-            }
-        });
-
         //close activity when back button is pressed
         backButton.setOnClickListener(v -> finish());
+
+        //set the view highest and lowest buttons to invisible and disabled until if and when the highest and lowest scores are found
+        viewHighestQRCButton.setEnabled(false);
+        viewHighestQRCButton.setVisibility(View.INVISIBLE);
+        viewLowestQRCButton.setEnabled(false);
+        viewLowestQRCButton.setVisibility(View.INVISIBLE);
 
     }
 
@@ -122,17 +113,12 @@ public class MyProfile extends AppCompatActivity {
     private void updateScores(){
 
         if (QRCodeList.size() == 0){
-            //if the user has not scanned any QR codes, set the text views to 0
+            //if the user has not scanned any QR codes, set the text views to null representing values
             highestQRCvalue.setText("N/A");
             lowestQRCvalue.setText("N/A");
             totalscoreValue.setText("0");
             codesScannedValue.setText("0");
 
-            // set the buttons to do nothing & be invisible
-            viewHighestQRCButton.setOnClickListener(v -> {});
-            viewHighestQRCButton.setVisibility(ImageButton.INVISIBLE);
-            viewLowestQRCButton.setOnClickListener(v -> {});
-            viewLowestQRCButton.setVisibility(ImageButton.INVISIBLE);
             return;
         }
 
@@ -157,6 +143,12 @@ public class MyProfile extends AppCompatActivity {
         lowestQRCvalue.setText(String.valueOf(lowestQR.getPoints()));
         totalscoreValue.setText(String.valueOf(total));
         codesScannedValue.setText(String.valueOf(QRCodeList.size()));
+
+        // enable the buttons
+        viewHighestQRCButton.setEnabled(true);
+        viewHighestQRCButton.setVisibility(View.VISIBLE);
+        viewLowestQRCButton.setEnabled(true);
+        viewLowestQRCButton.setVisibility(View.VISIBLE);
 
         //set the buttons to open the QRProfile activity
         final QRCode finalLowestQR = lowestQR;
