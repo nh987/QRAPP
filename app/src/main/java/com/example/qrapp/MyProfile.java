@@ -19,8 +19,8 @@ import java.util.ArrayList;
 public class MyProfile extends AppCompatActivity {
 
 
-    private TextInputEditText usernameText;
-    private TextInputEditText emailText;
+    private TextView usernameText;
+    private TextView emailText;
     private TextView highestQRCvalue;
     private TextView lowestQRCvalue;
     private TextView totalscoreValue;
@@ -69,22 +69,6 @@ public class MyProfile extends AppCompatActivity {
         QRCodeList = new ArrayList<>();
         getQRCodes();
 
-
-        //watch for the user updating their username
-        usernameText.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus && !usernameText.getText().toString().equals(username)){
-                //update the username in the database
-                db.collection("Users").document(userID).update("username", usernameText.getText().toString());
-            }
-        });
-
-        // watch for the user updating their email
-        emailText.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus && !emailText.getText().toString().equals(email)){
-                //update the email in the database
-                db.collection("Users").document(userID).update("email", emailText.getText().toString());
-            }
-        });
 
         //close activity when back button is pressed
         backButton.setOnClickListener(v -> finish());

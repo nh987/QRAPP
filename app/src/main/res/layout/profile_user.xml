@@ -78,49 +78,61 @@
 
         </RelativeLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
+        <TextView
             android:id="@+id/usernameLayout"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="312dp"
+            android:fontFamily="sans-serif-black"
             android:gravity="center"
-            android:hint="Username"
-            android:paddingBottom="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:text="Username"
+            android:paddingLeft = "30dp"
+            android:paddingTop = "20dp"
+            android:textSize="15sp"
             app:layout_constraintTop_toBottomOf="@+id/relativeLayout"
-            app:layout_constraintVertical_bias="0.05"
-            tools:layout_editor_absoluteX="0dp">
+            app:layout_constraintStart_toStartOf="parent" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/username"
-                android:layout_width="380dp"
-                android:layout_height="60dp"
-                android:inputType="text"
-                android:text="Loading..."
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/relativeLayout" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/emailLayout"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/username"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="312dp"
+            android:fontFamily="sans-serif-black"
             android:gravity="center"
-            android:hint="Email"
-            android:paddingBottom="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:text="user123"
+            android:textColor = "#824a5a"
+            android:paddingLeft = "30dp"
+            android:textSize="20sp"
             app:layout_constraintTop_toBottomOf="@+id/usernameLayout"
-            app:layout_constraintVertical_bias="0.0"
-            tools:layout_editor_absoluteX="0dp">
+            app:layout_constraintStart_toStartOf="parent" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/email"
-                android:layout_width="380dp"
-                android:layout_height="60dp"
-                android:inputType="textEmailAddress"
-                android:text="Loading..."
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/relativeLayout" />
-        </com.google.android.material.textfield.TextInputLayout>
+        <TextView
+            android:id="@+id/emailLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="312dp"
+            android:fontFamily="sans-serif-black"
+            android:gravity="center"
+            android:text="Email"
+            android:paddingLeft = "30dp"
+            android:paddingTop = "20dp"
+            android:textSize="15sp"
+            app:layout_constraintTop_toBottomOf="@+id/username"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="312dp"
+            android:fontFamily="sans-serif-black"
+            android:gravity="center"
+            android:text="user123@gmail.com"
+            android:paddingLeft = "30dp"
+            android:textSize="20sp"
+            android:textColor = "#824a5a"
+            app:layout_constraintTop_toBottomOf="@+id/emailLayout"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
             android:id="@+id/playerstats"
@@ -277,7 +289,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginBottom="40dp"
             android:background="@drawable/button_shape2"
-            android:text="My QR Codes"
+            android:text="View QR Codes"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
