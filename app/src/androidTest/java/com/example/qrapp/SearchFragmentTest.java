@@ -3,6 +3,9 @@ package com.example.qrapp;
 
 import static org.junit.Assert.assertTrue;
 
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.Spinner;
 
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -48,6 +51,24 @@ public class SearchFragmentTest {
         assertTrue(solo.searchText("22 Points"));
         assertTrue(solo.searchText("[I$,["));
     }
+
+    @Test
+    public void testSearchView() throws Exception {
+        solo.waitForActivity(MainActivity.class);
+        solo.assertCurrentActivity("Wrong activity", MainActivity.class);
+        solo.clickOnView(solo.getView(R.id.search_tab));
+        solo.clickOnView(solo.getView(R.id.button2));
+        solo.clickOnView(solo.getView(R.id.button));
+        androidx.appcompat.widget.SearchView searchView = (androidx.appcompat.widget.SearchView) solo.getView(R.id.searchView);
+        ImageView searchIcon = (ImageView) searchView.findViewById(androidx.appcompat.R.id.search_button);
+        solo.clickOnView(searchIcon);
+        solo.typeText(0, "User");
+        solo.sendKey(Solo.ENTER);
+        solo.clickOnView(solo.getView(R.id.viewProfile));
+        solo.waitForActivity(PlayerProfileActivity.class);
+        assertTrue(solo.searchText("User1's Profile"));
+    }
+
     @After
     public void tearDown() throws Exception {
         solo.finishOpenedActivities();
