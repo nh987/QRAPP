@@ -75,11 +75,11 @@ public class SearchFragmentTest {
         androidx.appcompat.widget.SearchView searchView = (androidx.appcompat.widget.SearchView) solo.getView(R.id.searchView);
         ImageView searchIcon = (ImageView) searchView.findViewById(androidx.appcompat.R.id.search_button);
         solo.clickOnView(searchIcon);
-        solo.typeText(0, "User");
+        solo.typeText(0, "dds");
         solo.sendKey(Solo.ENTER);
         solo.clickOnView(solo.getView(R.id.viewProfile));
         solo.waitForActivity(PlayerProfileActivity.class);
-        assertTrue(solo.searchText("User1's Profile"));
+        assertTrue(solo.searchText("dds's Profile"));
     }
 
     @After

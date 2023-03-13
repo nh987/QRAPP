@@ -64,10 +64,10 @@ public class PlayerProfileActivity extends AppCompatActivity {
         // Set player data, init db
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String finalUsername = username;
-        db.collection("Users").whereEqualTo("Username", username).get().addOnCompleteListener(task -> {
+        db.collection("Users").whereEqualTo("username", username).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult().getDocuments().get(0);
-                String email = document.getString("Email");
+                String email = document.getString("email");
                 usernameText.setText(finalUsername);
                 emailText.setText(email);
             }
