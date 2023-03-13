@@ -40,7 +40,6 @@
         <!-- FOR SCANNING RESULTS -->
         <activity
             android:name=".ResultsActivity"
-            android:exported="false"
             android:launchMode="singleInstance">
             <meta-data
                 android:name="android.app.lib_name"
@@ -66,8 +65,7 @@
 
 
         <activity
-            android:name=".ScanActivity"
-            android:exported="false">
+            android:name=".ScanActivity">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
