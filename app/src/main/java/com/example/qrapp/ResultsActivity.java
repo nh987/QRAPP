@@ -57,6 +57,22 @@ import android.provider.Settings.Secure;
 import android.Manifest;
 import android.widget.Toast;
 
+/**
+ * ResultsActivity gets bundle from ScanActivity containing a SHA-256 hashed string of the barcode
+ * and long score value of the hash according to the scoring system. Score is displayed in a TextView and
+ * The hashed string is then compared to a Firebase DB query to check if A.) hash already exists in QRCodes
+ * collection and B.) If it does exist, if in its field playerScanned arrayList does the UserID already exist inside
+ * the list. If  A or B are met the "Add Photo" and "Include Geolocation" options are hidden and the player
+ * can only continue to MainFeed (For now, will be updated to go to QRProfile instead) If only A is met
+ * userID will be added into the playerScanned array. If neither condition is met, a new barcode entry is
+ * created and the hash is used to generate a name and visual representation of the hash according to the first
+ * 6 digits of the hash. User will have the option to Add Photo and Include Geolocation. Add Photo opens a new activity
+ * PictureActivity that returns (? - implementation detail not sure yet) a image that is sent into Cloud Storage and
+ * returns to ResultsActivity. If checked - Include Geolocation will get user permissions and get latitude and longitude
+ * of the device and will be used to create a GeoPoint. After this the hash, score, name, visual, GeoPoint (can be null), Comments (array),
+ * playersScanned (array) are all combined to make a single QRCode instance that is sent into the DB. The User's UserID is then
+ * appended into the playersScanned array for the QRCode instance.
+ */
 public class ResultsActivity extends AppCompatActivity {
     String hashed;
     long score;
@@ -123,7 +139,6 @@ public class ResultsActivity extends AppCompatActivity {
                             if (scannedPlayers.contains(FirebaseAuth.getInstance().getCurrentUser().getUid())) { // if user has already scanned QRCode
                                 Toast.makeText(ResultsActivity.this, "User has already scanned this QRCode", Toast.LENGTH_SHORT).show();
                                 hasScanned = true;
-                                // TODO: GOTO: QRProfile...
                             }
                         }
 
@@ -144,6 +159,7 @@ public class ResultsActivity extends AppCompatActivity {
         textViewScore.setText(""+score+" points!");
         textViewVisual.setText(visual);
 
+        // TODO: ADD PHOTO FUNCTIONALITY UNFINISHED DOES NOT WORK CORRECTLY RIGHT NOW NOT INCLUDED IN HALF-WAY POINT
         addPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -221,7 +237,6 @@ public class ResultsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (!hasScanned && !doesExist) {
-                    // TODO: Send new QRCode to DB, update Player scanned QRCodes
                     Map<String,Object> newQRC = new HashMap<>();
 
 //                HashMap<String, String> nameDB = new HashMap<>();
@@ -233,7 +248,7 @@ public class ResultsActivity extends AppCompatActivity {
 //                HashMap<String, String> hashedDB = new HashMap<>();
                     newQRC.put("Hash", hashed);
 //                HashMap<String, Location> locationDB = new HashMap<>();
-                    if (includeGeolocation && lat != null && lon != null) { // TODO: WHY THE FUCK IS IT NULL SOMETIMES??? MAYBE SLOW TO GET COORDS?? - CORDS ARE SET TO GOOGLE'S LOCATION FOR EMULATOR BTW.
+                    if (includeGeolocation && lat != null && lon != null) {
                         GeoPoint geolocation = new GeoPoint(lat,lon);
                         Log.d("TAG", "GEOLOCATION "+geolocation);
                         newQRC.put("Geolocation", geolocation);
@@ -274,13 +289,19 @@ public class ResultsActivity extends AppCompatActivity {
                     }
 
                 }
-                finish();
+                finish(); // return to main activity TODO: go to QRProfile instead
 
             }
         });
 
     }
 
+    /**
+     * Pass in hashed barcode string and take first 6 digits that are mapped to various words that are then concatenated together to create
+     * a name.
+     * @param hashed
+     * @return
+     */
     private String createName(String hashed) {
         String hashedSubstring = hashed.substring(0,6);
         String QRName = "";
@@ -308,7 +329,12 @@ public class ResultsActivity extends AppCompatActivity {
         Log.d("QRName:", QRName);
         return QRName;
     }
-
+    /**
+     * Pass in hashed barcode string and take first 4 digits that are mapped to various emoticon (head/hat, eyes, nose, mouth
+     * that are then concatenated together to create a visual representation.
+     * @param hashed
+     * @return
+     */
     private String createVisual (String hashed){
         String hashedSubstring = hashed.substring(0,4);
         String QRVisual = "";
@@ -377,7 +403,7 @@ public class ResultsActivity extends AppCompatActivity {
         hexMapMouth.put('5', "(");
         hexMapMouth.put('6', "|");
         hexMapMouth.put('7', "3");
-        hexMapMouth.put('8', "6");
+        hexMapMouth.put('8', "L");
         hexMapMouth.put('9', "{]"); // Mustaches
         hexMapMouth.put('a', "{[");
         hexMapMouth.put('b', "{)");
@@ -393,6 +419,4 @@ public class ResultsActivity extends AppCompatActivity {
 
     // TODO: Functions
     private void getImage() {} // will return Image from CameraX fragment...
-
-
 }
