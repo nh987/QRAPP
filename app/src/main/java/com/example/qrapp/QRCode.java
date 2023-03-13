@@ -42,14 +42,14 @@ public class QRCode implements Parcelable {
 
     /**
      * Returns the comments associated with the QR code.
-     * @return
+     * @return The comments associated with the QR code.
      */
     public Object getComments() {
         return comments;
     }
     /**
      * Sets the comments associated with the QR code.
-     * @param comments
+     * @param comments The comments associated with the QR code.
      */
     public void setComments(Object comments) {
         this.comments = comments;
@@ -136,6 +136,7 @@ public class QRCode implements Parcelable {
 
     /**
      * Represents a QR code with a name, number of points, and icon.
+     * @param in The name of the QR code.
      */
     protected QRCode(Parcel in) {
         name = in.readString();

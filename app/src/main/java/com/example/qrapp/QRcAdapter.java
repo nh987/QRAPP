@@ -26,8 +26,8 @@ class QRcAdapter extends BaseAdapter {
 
     /**
      * Constructor for QRcAdapter
-     * @param items
-     * @param context
+     * @param items list of QRCodes
+     * @param context context
      */
     public QRcAdapter(ArrayList<QRCode> items, Context context) {
         super();
