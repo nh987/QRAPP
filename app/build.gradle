@@ -78,12 +78,12 @@ dependencies {
 
     implementation "androidx.camera:camera-view:${camerax_version}"
     implementation "androidx.camera:camera-extensions:${camerax_version}"
-
     // SHA-256
     implementation("com.google.guava:guava:31.1-android")
 
     // Mockito
     testImplementation 'org.mockito:mockito-core:3.12.4'
+
 }
 
 

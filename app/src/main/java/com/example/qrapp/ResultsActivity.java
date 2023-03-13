@@ -302,7 +302,7 @@ public class ResultsActivity extends AppCompatActivity {
      * @param hashed
      * @return
      */
-    private String createName(String hashed) {
+    public String createName(String hashed) {
         String hashedSubstring = hashed.substring(0,6);
         String QRName = "";
 
@@ -335,7 +335,7 @@ public class ResultsActivity extends AppCompatActivity {
      * @param hashed
      * @return
      */
-    private String createVisual (String hashed){
+    public String createVisual (String hashed){
         String hashedSubstring = hashed.substring(0,4);
         String QRVisual = "";
 

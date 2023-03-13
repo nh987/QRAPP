@@ -91,14 +91,11 @@
                 android:value=""/>
         </activity>
 
-<<<<<<< Updated upstream
-
-=======
         <!--for maps-->
 <!--        <meta-data-->
 <!--            android:name="com.google.android.geo.API_KEY"-->
 <!--            android:value="${API_maps}"/>-->
->>>>>>> Stashed changes
+
 
     </application>
 
