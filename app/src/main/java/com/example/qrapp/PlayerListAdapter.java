@@ -37,9 +37,9 @@ class PlayerListAdapter extends BaseAdapter {
 
     /**
      * Constructor for init of new adapter objects
-     * @param items, an arraylist of player objects
-     * @param context, a variable defining the context of search fragment on object init
-     * @param activity, a variable defining the current activity of searchFragment
+     * @param items an arraylist of player objects
+     * @param context a variable defining the context of search fragment on object init
+     * @param activity a variable defining the current activity of searchFragment
      */
     public PlayerListAdapter(ArrayList<Player> items, Context context, Activity activity) {
         super();
@@ -47,17 +47,28 @@ class PlayerListAdapter extends BaseAdapter {
         this.items = items;
         this.myActivity = activity;
     }
-
+    /**
+     * gets the ItemID associated with the ListView
+     * @return the size of the ListView
+     */
     @Override
     public int getCount() {
         return items.size();
     }
 
+    /**
+     * gets the ItemID associated with the ListView
+     * @param i an integer representing the index of the ListView
+     */
     @Override
     public Object getItem(int i) {
         return items.get(i);
     }
 
+    /**
+     * gets the ItemID associated with the ListView
+     * @param i an integer representing the index of the ListView
+     */
     @Override
     public long getItemId(int i) {
         return items.get(i).hashCode();
@@ -67,9 +78,9 @@ class PlayerListAdapter extends BaseAdapter {
 
     /**
      * main method, displays searched User's in a ListView and provides a button to navigate to their profile
-     * @param i, an integer representing the index of the ListView
-     * @param view, a variable representing the current view of SearchFragment
-     * @param viewGroup, a variable representing the current grouping of view
+     * @param i an integer representing the index of the ListView
+     * @param view a variable representing the current view of SearchFragment
+     * @param viewGroup a variable representing the current grouping of view
      * @return the updated view
      */
     @Override
