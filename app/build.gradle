@@ -42,12 +42,14 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.8.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-
     implementation 'com.google.android.gms:play-services-maps:18.1.0'//gms
     implementation 'com.google.android.libraries.maps:maps:3.1.0-beta'
     implementation 'com.google.firebase:firebase-auth:21.1.0'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    androidTestImplementation "androidx.test:runner:1.5.2"
+    androidTestImplementation "androidx.test:rules:1.5.0"
+    androidTestImplementation "com.jayway.android.robotium:robotium-solo:5.2.1"
 
     // FIRESTORE
     implementation platform('com.google.firebase:firebase-bom:31.2.0')
