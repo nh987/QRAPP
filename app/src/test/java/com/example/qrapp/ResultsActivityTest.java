@@ -18,8 +18,8 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
-//@RunWith(MockitoJUnitRunner.class)
-@RunWith(JUnit4.class)
+@RunWith(MockitoJUnitRunner.class)
+//@RunWith(JUnit4.class)
 public class ResultsActivityTest {
     private ResultsActivity resultsActivity;
 
@@ -40,7 +40,7 @@ public class ResultsActivityTest {
         String hexHash = hashTest();
         when(resultsActivity.createName(hexHash)).thenReturn("Golf JulietGolfMikeOscarEcho");
 //        String expected = "Golf JulietGolfMikeOscarEcho";
-//        assertEquals(expected, resultsActivity.createName(hexHash));
+//        assertEquals(expected, resultsActivity.createName(hexHash)); // this function works as intended
     }
 
     @Test
@@ -48,7 +48,7 @@ public class ResultsActivityTest {
         String hexHash = hashTest();
         when(resultsActivity.createVisual(hexHash)).thenReturn("F|>X*{(");
 //        String expected = "F|>X*{(";
-//        assertEquals(expected, resultsActivity.createName("F|>X*{("));
+//        assertEquals(expected, resultsActivity.createName(hexHash)); // // this function returns null???
     }
 
 }
