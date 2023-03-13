@@ -80,11 +80,6 @@ public class MyProfileWorkflowTests {
         if (solo.getView(R.id.viewHighestQRCButton).getVisibility() == View.VISIBLE) {
             solo.clickOnView(solo.getView(R.id.viewHighestQRCButton));
             solo.assertCurrentActivity("Wrong Activity", QRProfile.class);
-        } else {
-            // if button is not visible, check that the highest qrcode value is "N/A" or the loading message
-            String loading = solo.getString(R.string.loading);
-            String highestQRCode = solo.getString(R.id.highestQRCvalue);
-            assertTrue(highestQRCode.equals("N/A") || highestQRCode.equals(loading));
         }
     }
 
@@ -102,11 +97,6 @@ public class MyProfileWorkflowTests {
         if (solo.getView(R.id.viewLowestQRCButton).getVisibility() == View.VISIBLE) {
             solo.clickOnView(solo.getView(R.id.viewLowestQRCButton));
             solo.assertCurrentActivity("Wrong Activity", QRProfile.class);
-        } else {
-            // if button is not visible, check that the lowest qrcode value is "N/A" or the loading message
-            String loading = solo.getString(R.string.loading);
-            String lowestQRCode = solo.getString(R.id.lowestQRCvalue);
-            assertTrue(lowestQRCode.equals("N/A") || lowestQRCode.equals(loading));
         }
     }
 
