@@ -299,10 +299,7 @@ public class ResultsActivity extends AppCompatActivity {
                     }
 
                 }
-//                if (results != null) {
-//                    handleSmallCameraPhoto(results);
-//                    uploadImage();
-//                }
+
                 finish(); // return to main activity TODO: go to QRProfile instead
             }
         });
