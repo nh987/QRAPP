@@ -310,7 +310,7 @@ public class ResultsActivity extends AppCompatActivity {
      * Pass in hashed barcode string and take first 6 digits that are mapped to various words that are then concatenated together to create
      * a name.
      * @param hashed
-     * @return
+     * @return string
      */
     public String createName(String hashed) {
         String hashedSubstring = hashed.substring(0,6);
@@ -343,7 +343,7 @@ public class ResultsActivity extends AppCompatActivity {
      * Pass in hashed barcode string and take first 4 digits that are mapped to various emoticon (head/hat, eyes, nose, mouth
      * that are then concatenated together to create a visual representation.
      * @param hashed
-     * @return
+     * @return string
      */
     public String createVisual (String hashed){
         String hashedSubstring = hashed.substring(0,4);
@@ -431,7 +431,7 @@ public class ResultsActivity extends AppCompatActivity {
      * check/get intent permissions
      * @param context
      * @param action
-     * @return
+     * @return boolean
      */
     public static boolean isIntentAvailable(Context context, String action) {
         final PackageManager packageManager = context.getPackageManager();
