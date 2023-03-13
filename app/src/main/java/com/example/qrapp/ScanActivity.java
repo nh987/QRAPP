@@ -93,6 +93,11 @@ public class ScanActivity extends AppCompatActivity implements ImageAnalysis.Ana
             }, getExecutor());
 
     }
+
+    /**
+     * Calls executor to run CameraX and ML Kit applications on main thread.
+     * @return
+     */
     private Executor getExecutor() {
         return ContextCompat.getMainExecutor(this);
     }
@@ -115,6 +120,12 @@ public class ScanActivity extends AppCompatActivity implements ImageAnalysis.Ana
         cameraProvider.bindToLifecycle((LifecycleOwner) this, cameraSelector, preview, imageAnalysis);
     }
 
+    /**
+     * get frame from cameraX and then is passed into the analyser from ML Kit that has been
+     * set up to look thru image for a barcode. On success image's rawValue (what it would return)
+     * is then SHA-256 hashed. This hash is then passed into the score() method for score processing.
+     * @param imageProxy The image to analyze
+     */
     @Override
     public void analyze(@NonNull ImageProxy imageProxy) {
         Log.d("ScanActivity_analyze", "analyze: got the frame at: " + imageProxy.getImageInfo().getTimestamp());
@@ -165,6 +176,7 @@ public class ScanActivity extends AppCompatActivity implements ImageAnalysis.Ana
                             imageProxy.close();
                             mediaImage.close();
                             if (scannedCode) {
+
                                 Intent toResults = new Intent(ScanActivity.this, ResultsActivity.class);
                                 toResults.putExtra("hashed", hashed);
                                 toResults.putExtra("score", score);
@@ -175,6 +187,15 @@ public class ScanActivity extends AppCompatActivity implements ImageAnalysis.Ana
                     });
         }
     }
+
+    /**
+     * SHA-256 hashed barcode is passed into this function and uses a scoring method to determine
+     * the arbitrary worth of the barcode based on subsequent repeated numbers/letters - where the score
+     * grows exponentially according to the length of the combo chain. Follows format of <hex_digit>(^<combo_length>-1)
+     * 0 is a special digit as it is the only value that alone is worth 1 and chained is 20^(<combo_length-1>).
+     * @param hex
+     * @return
+     */
     public long score(String hex) {
         long score = 0;
         HashMap<Character, Integer> hexMap = new HashMap<Character, Integer>();
@@ -195,16 +216,26 @@ public class ScanActivity extends AppCompatActivity implements ImageAnalysis.Ana
         hexMap.put('e', 14);
         hexMap.put('f', 15);
 
-        Pattern pattern = Pattern.compile("([0-9a-f])(\\1+)",  2); // regex expression and flag for repeated substrings in hash
-        Matcher matcher = pattern.matcher(hex);
-        while (matcher.find()) {
-            String repeated = matcher.group();
+        // repeated substrings
+        Pattern patternRepeats = Pattern.compile("([0-9a-f])(\\1+)",  2); // regex expression and flag for repeated substrings in hash
+        Matcher matcherRepeats = patternRepeats.matcher(hex);
+        while (matcherRepeats.find()) {
+            String repeated = matcherRepeats.group();
             Log.d("REPEATED SUBSTRING:", repeated);
             long len = repeated.length() - 1; // subtract 1 from length
             double val = Math.pow(hexMap.get(repeated.charAt(0)),len);
             Log.d("SUBSTRING VALUE", ""+val);
             score += Math.pow(hexMap.get(repeated.charAt(0)),len);
         }
+        // single zeros
+        Pattern patternSingleZero = Pattern.compile("([^0]0[^0])",2);
+        Matcher matcherSingleZero = patternSingleZero.matcher(hex);
+        while (matcherSingleZero.find()) {
+            String singleZero = matcherSingleZero.group();
+            Log.d("SINGLE ZERO:", singleZero);
+            score += 1;
+        }
+
         Log.d("hex SCORE: ", ""+score);
         return score;
     }

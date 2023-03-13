@@ -122,14 +122,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/results_visual" />
 
-    <ImageButton
-        android:id="@+id/back"
-        android:layout_width="60dp"
-        android:layout_height="55dp"
-        android:padding="15dp"
-        android:background = "@android:color/transparent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="?attr/actionModeCloseDrawable" />
+<!--    <ImageButton-->
+<!--        android:id="@+id/back"-->
+<!--        android:layout_width="60dp"-->
+<!--        android:layout_height="55dp"-->
+<!--        android:padding="15dp"-->
+<!--        android:background = "@android:color/transparent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:srcCompat="?attr/actionModeCloseDrawable" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
