@@ -96,11 +96,16 @@ public class ScanActivity extends AppCompatActivity implements ImageAnalysis.Ana
 
     /**
      * Calls executor to run CameraX and ML Kit applications on main thread.
-     * @return
+     * @return executor
      */
     private Executor getExecutor() {
         return ContextCompat.getMainExecutor(this);
     }
+
+    /**
+     * start cameraX instance
+     * @param cameraProvider
+     */
 
     private void startCameraX(ProcessCameraProvider cameraProvider) {
         cameraProvider.unbindAll();
@@ -191,10 +196,10 @@ public class ScanActivity extends AppCompatActivity implements ImageAnalysis.Ana
     /**
      * SHA-256 hashed barcode is passed into this function and uses a scoring method to determine
      * the arbitrary worth of the barcode based on subsequent repeated numbers/letters - where the score
-     * grows exponentially according to the length of the combo chain. Follows format of <hex_digit>(^<combo_length>-1)
-     * 0 is a special digit as it is the only value that alone is worth 1 and chained is 20^(<combo_length-1>).
+     * grows exponentially according to the length of the combo chain. Follows format of value raised to combo minus 1
+     * zero is a special digit as it is the only value that alone is worth 1 and chained is twenty raised to combo length minus 1
      * @param hex
-     * @return
+     * @return long
      */
     public long score(String hex) {
         long score = 0;
