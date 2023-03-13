@@ -165,7 +165,6 @@ public class SearchFragment extends Fragment {
              @param position The position of the item selected.
              @param id The row id of the item that is selected.
              */
-            private FusedLocationProviderClient fusedLocationClient;
             @SuppressLint("MissingPermission")
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedDistance = spinner.getSelectedItem().toString();
@@ -263,7 +262,7 @@ public class SearchFragment extends Fragment {
              @param point2 the second GeoPoint
              @return the distance between the two GeoPoints
              */
-            private double calculateDistance(GeoPoint point1, GeoPoint point2) {
+            public double calculateDistance(GeoPoint point1, GeoPoint point2) {
                 double lat1 = toRadians(point1.getLatitude());
                 double lon1 = toRadians(point1.getLongitude());
                 double lat2 = toRadians(point2.getLatitude());
