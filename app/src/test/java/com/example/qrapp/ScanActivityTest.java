@@ -38,6 +38,7 @@ public class ScanActivityTest{
     public void testScore() {
         String hexHash = hashTest();
         when(scanActivity.score(hexHash)).thenReturn((long) 115);
+        assertEquals((long) 115, scanActivity.score(hexHash));
     }
 }
 
