@@ -57,6 +57,7 @@ public class MyProfile extends AppCompatActivity {
      * the onCreate method finds all the views and sets the onclick listeners,
      *  as well as establishing the database connection, then calls updateUserInfo()
      *  and getQRCodes() in order to get the user data and the QRCodes they have scanned
+     * @param savedInstanceState the saved instance state of the activity, not used except to call the super method
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
