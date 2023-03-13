@@ -36,7 +36,7 @@ public class QRProfile extends AppCompatActivity {
     @Override
     /**
      * On create method for QRProfile activity
-     * @param savedInstanceState
+     * @param savedInstanceState a Bundle object to be saved
      */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,7 +60,7 @@ public class QRProfile extends AppCompatActivity {
             @Override
             /**
              * On click method for back button
-             * @param v
+             * @param v a View object
              */
             public void onClick(View v) {
                 finish();
