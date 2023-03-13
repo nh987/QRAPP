@@ -1,8 +1,12 @@
 package com.example.qrapp;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.media.Image;
 import android.os.Bundle;
@@ -11,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -43,7 +48,11 @@ import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -88,12 +97,14 @@ public class ResultsActivity extends AppCompatActivity {
     TextView textViewName;
     CheckBox checkBox;
     Button addPhoto; // TODO: addPhotoFragment -> CameraX integration
-    Image image; //  init as null
-
+    Bitmap imageBitmap;
+    Intent results;
+    private static final int CAMERA_REQUEST = 100;
     Double lat;
     Double lon;
     Button continueToPost;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseStorage storage = FirebaseStorage.getInstance();
     private FusedLocationProviderClient fusedLocationClient;
 
     @Override
@@ -163,9 +174,11 @@ public class ResultsActivity extends AppCompatActivity {
         addPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent toResults = new Intent(ResultsActivity.this, PictureActivity.class);
-                toResults.putExtra("hashed", hashed);
-                startActivity(toResults);
+                isIntentAvailable(ResultsActivity.this, MediaStore.ACTION_IMAGE_CAPTURE);
+                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(takePictureIntent, CAMERA_REQUEST);
+//                handleSmallCameraPhoto(takePictureIntent);
+//                uploadImage();
                 addPhoto.setVisibility(View.INVISIBLE);
             }
         });
@@ -289,8 +302,11 @@ public class ResultsActivity extends AppCompatActivity {
                     }
 
                 }
+                if (results != null) {
+                    handleSmallCameraPhoto(results);
+                    uploadImage();
+                }
                 finish(); // return to main activity TODO: go to QRProfile instead
-
             }
         });
 
@@ -417,6 +433,58 @@ public class ResultsActivity extends AppCompatActivity {
         return QRVisual;
     }
 
-    // TODO: Functions
-    private void getImage() {} // will return Image from CameraX fragment...
+    /**
+     * check/get intent permissions
+     * @param context
+     * @param action
+     * @return
+     */
+    public static boolean isIntentAvailable(Context context, String action) {
+        final PackageManager packageManager = context.getPackageManager();
+        final Intent intent = new Intent(action);
+        List<ResolveInfo> list =
+                packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        return list.size() > 0;
+    }
+
+    /**
+     * Get bitmap image from Intent bundle.
+     */
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
+//            imageBitmap = (Bitmap) data.getExtras().get("data");
+//
+//        }
+//    }
+    public void handleSmallCameraPhoto(Intent intent) {
+        Bundle extras = intent.getExtras();
+        extras.get("data");
+        imageBitmap = (Bitmap) extras.get("data");
+    }
+
+    /**
+     * Convert bitmap to bytes and upload to Cloud Storage.
+     */
+    public void uploadImage () {
+        StorageReference storageRef = storage.getReference();
+        StorageReference qrcRef = storageRef.child(hashed+".jpg");
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+
+        UploadTask uploadTask = qrcRef.putBytes(data);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                Toast.makeText(ResultsActivity.this,"Thumbnail uploaded", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Toast.makeText(ResultsActivity.this,"Thumbnail failed to upload", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 }
