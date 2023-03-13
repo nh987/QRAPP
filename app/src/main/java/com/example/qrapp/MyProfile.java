@@ -17,6 +17,17 @@ import com.google.firebase.firestore.GeoPoint;
 
 import java.util.ArrayList;
 
+/**
+ * The MyProfile class is the activity that is used to display the user's profile
+ *  and their stats, when called, it will get the user's UID from auth, then
+ *  get the user's data from the database, then get the QRCodes they have scanned
+ *  and display the stats & information based on that data.
+ *  It also has a button to view the highest and lowest QRCodes scanned by the user, which
+ *  will open a new activity "QRProfile", passing the QRCode object to it.
+ *  it displays the user's username, email, highest and lowest QRCodes scanned, total score,
+ *  and total number of QRCodes scanned. It has buttons to view the highest and lowest QRCodes, and
+ *  a back button to return to the previous activity.
+ */
 public class MyProfile extends AppCompatActivity {
 
 
@@ -42,6 +53,11 @@ public class MyProfile extends AppCompatActivity {
     private FirebaseFirestore db;
     //TODO Stats section
 
+    /**
+     * the onCreate method finds all the views and sets the onclick listeners,
+     *  as well as establishing the database connection, then calls updateUserInfo()
+     *  and getQRCodes() in order to get the user data and the QRCodes they have scanned
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,6 +126,12 @@ public class MyProfile extends AppCompatActivity {
         });
     }
 
+    /**
+     * UpdateScores finds the highest, lowest and total scores of the user using the QRCodeList,
+     * sets the text views to their corresponding values,
+     * sets if the view highest and lowest buttons are enabled or not,
+     * sets the buttons to open the QRProfile activity with the highest and lowest QRCode respectively
+     */
     private void updateScores(){
 
         if (QRCodeList.size() == 0){
@@ -166,7 +188,8 @@ public class MyProfile extends AppCompatActivity {
     }
 
     /**
-     * Gets the username and email of the user from the database, sets the text views
+     * UpdateUserInfo Gets the username and email of the user from the database,
+     * and sets the text views to their corresponding values
      */
     private void updateUserInfo(){
         db.collection("Users").document(userID).get().addOnCompleteListener(task -> {
