@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,19 +29,13 @@ import java.util.AbstractMap;
 
 import android.Manifest;
 
-
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
@@ -52,7 +47,11 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-
+/**
+ * Fragment for searching for players and QR codes
+ * Allows user to look up players based on their exact username
+ * Allows user to look up QR codes based on the users current location
+ */
 public class SearchFragment extends Fragment {
     Boolean playerFilterButtonClicked = true;
     Boolean QrFilterButtonClicked = false;
@@ -67,14 +66,6 @@ public class SearchFragment extends Fragment {
     QRcAdapter qRcAdapter;
 
     PlayerListAdapter playerListAdapter;
-
-    /*
-    ListView qrListView;
-    QRcAdapter qRcAdapter;
-
-
-
-     */
 
     @SuppressLint("CutPasteId")
     @Nullable
@@ -168,7 +159,6 @@ public class SearchFragment extends Fragment {
         });
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             /**
-
              This method is called when an item is selected from the spinner. It extracts the maximum distance from the selected item, gets the current location, and retrieves QR codes from Firestore that are within the maximum distance from the current location. The QR codes are then sorted by distance and displayed on the screen.
              @param parent The AdapterView where the selection happened.
              @param view The view within the AdapterView that was clicked.
@@ -176,20 +166,32 @@ public class SearchFragment extends Fragment {
              @param id The row id of the item that is selected.
              */
             private FusedLocationProviderClient fusedLocationClient;
+            @SuppressLint("MissingPermission")
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedDistance = spinner.getSelectedItem().toString();
                 double maxDistance = extractMaxDistance(selectedDistance);
-                Location location = getCurrentLocation();
+                LocationManager locationManager = (LocationManager) getActivity().getSystemService(getContext().LOCATION_SERVICE);
+                if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    // requirement to check permission
+                    return;
+                }
+                Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                if (location == null) {
+                    location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                }
                 ArrayList<QRCode> qrCodeList = new ArrayList<>();
                 if (location == null) {
                     Toast.makeText(getContext(), "Location not being shared, location set to default", Toast.LENGTH_SHORT).show();
                     location = new Location("");
-                    location.setLatitude(53.5444);
-                    location.setLongitude(-113.4909);
+                    location.setLatitude(37.4216863);
+                    location.setLongitude(-122.0842771);
+                } else {
+                    double locationLatitude = location.getLatitude();
+                    double locationLongitude = location.getLongitude();
+                    Toast.makeText(getContext(), "Location found (" + locationLatitude + ", " + locationLongitude + ")", Toast.LENGTH_SHORT).show();
                 }
                 GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
-                System.out.println("Location" + geoPoint);
-                db.collection("QrCodes")
+                db.collection("QRCodes")
                         .whereNotEqualTo("Geolocation", null)
                         .get()
                         .addOnCompleteListener(task -> {
@@ -200,7 +202,6 @@ public class SearchFragment extends Fragment {
                                     GeoPoint qrCodeLocation = document.getGeoPoint("Geolocation");
                                     double distance = calculateDistance(geoPoint, qrCodeLocation);
                                     if (distance <= maxDistance) {
-                                        System.out.println("Found QR CODE!!");
                                         Integer points = document.getLong("Points").intValue();
                                         String name = document.getString("Name");
                                         String icon = document.getString("icon");
@@ -210,7 +211,6 @@ public class SearchFragment extends Fragment {
                                         QRCode queriedQR = new QRCode(comments, points, name, icon, playersScanned, geolocation);
                                         Map.Entry<QRCode, Double> entry = new AbstractMap.SimpleEntry<>(queriedQR, distance);
                                         QRCodeListWithDistances.add(entry);
-                                        System.out.println("QRCodeListWithDistances size" + QRCodeListWithDistances.size());
                                     }
                                 }
                                 Collections.sort(QRCodeListWithDistances, new Comparator<Map.Entry<QRCode, Double>>() {
@@ -221,7 +221,6 @@ public class SearchFragment extends Fragment {
                                 for (Map.Entry<QRCode, Double> entry : QRCodeListWithDistances) {
                                     qrCodeList.add(entry.getKey());
                                 }
-                                System.out.println("QRCodeList size" + qrCodeList.size());
                                 displayQRCodeList(qrCodeList);
                             } else {
                                 Toast queryToast = Toast.makeText(getContext(), "Your search returned no results", Toast.LENGTH_SHORT);
@@ -257,41 +256,6 @@ public class SearchFragment extends Fragment {
                 selectedDistance = selectedDistance.replaceAll("[^0-9]", "");
                 return Double.parseDouble(selectedDistance);
             }
-
-            /**
-             This method gets the current location of the user. If the user has not granted permission to access their location, it will request permission from the user.
-             @return the current location of the user
-             */
-            @SuppressLint("MissingPermission")
-            private Location getCurrentLocation() {
-                LocationManager locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
-
-                // Check if permissions are granted
-                if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                        ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    // Request for permissions
-                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-                    return null;
-                }
-
-                // Get last known location
-                Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                if (lastKnownLocation == null) {
-                    return null;
-                }
-
-                return lastKnownLocation;
-            }
-
-            private void requestLocationPermissions() {
-                if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                        && ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(getActivity(),
-                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
-                            1);
-                }
-            }
-
 
             /**
              This method calculates the distance between two GeoPoints
@@ -344,6 +308,11 @@ public class SearchFragment extends Fragment {
             Context mContext = getContext();
 
             @Override
+            /**
+             * Method for qrSearch button filter, which acts as a way to filter what is queried
+             * @param view represents the current view
+             * @return nothing
+             */
             public void onClick(View view) {
                 QrFilterButtonClicked = true;
                 playerFilterButtonClicked = false;

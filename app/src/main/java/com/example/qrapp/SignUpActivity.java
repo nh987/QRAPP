@@ -50,8 +50,6 @@ public class SignUpActivity extends AppCompatActivity {
                 String email = emailField.getText().toString();
                 String password = passwordField.getText().toString();
                 String uname = username.getText().toString();
-
-                // Check if the username already exists
                 db.collection("Users")
                         .whereEqualTo("username", uname)
                         .get()
@@ -64,7 +62,6 @@ public class SignUpActivity extends AppCompatActivity {
                             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                 if (task.isSuccessful()) {
                                     if (!task.getResult().isEmpty()) {
-                                        // Username already exists
                                         Toast.makeText(SignUpActivity.this, "Username already exists", Toast.LENGTH_SHORT).show();
                                         return;
                                     }
