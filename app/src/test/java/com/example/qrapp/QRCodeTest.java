@@ -2,6 +2,7 @@ package com.example.qrapp;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.*;
 
 import android.location.Location;
 
@@ -10,14 +11,16 @@ import com.google.firebase.firestore.GeoPoint;
 import org.junit.Test;
 
 public class QRCodeTest {
-    @Test
+    QRCode qrCode;
     public QRCode MockQRCode() {
-        Location location = new Location("location");
-        location.setLatitude(50.0);
-        location.setLongitude(50.0);
-        GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
-        QRCode qrCode = new QRCode(null, 10, "QR Code", "icon", null, geoPoint);
+        QRCode qrCode = new QRCode(null, null, null, null, null, null);
         return qrCode;
+    }
+    @Test
+    public void setCommentsTest() {
+        QRCode qrCode = MockQRCode();
+        qrCode.setComments("comments");
+        assertEquals(qrCode.getComments(), "comments");
     }
 
     @Test
@@ -26,26 +29,19 @@ public class QRCodeTest {
         assertEquals(qrCode.getComments(), null);
     }
     @Test
-    public void setCommentsTest() {
-        QRCode qrCode = MockQRCode();
-        qrCode.setComments("comments");
-        assertEquals(qrCode.getComments(), "comments");
-    }
-    @Test
     public void getPointsTest() {
         QRCode qrCode = MockQRCode();
-        assertEquals(qrCode.getPoints(), 10);
+        Integer expectedPoints = 10;
+        qrCode.setPoints(expectedPoints);
+        String points = qrCode.getPoints();
+        assertEquals(expectedPoints.toString(), points);
     }
     @Test
     public void setPointsTest() {
         QRCode qrCode = MockQRCode();
-        qrCode.setPoints(20);
-        assertEquals(qrCode.getPoints(), 20);
-    }
-    @Test
-    public void getNameTest() {
-        QRCode qrCode = MockQRCode();
-        assertEquals(qrCode.getName(), "QR Code");
+        Integer expectedPoints = 5;
+        qrCode.setPoints(expectedPoints);
+        assertEquals(expectedPoints, qrCode.points);
     }
     @Test
     public void setNameTest() {
@@ -54,9 +50,16 @@ public class QRCodeTest {
         assertEquals(qrCode.getName(), "New QR Code");
     }
     @Test
+    public void getNameTest() {
+        QRCode qrCode = MockQRCode();
+        qrCode.setName("QR Code");
+        assertEquals(qrCode.getName(), "QR Code");
+    }
+    @Test
     public void getIconTest() {
         QRCode qrCode = MockQRCode();
-        assertEquals(qrCode.getIcon(), "icon");
+        qrCode.setIcon(":)");
+        assertEquals(qrCode.getIcon(), ":)");
     }
     @Test
     public void setIconTest() {
@@ -78,18 +81,14 @@ public class QRCodeTest {
     @Test
     public void getGeolocationTest() {
         QRCode qrCode = MockQRCode();
-        Location location = new Location("location");
-        location.setLatitude(50.0);
-        location.setLongitude(50.0);
-        GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
-        assertEquals(qrCode.getGeolocation(), geoPoint);
+        assertEquals(qrCode.getGeolocation(), null);
     }
     @Test
     public void setGeolocationTest() {
         QRCode qrCode = MockQRCode();
-        Location location = new Location("location");
-        location.setLatitude(55.0);
-        location.setLongitude(55.0);
+        Location location = mock(Location.class);
+        when(location.getLatitude()).thenReturn(50.0);
+        when(location.getLongitude()).thenReturn(55.0);
         GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
         qrCode.setGeolocation(geoPoint);
         assertEquals(qrCode.getGeolocation(), geoPoint);

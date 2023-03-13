@@ -46,7 +46,6 @@ dependencies {
     implementation 'com.google.android.gms:play-services-maps:18.1.0'//gms
     implementation 'com.google.android.libraries.maps:maps:3.1.0-beta'
     implementation 'com.google.firebase:firebase-auth:21.1.0'
-    testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
@@ -71,12 +70,21 @@ dependencies {
     implementation "androidx.camera:camera-camera2:${camerax_version}"
     implementation "androidx.camera:camera-lifecycle:${camerax_version}"
     implementation "androidx.camera:camera-video:${camerax_version}"
+    testImplementation 'org.robolectric:robolectric:4.3'
 
     implementation "androidx.camera:camera-view:${camerax_version}"
     implementation "androidx.camera:camera-extensions:${camerax_version}"
 
     // SHA-256
     implementation("com.google.guava:guava:31.1-android")
+    testImplementation 'org.mockito:mockito-core:3.12.4'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation "androidx.test:runner:1.5.2"
+    androidTestImplementation "androidx.test:rules:1.5.0"
+    androidTestImplementation "com.jayway.android.robotium:robotium-solo:5.2.1"
 
+    // implementation for intent
 }
+
+
 

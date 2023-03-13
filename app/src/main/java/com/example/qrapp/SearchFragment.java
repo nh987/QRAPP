@@ -61,8 +61,6 @@ public class SearchFragment extends Fragment {
     SearchView searchView;
     Spinner spinner;
     ListView qrListView;
-
-    ListView playerListView;
     QRcAdapter qRcAdapter;
 
     PlayerListAdapter playerListAdapter;
