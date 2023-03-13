@@ -43,7 +43,7 @@ public class MainFragment extends Fragment {
     @Nullable
     @Override
     /**
-     * Create the view for the fragment
+     * Create a list of all the QR codes in the database in a "feed style" list
      * @param inflater
      * @param container
      * @param savedInstanceState
