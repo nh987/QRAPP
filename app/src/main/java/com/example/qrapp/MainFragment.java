@@ -56,7 +56,6 @@ public class MainFragment extends Fragment {
         QRCodeList = new ArrayList<>();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        // Add a real-time listener for updates to the database
         qrCodeListener = db.collection("QRCodes").addSnapshotListener((value, error) -> {
             QRCodeList.clear();
             for (DocumentSnapshot document : value.getDocuments()) {
@@ -66,7 +65,6 @@ public class MainFragment extends Fragment {
                 Object playersScanned = document.get("playersScanned");
                 GeoPoint geolocation = document.getGeoPoint("Geolocation");
                 Object comments = document.get("Comments");
-
                 QRCode queriedQR = new QRCode(comments, points, name, icon, playersScanned, geolocation);
                 QRCodeList.add(queriedQR);
             }
@@ -99,7 +97,7 @@ public class MainFragment extends Fragment {
 
     @Override
     /**
-     * On destroy view method for the fragment
+     * Removes the listener when the fragment is destroyed
      */
     public void onDestroyView() {
         super.onDestroyView();
