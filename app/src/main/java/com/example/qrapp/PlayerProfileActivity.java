@@ -39,7 +39,10 @@ public class PlayerProfileActivity extends AppCompatActivity {
 
     @Override
     /**
-     * OnCreate method, initalizes all fields
+     * OnCreate method, init all fields
+     * @param savedInstanceState, this is used to pass a username from PlayerListAdapter so we can query the db for all player
+     * information
+     * @return void
      */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,10 +63,10 @@ public class PlayerProfileActivity extends AppCompatActivity {
         // Set player data, init db
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String finalUsername = username;
-        db.collection("Users").whereEqualTo("Username", username).get().addOnCompleteListener(task -> {
+        db.collection("Users").whereEqualTo("username", username).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult().getDocuments().get(0);
-                String email = document.getString("Email");
+                String email = document.getString("email");
                 usernameText.setText(finalUsername);
                 emailText.setText(email);
             }

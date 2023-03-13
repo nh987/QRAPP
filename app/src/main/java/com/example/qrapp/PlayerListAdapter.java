@@ -1,6 +1,7 @@
 package com.example.qrapp;
 
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -27,8 +28,6 @@ import java.util.List;
 
 /**
  * Class for defining a custom adapter for a ListView for player Searching
- *
- *
  */
 class PlayerListAdapter extends BaseAdapter {
     ArrayList<Player> items;
@@ -36,6 +35,12 @@ class PlayerListAdapter extends BaseAdapter {
 
     Activity myActivity;
 
+    /**
+     * Constructor for init of new adapter objects
+     * @param items, an arraylist of player objects
+     * @param context, a variable defining the context of search fragment on object init
+     * @param activity, a variable defining the current activity of searchFragment
+     */
     public PlayerListAdapter(ArrayList<Player> items, Context context, Activity activity) {
         super();
         this.mycontext = context;
@@ -45,7 +50,6 @@ class PlayerListAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-//        return items.size();
         return items.size();
     }
 
@@ -59,10 +63,19 @@ class PlayerListAdapter extends BaseAdapter {
         return items.get(i).hashCode();
     }
 
+
+
+    /**
+     * main method, displays searched User's in a ListView and provides a button to navigate to their profile
+     * @param i, an integer representing the index of the ListView
+     * @param view, a variable representing the current view of SearchFragment
+     * @param viewGroup, a variable representing the current grouping of view
+     * @return the updated view
+     */
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         LayoutInflater inflater = LayoutInflater.from(mycontext);
-        View row = inflater.inflate(R.layout.text_layout, viewGroup, false);
+        @SuppressLint("ViewHolder") View row = inflater.inflate(R.layout.text_layout, viewGroup, false);
         Player player = items.get(i);
         TextView username = row.findViewById(R.id.textinlist);
         username.setText(player.getUsername().toString());
@@ -72,7 +85,7 @@ class PlayerListAdapter extends BaseAdapter {
         {
             @Override
             public void onClick(View view) {
-                // TODO actually have it open a fragment lol
+                // try catch for fragment error handling
                 try {
                     Intent playerProfileIntent = new Intent(myActivity, PlayerProfileActivity.class);
                     playerProfileIntent.putExtra("player", player.getUsername());

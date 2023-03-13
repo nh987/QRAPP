@@ -61,13 +61,12 @@ public class SearchFragment extends Fragment {
     SearchView searchView;
     Spinner spinner;
     ListView qrListView;
-
-    ListView playerListView;
     QRcAdapter qRcAdapter;
 
     PlayerListAdapter playerListAdapter;
 
-    @SuppressLint("CutPasteId")
+
+    @SuppressLint({"CutPasteId", "InflateParams"})
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -102,7 +101,7 @@ public class SearchFragment extends Fragment {
                     String searchText = searchView.getQuery().toString();
                     // query all users based on partial string matching
                     // works for partial string matching (i.e search:"User" --> "User1", "User2"
-                    db.collection("Users").orderBy("Username").startAt(searchText).endAt(searchText + "\uf8ff").get().addOnCompleteListener(task -> {
+                    db.collection("Users").orderBy("username").startAt(searchText).endAt(searchText + "\uf8ff").get().addOnCompleteListener(task -> {
 
                         if (task.isSuccessful()) {
                             // Handle out of bounds error with document snapshot.
@@ -118,10 +117,10 @@ public class SearchFragment extends Fragment {
                             List<DocumentSnapshot> documents = task.getResult().getDocuments();
                             // loop through all queried users, create player objects
                             for (DocumentSnapshot document : documents) {
-                                Log.d("myTag", document.getString("Username"));
-                                String username = document.getString("Username");
-                                String email = document.getString("Email");
-                                String phoneNumber = document.getString("PhoneNumber");
+                                Log.d("myTag", document.getString("username"));
+                                String username = document.getString("username");
+                                String email = document.getString("email");
+                                String phoneNumber = document.getString("phoneNumber");
                                 String location = "edmonton"; // TODO  This is currently NOT in the db
                                 Player queriedPlayer = new Player(username, email, location, phoneNumber);
                                 playerList.add(queriedPlayer);

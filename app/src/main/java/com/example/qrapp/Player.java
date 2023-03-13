@@ -1,5 +1,9 @@
 package com.example.qrapp;
 
+
+/**
+ * Class for representing a 'Player', i.e a user of the app
+ */
 public class Player
 {
     private String username;
@@ -7,6 +11,13 @@ public class Player
     private String location;
     private String phoneNumber;
 
+    /**
+     * Constructor for init of new player objects
+     * @param usrN  Player "username"
+     * @param em Player "email"
+     * @param loc Player "location" (specifically in string format for some use cases)
+     * @param ph Player "phone number"
+     */
     public Player(String usrN, String em, String loc, String ph) {
         this.username = usrN;
         this.email = em;
