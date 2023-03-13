@@ -176,6 +176,7 @@ public class SearchFragment extends Fragment {
                 }
                 Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                 if (location == null) {
+                    // If the location cannot be grabbed from GPS we grab it from network
                     location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                 }
                 ArrayList<QRCode> qrCodeList = new ArrayList<>();
@@ -190,6 +191,7 @@ public class SearchFragment extends Fragment {
                     Toast.makeText(getContext(), "Location found (" + locationLatitude + ", " + locationLongitude + ")", Toast.LENGTH_SHORT).show();
                 }
                 GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
+                // Search the database for non null geolocations, within the max distance
                 db.collection("QRCodes")
                         .whereNotEqualTo("Geolocation", null)
                         .get()
@@ -208,11 +210,19 @@ public class SearchFragment extends Fragment {
                                         GeoPoint geolocation = document.getGeoPoint("Geolocation");
                                         Object comments =  document.get("Comments");
                                         QRCode queriedQR = new QRCode(comments, points, name, icon, playersScanned, geolocation);
+                                        // use a map to store the qr code and its distance from the current location
                                         Map.Entry<QRCode, Double> entry = new AbstractMap.SimpleEntry<>(queriedQR, distance);
                                         QRCodeListWithDistances.add(entry);
                                     }
                                 }
+                                // sort the list of qr codes by distance
                                 Collections.sort(QRCodeListWithDistances, new Comparator<Map.Entry<QRCode, Double>>() {
+                                    /**
+                                     * Compares two entries in the QRCodeListWithDistances list by their distance from the current location.
+                                     * @param a
+                                     * @param b
+                                     * @return
+                                     */
                                     public int compare(Map.Entry<QRCode, Double> a, Map.Entry<QRCode, Double> b) {
                                         return a.getValue().compareTo(b.getValue());
                                     }

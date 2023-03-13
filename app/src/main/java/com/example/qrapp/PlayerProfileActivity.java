@@ -58,6 +58,7 @@ public class PlayerProfileActivity extends AppCompatActivity {
         TextView profileHeader = findViewById(R.id.profile);
         TextView usernameText = findViewById(R.id.username);
         TextView emailText = findViewById(R.id.email);
+        ImageView back = findViewById(R.id.back);
         String profile = username + "'s Profile";
         profileHeader.setText(profile);
         // Set player data, init db
@@ -71,6 +72,17 @@ public class PlayerProfileActivity extends AppCompatActivity {
                 emailText.setText(email);
             }
             //TODO stats
+        });
+
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            /**
+             * On click method for back button
+             * @param v
+             */
+            public void onClick(View v) {
+                finish();
+            }
         });
 
     }
