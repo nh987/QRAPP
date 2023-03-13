@@ -20,7 +20,8 @@ import java.util.Map;
 
 public class SignUpActivity extends AppCompatActivity {
 
-    private FirebaseAuth auth;
+    public FirebaseAuth auth;
+    public FirebaseFirestore db;
     private EditText emailField;
     private EditText passwordField;
     private EditText username;
@@ -39,7 +40,7 @@ public class SignUpActivity extends AppCompatActivity {
         emailField = findViewById(R.id.email_field);
         passwordField = findViewById(R.id.password_field);
         signUpButton = findViewById(R.id.signup_button);
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db = FirebaseFirestore.getInstance();
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             /**
