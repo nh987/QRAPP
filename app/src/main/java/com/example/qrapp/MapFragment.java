@@ -144,8 +144,7 @@ public class MapFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         //set attrs really needed as soon as it is created/ can already be set
-
-
+        FLPC = LocationServices.getFusedLocationProviderClient(getContext());
 
 
         //get results every 10 secs
