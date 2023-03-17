@@ -49,7 +49,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -86,15 +88,37 @@ public class MapFragment extends Fragment {
 
     //Model/Values for loaction storage and maintenace
     Location curr_location;
-    ArrayList<LatLng> QRcLocations;
     ArrayList<QRCode> closestQRcs;
 
-    //THE DB
+    //THE DBs
     FirebaseFirestore DB; // how we access a db, just use DB
+    FirebaseAuth Auth; // authentication for username
+
 
     //Views to display and/or update Model
     TextView points; //shows how many locations are saved
     Button UPDATE; //update locations
+
+    //user
+    String PlayerName;
+
+    public MapFragment(){
+        closestQRcs = new ArrayList<>();
+
+        DB = FirebaseFirestore.getInstance();
+        Auth = FirebaseAuth.getInstance();
+
+        String userID = Auth.getCurrentUser().getUid();
+        PlayerName = "----"; // default if no username
+        getUsername(userID);
+
+
+        LRequest = new LocationRequest.Builder(trackingACCURACY)
+                .setIntervalMillis(update_interval * 1000L)
+                .setMinUpdateIntervalMillis(fastest_update_interval * 1000L)
+                .build();
+    }
+
 
     //used whenvever a new last location is requested
     private ActivityResultLauncher<String> requestPermissionLauncher =
@@ -103,15 +127,8 @@ public class MapFragment extends Fragment {
                     // Permission is granted. Continue the action or workflow in your
                     // app.
 
-                    checkUserSettingsAndStartLocUpdates();
-                    if(curr_location!=null) {
-                        addLocationsToMap();
-                        updateView();
-                        showMapFragment();
-                        Log.d("CURRENT LOCATION","not null");
-                    }else{
-                        Log.d("CURRENT LOCATION","No location on found");
-                    }
+                    startLocUpdates();
+                    //checkUserSettingsAndStartLocUpdates();
 
                 } else {
                     //Permission not granted
@@ -127,43 +144,34 @@ public class MapFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         //set attrs really needed as soon as it is created/ can already be set
-        QRcLocations = new ArrayList<>();
-        closestQRcs = new ArrayList<>();
 
-        FLPC = LocationServices.getFusedLocationProviderClient(getContext());
 
-        LRequest = new LocationRequest.Builder(trackingACCURACY)
-                .setIntervalMillis(update_interval * 1000L)
-                .setMinUpdateIntervalMillis(fastest_update_interval * 1000L)
-                .build();
+
 
         //get results every 10 secs
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
                 super.onLocationResult(locationResult);
+                curr_location = locationResult.getLastLocation();
                 //can throw null
-                if(locationResult==null){
-                    Log.d("LOCATION CALLBACK", "No new locations from updates");
-                    return;
-                }else{
-                    curr_location = locationResult.getLastLocation();
-                    if(curr_location!=null) {
-                        //addLocationsToMap();
-                        Log.d("CURRENT LOCATION","started with location from callback");
-                    }else{
-                        Log.d("CURRENT LOCATION","No location on callback");
-
-                    }
-
-
+                if(curr_location!=null) {
+                    //addLocationsToMap();
+                    //addLocationsToMap();
+                    updateView();
+                    Log.d("CURRENT LOCATION","started with location from callback");
                     LatLng curr_LL = new LatLng(curr_location.getLatitude(), curr_location.getLongitude());
                     Log.d("CURRENT LOCATION", String.valueOf(curr_LL.latitude) +  " " + String.valueOf(curr_LL.longitude) + " in callback");
+                }else{
+                    Log.d("CURRENT LOCATION","No location on callback");
+
                 }
             }
         };
 
 
+
+        //requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
 
 
     }
@@ -187,68 +195,28 @@ public class MapFragment extends Fragment {
         UPDATE.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                requestPermissionLauncher.launch(
-                        Manifest.permission.ACCESS_FINE_LOCATION);
-
-                startLocUpdates();
-                if(curr_location!=null){
-                    addLocationsToMap();
-                    updateView();
-                    showMapFragment();
-                    Log.d("CURRENT LOCATION",String.valueOf(curr_location) + " updated");
-                }else{
-                    Log.d("CURRENT LOCATION","Location not updated");
-                }
+                //startLocUpdates();
+                requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
             }
         });
 
         //want to show immediate created
-        startLocUpdates();
+        //startLocUpdates();
 
+        requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
 
 
         return view;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
 
-        // 1)permission for location
-        if (ActivityCompat //PERMISSION GRANTED
-                .checkSelfPermission(getContext(),
-                        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
-
-            checkUserSettingsAndStartLocUpdates();
-            if(curr_location!=null) {
-                addLocationsToMap();
-                updateView();
-                showMapFragment();
-                Log.d("CURRENT LOCATION","started with location in onStart()");
-            }else {
-                Log.d("CURRENT LOCATION","started with no location in onStart()");
-            }
-
-
-
-
-        } else { //PERMISSION DENIED
-            requestLocationPermission();
-        }
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        stopLocUpdates();
-    }
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         stopLocUpdates();
         FLPC=null;
+        super.onDestroy();
+
     }
 
 
@@ -267,6 +235,7 @@ public class MapFragment extends Fragment {
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         requestCode_Rationale);
                 //requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+                startLocUpdates();
 
 
             } else { // directly ask for permission, they have since the rationale now
@@ -332,6 +301,7 @@ public class MapFragment extends Fragment {
 
     @SuppressLint("MissingPermission") //literally asked for permission 3 times before using loc... suppressed
     private void startLocUpdates() {
+        FLPC = LocationServices.getFusedLocationProviderClient(getContext());
         FLPC.requestLocationUpdates(LRequest, locationCallback, Looper.getMainLooper());
         //getting last location with location task
         Task<Location> locationTask = FLPC.getLastLocation();
@@ -340,7 +310,6 @@ public class MapFragment extends Fragment {
         locationTask.addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
-
                 //BUT, even though already got permissions, computers can throw.
                 // Also this only gets the last location... which may not exist if lets say you are actual an android studio emulator
                 if (location == null) {
@@ -386,9 +355,25 @@ public class MapFragment extends Fragment {
         HMFragment = new HelperMapFragment();
 
         // package model data
-        Bundle LocationBundle = new Bundle(); //to pass location data into fragment
-        String LocationDataKey = "LB";
-        LocationBundle.putSerializable(LocationDataKey, closestQRcs);
+        Bundle LocationBundle = new Bundle();
+
+        //package QRcs
+        Bundle LocationsQRcBundle = new Bundle(); //to pass location data into fragment
+        String LocationsQRcDataKey = "LB";
+        LocationsQRcBundle.putSerializable(LocationsQRcDataKey, closestQRcs);
+
+        //package current location
+        Bundle MyLocationBundle = new Bundle();
+        String MyLocationDataKey = "myLB";
+        MyLocationBundle.putParcelable(MyLocationDataKey, curr_location);
+
+        //package player
+        String MeDataKey = "ME";
+
+        //put all bundles
+        LocationBundle.putBundle(LocationsQRcDataKey,LocationsQRcBundle);
+        LocationBundle.putBundle(MyLocationDataKey,MyLocationBundle);
+        LocationBundle.putString(MeDataKey,PlayerName); //also put username
 
         //pass to Helper
         HMFragment.setArguments(LocationBundle);
@@ -406,11 +391,14 @@ public class MapFragment extends Fragment {
     //TODO: This is where the db/a list of the closest  QRc locations to the phone is set
     //If i can get a list of all the QRcodes from a db or something, I can show the closest within a given range
     private void addLocationsToMap() {
+        if(closestQRcs.size()>=10 || curr_location==null){
+            return;
+        }
+        closestQRcs.clear();
         int Contact_Radius = 500000; //all QRc within a xkm radius
         int max_count = 10; // I want only x qrcs to show
 
 
-        DB = FirebaseFirestore.getInstance();
 
         //to stroe in a collection
         CollectionReference QRC_collectionReference = DB.collection("QRCodes");
@@ -438,7 +426,10 @@ public class MapFragment extends Fragment {
                                         QRcLocation) );
                                 count++;
                             }
-                            if(count==max_count){break;}
+                            if(count==max_count){
+                                Toast.makeText(getContext(), String.valueOf(count), Toast.LENGTH_SHORT).show();
+                                break;
+                            }
                         }
                     }
                 })
@@ -453,45 +444,6 @@ public class MapFragment extends Fragment {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        /*
-        double Lat = curr_location.getLatitude(), Long = curr_location.getLongitude();
-        QRcLocations.clear(); //clear whatever is there.
-
-        //add random nearby locations for now.
-        //This loop is actually supposed to add the top X locations closest to user
-        double bound = 0.001;
-        for (int i = 10; i > 0; i--) {
-            QRcLocations.add(
-                    new LatLng(
-                            ThreadLocalRandom.current().nextDouble(Lat - bound, Lat + bound),
-                            ThreadLocalRandom.current().nextDouble(Long - bound, Long + bound)
-                    ));
-        }
-        //QRcLocations(new LatLng(Lat, Long)); //add current location as well as a referecne point
-        QRcLocations.add(new LatLng(Lat,Long));
-
-         */
     }
 
 
@@ -505,7 +457,7 @@ public class MapFragment extends Fragment {
         //put location values in view
 
         //update points total
-        points.setText(String.format(Locale.CANADA, "%d", QRcLocations.size()));
+        points.setText(String.format(Locale.CANADA, "%d", closestQRcs.size()));
     }
 
 
@@ -528,6 +480,18 @@ public class MapFragment extends Fragment {
 
     private boolean inRange(double threshold, double wantsIn){
         return wantsIn <= threshold;
+    }
+
+    private void getUsername(String userID){
+        DB.collection("Users").document(userID).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {PlayerName = document.getString("username");}
+                else {Toast.makeText(getContext(), "User Document doesnt exist", Toast.LENGTH_SHORT).show();}
+            }else {
+                Toast.makeText(getContext(), "Username Task Unsuccessful", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 

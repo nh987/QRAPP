@@ -14,7 +14,7 @@
 
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="SAVED POINTS: "
+            android:text="Nearby Codes: "
             android:textSize="25dp"/>
         <TextView
             android:id="@+id/textview_points"
@@ -34,7 +34,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="UPDATE"
-            android:textSize="20dp"/>
+            android:textSize="20dp"
+            android:layout_marginRight="10dp"/>
 
     </LinearLayout>
 
