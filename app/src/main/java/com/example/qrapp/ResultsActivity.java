@@ -170,6 +170,7 @@ public class ResultsActivity extends AppCompatActivity {
         textViewScore.setText(""+score+" points!");
         textViewVisual.setText(visual);
 
+        // Add image
         addPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
