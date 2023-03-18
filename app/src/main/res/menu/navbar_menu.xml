@@ -3,16 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
 <!--REGULAR-->
-    <item
-        android:id="@+id/leaderboard_tab"
+    <item android:id="@+id/leaderboard_tab"
         android:icon="@drawable/ic_outline_leaderboard_24"
         android:title="Rankings"
-        app:showAsAction="always"/>
+        app:showAsAction="always" />
 
     <item android:title="Main"
         android:icon="@drawable/ic_sharp_dynamic_feed_24"
         android:id="@+id/main_tab"
-        app:showAsAction="always"/>
+        app:showAsAction="always" />
 
 
     <item android:title=""

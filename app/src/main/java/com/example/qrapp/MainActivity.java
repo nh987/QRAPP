@@ -6,6 +6,8 @@ import androidx.fragment.app.Fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -16,27 +18,36 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MainFragment.Scrollable {
 
+    BottomAppBar bottomAppBar; //solely to hide nav bar when scrolling
 
     BottomNavigationView nav_bar;//nav bar object
     ImageButton SCAN;// scan button object
     ImageButton MYPROFILE;// get to myprofile page
-    private FirebaseAuth auth;
+    FirebaseAuth auth;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //bottom app bar
+        bottomAppBar = findViewById(R.id.bottom_nav_bar);
+
+        bottomAppBar.setHideOnScroll(true);
+
 
         //set profile button
         MYPROFILE = findViewById(R.id.button_MYprofile);
@@ -45,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
         //set nav_bar
         nav_bar = findViewById(R.id.nav_barview);
         nav_bar.setOnItemSelectedListener(navbar_listener);
-
 
         // start at menu
         nav_bar.setSelectedItemId(R.id.main_tab);
@@ -161,6 +171,17 @@ public class MainActivity extends AppCompatActivity {
         }
 
     };
+
+    //hide bottom nva bar when scrolling sown
+    @Override
+    public void Scrollable(int scrollState) {
+        Log.d("INTERFACE",String.format("I got %d",scrollState));
+        if(scrollState==2){
+            bottomAppBar.setVisibility(View.INVISIBLE);
+        }else{
+            bottomAppBar.setVisibility(View.VISIBLE);
+        }
+    }
 
 
 }

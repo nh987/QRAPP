@@ -2,12 +2,14 @@ package com.example.qrapp;
 
 import static java.lang.Math.toRadians;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
@@ -39,6 +41,17 @@ public class MainFragment extends Fragment {
     private QRcAdapter qRcAdapter;
     private ArrayList<QRCode> QRCodeList;
     private ListenerRegistration qrCodeListener;
+
+    //I added a "Scrolling" interface to hide the nav bar when scrolling down.
+    //I noticed that the very last item in the Listview is difficult if not impossible
+    //to see. Not a tremendous issue but addressed it since I could
+    //See->"for scrolling interface" below
+    public interface Scrollable {
+        public void Scrollable(int scrollState);
+    }
+    private Scrollable dataPasser;
+    //
+
 
     @Nullable
     @Override
@@ -92,8 +105,57 @@ public class MainFragment extends Fragment {
         qRcAdapter = new QRcAdapter(QRCodeList, getContext());
         qrListView.setAdapter(qRcAdapter);
 
+        //interface for scrolling
+        qrListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            int LastFirstVisibleItem;
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                if(LastFirstVisibleItem<firstVisibleItem)
+                {
+                    //Log.i("SCROLLING DOWN","TRUE");
+                    passData(2);
+                }
+                if(LastFirstVisibleItem>firstVisibleItem)
+                {
+                    passData(1);
+                    //Log.i("SCROLLING UP","TRUE");
+                }
+                LastFirstVisibleItem=firstVisibleItem;
+
+            }
+        });
+
         return contentView;
     }
+
+
+    //for scrolling interface
+    /*Overview
+    The Scrollable Interface works by passing Scrolling data from the Main
+    Fragment to the Main Activity. I has been set as so
+     1) the Main Fragment determines the scroll direction and has a Scrollable
+      Interface object whose sole purpose is receiving data from the fragment
+     2) Main Fragment passes scroll direction(a number) to Main Activity by using a scroll listener on the Main Fragments ListView
+     3) Main Activity implements the Main Fragments Scrollable Interaface so it can receive data from any Main Fragment Object
+     4) The bottom nav bar is hidden when scrolling down(2) and reappears when scrolling up(not 2)
+
+    The solution here is a bit tacky but seems to work ok
+     */
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        dataPasser = (Scrollable) context;
+    }
+
+    public void passData(int data) {
+        dataPasser.Scrollable(data);
+    }
+    //// End of Scroll Interface
 
     @Override
     /**

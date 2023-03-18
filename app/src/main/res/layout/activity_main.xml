@@ -50,6 +50,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
 
+        app:hideOnScroll="true"
         app:contentInsetStart="0dp"
         app:fabCradleMargin="20dp"
         app:fabCradleVerticalOffset="20dp">
@@ -61,7 +62,7 @@
             android:layout_gravity="bottom"
             app:menu="@menu/navbar_menu"
             android:background="@android:color/transparent"
-            app:elevation="0dp"/>
+            app:elevation="0dp" />
     </com.google.android.material.bottomappbar.BottomAppBar>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -72,7 +73,7 @@
         android:src="@drawable/ic_baseline_qr_code_scanner_24"
         app:layout_anchor="@id/bottom_nav_bar"
         app:maxImageSize="40dp"
-        app:fabCustomSize="65dp"/>
+        app:fabCustomSize="65dp" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 
