@@ -408,13 +408,13 @@ public class ResultsActivity extends AppCompatActivity {
         hexMapNose.put('9', "x");
         hexMapNose.put('a', "J");
         hexMapNose.put('b', "7");
-        hexMapNose.put('c', ".");
-        hexMapNose.put('d', ",");
-        hexMapNose.put('e', "^");
-        hexMapNose.put('f', "'");
+        hexMapNose.put('c', "^");
+        hexMapNose.put('d', "~");
+        hexMapNose.put('e', "y");
+        hexMapNose.put('f', "0");
 
         HashMap<Character, String> hexMapMouth = new HashMap<Character, String>();
-        hexMapMouth.put('0', "b");
+        hexMapMouth.put('0', "P");
         hexMapMouth.put('1', "B");
         hexMapMouth.put('2', "]");
         hexMapMouth.put('3', "[");
@@ -428,8 +428,8 @@ public class ResultsActivity extends AppCompatActivity {
         hexMapMouth.put('b', "{)");
         hexMapMouth.put('c', "{(");
         hexMapMouth.put('d', "{|");
-        hexMapMouth.put('e', "D");
-        hexMapMouth.put('f', "{D");
+        hexMapMouth.put('e', "/");
+        hexMapMouth.put('f', "{/");
 
         QRVisual = hexMapHead.get(hashedSubstring.charAt(0))+hexMapEyes.get(hashedSubstring.charAt(1))+hexMapNose.get(hashedSubstring.charAt(2))+hexMapMouth.get(hashedSubstring.charAt(3));
         Log.d("QRVisual:", QRVisual);
