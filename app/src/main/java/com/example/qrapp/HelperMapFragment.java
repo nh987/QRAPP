@@ -56,7 +56,7 @@ public class HelperMapFragment extends Fragment{
 
     //Map
     SupportMapFragment SMH; //the google map needs its own support fragment
-    int Zoom = 18; // how much to zoom in
+    int Zoom = 14; // how much to zoom in
     QRcMarkerInfoWindowAdapter QRcMarkerAdapter; // a custom view and behaviour for the markers for QRcs
 
     //Buttons
@@ -111,7 +111,8 @@ public class HelperMapFragment extends Fragment{
             @Override
             public void onClick(View v) {
                 LatLng myLL = new LatLng(current.getLatitude(), current.getLongitude());
-                Map.animateCamera(CameraUpdateFactory.newLatLngZoom(myLL, Zoom));
+                Map.animateCamera(CameraUpdateFactory.newLatLngZoom(myLL, Zoom+3));
+
             }
         });
 
