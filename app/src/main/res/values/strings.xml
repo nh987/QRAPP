@@ -24,6 +24,8 @@
         item
     </string>
     <string name="loading">Loading...</string>
+    <string name="framed_face">C|=\'#~        1  points</string>
+    <string name="Another">Cpt cool SloYoUltraSonicSquid</string>
     <string-array name="numbers">
         <item>0.5 km</item>
         <item>1 km</item>
