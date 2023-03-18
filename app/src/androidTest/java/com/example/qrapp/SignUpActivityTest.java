@@ -10,7 +10,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 
-
 public class SignUpActivityTest {
 
     private Solo solo;
