@@ -72,7 +72,7 @@ public class ScanActivity extends AppCompatActivity implements ImageAnalysis.Ana
         BACK_ARROW.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (cameraProviderFuture.isDone()) { // potential solution to crashing on back button press start up
+                if (cameraProviderFuture.isDone()) { // potential solution to crashing on back button press during start up
                     finish();
                 }
             }

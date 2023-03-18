@@ -143,8 +143,8 @@ public class ResultsActivity extends AppCompatActivity {
                         Log.d("TAG", "QR Code already exists in DB!");
                         Toast.makeText(ResultsActivity.this, "QR Code already exists", Toast.LENGTH_SHORT).show();
                         doesExist = true;
-                        checkBox.setVisibility(View.INVISIBLE);
-                        addPhoto.setVisibility(View.INVISIBLE);
+//                        checkBox.setVisibility(View.INVISIBLE);
+//                        addPhoto.setVisibility(View.INVISIBLE);
                         List<String> scannedPlayers = (List<String>) document.get("playersScanned");
                         if (scannedPlayers != null) {
                             if (scannedPlayers.contains(FirebaseAuth.getInstance().getCurrentUser().getUid())) { // if user has already scanned QRCode
@@ -177,7 +177,7 @@ public class ResultsActivity extends AppCompatActivity {
                 isIntentAvailable(ResultsActivity.this, MediaStore.ACTION_IMAGE_CAPTURE);
                 Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 startActivityForResult(takePictureIntent, CAMERA_REQUEST);
-                addPhoto.setVisibility(View.INVISIBLE);
+//                addPhoto.setVisibility(View.INVISIBLE);
             }
         });
 
@@ -247,18 +247,13 @@ public class ResultsActivity extends AppCompatActivity {
         continueToPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!hasScanned && !doesExist) {
+                if (!hasScanned && !doesExist) { // if qrc is completely new
                     Map<String,Object> newQRC = new HashMap<>();
-
-//                HashMap<String, String> nameDB = new HashMap<>();
                     newQRC.put("Name", name);
-//                HashMap<String, String> visualDB = new HashMap<>();
                     newQRC.put("icon",visual);
-//                HashMap<String, Number> scoreDB = new HashMap<>();
                     newQRC.put("Points",score);
-//                HashMap<String, String> hashedDB = new HashMap<>();
                     newQRC.put("Hash", hashed);
-//                HashMap<String, Location> locationDB = new HashMap<>();
+
                     if (includeGeolocation && lat != null && lon != null) {
                         GeoPoint geolocation = new GeoPoint(lat,lon);
                         Log.d("TAG", "GEOLOCATION "+geolocation);
@@ -290,15 +285,27 @@ public class ResultsActivity extends AppCompatActivity {
                             });
                 }
 
-                else {
+                else { // if qrc already exists in db
 
-                    if (!hasScanned) {
+                    if (!hasScanned) { // user has not scanned this QR code yet
                         final Map<String,Object> addUser = new HashMap<>();
                         addUser.put("playersScanned", FieldValue.arrayUnion(FirebaseAuth.getInstance().getCurrentUser().getUid()));
                         db.collection("QRCodes").document(hashed)
                                 .update(addUser);
                     }
 
+                    final Map<String,Object> updateGeolocation = new HashMap<>();
+                    if (includeGeolocation) { // reset geolocation
+                        GeoPoint geolocation = new GeoPoint(lat,lon);
+                        Log.d("TAG", "UPDATE GEOLOCATION "+geolocation);
+                        updateGeolocation.put("Geolocation", geolocation);
+                    }
+                    else {
+                        Log.d("TAG", "REMOVED GEOLOCATION");
+                        updateGeolocation.put("Geolocation", null);
+                    }
+                    db.collection("QRCodes").document(hashed)
+                            .update(updateGeolocation);
                 }
 
                 finish(); // return to main activity TODO: go to QRProfile instead
