@@ -49,6 +49,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -143,8 +144,8 @@ public class ResultsActivity extends AppCompatActivity {
                         Log.d("TAG", "QR Code already exists in DB!");
                         Toast.makeText(ResultsActivity.this, "QR Code already exists", Toast.LENGTH_SHORT).show();
                         doesExist = true;
-                        checkBox.setVisibility(View.INVISIBLE);
-                        addPhoto.setVisibility(View.INVISIBLE);
+//                        checkBox.setVisibility(View.INVISIBLE);
+//                        addPhoto.setVisibility(View.INVISIBLE);
                         List<String> scannedPlayers = (List<String>) document.get("playersScanned");
                         if (scannedPlayers != null) {
                             if (scannedPlayers.contains(FirebaseAuth.getInstance().getCurrentUser().getUid())) { // if user has already scanned QRCode
@@ -170,13 +171,14 @@ public class ResultsActivity extends AppCompatActivity {
         textViewScore.setText(""+score+" points!");
         textViewVisual.setText(visual);
 
+        // Add image
         addPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 isIntentAvailable(ResultsActivity.this, MediaStore.ACTION_IMAGE_CAPTURE);
                 Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 startActivityForResult(takePictureIntent, CAMERA_REQUEST);
-                addPhoto.setVisibility(View.INVISIBLE);
+//                addPhoto.setVisibility(View.INVISIBLE);
             }
         });
 
@@ -246,18 +248,13 @@ public class ResultsActivity extends AppCompatActivity {
         continueToPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!hasScanned && !doesExist) {
+                if (!hasScanned && !doesExist) { // if qrc is completely new
                     Map<String,Object> newQRC = new HashMap<>();
-
-//                HashMap<String, String> nameDB = new HashMap<>();
                     newQRC.put("Name", name);
-//                HashMap<String, String> visualDB = new HashMap<>();
                     newQRC.put("icon",visual);
-//                HashMap<String, Number> scoreDB = new HashMap<>();
                     newQRC.put("Points",score);
-//                HashMap<String, String> hashedDB = new HashMap<>();
                     newQRC.put("Hash", hashed);
-//                HashMap<String, Location> locationDB = new HashMap<>();
+
                     if (includeGeolocation && lat != null && lon != null) {
                         GeoPoint geolocation = new GeoPoint(lat,lon);
                         Log.d("TAG", "GEOLOCATION "+geolocation);
@@ -289,15 +286,27 @@ public class ResultsActivity extends AppCompatActivity {
                             });
                 }
 
-                else {
+                else { // if qrc already exists in db
 
-                    if (!hasScanned) {
+                    if (!hasScanned) { // user has not scanned this QR code yet
                         final Map<String,Object> addUser = new HashMap<>();
                         addUser.put("playersScanned", FieldValue.arrayUnion(FirebaseAuth.getInstance().getCurrentUser().getUid()));
                         db.collection("QRCodes").document(hashed)
                                 .update(addUser);
                     }
 
+                    final Map<String,Object> updateGeolocation = new HashMap<>();
+                    if (includeGeolocation) { // reset geolocation
+                        GeoPoint geolocation = new GeoPoint(lat,lon);
+                        Log.d("TAG", "UPDATE GEOLOCATION "+geolocation);
+                        updateGeolocation.put("Geolocation", geolocation);
+                    }
+                    else {
+                        Log.d("TAG", "REMOVED GEOLOCATION");
+                        updateGeolocation.put("Geolocation", null);
+                    }
+                    db.collection("QRCodes").document(hashed)
+                            .update(updateGeolocation);
                 }
 
                 finish(); // return to main activity TODO: go to QRProfile instead
@@ -399,13 +408,13 @@ public class ResultsActivity extends AppCompatActivity {
         hexMapNose.put('9', "x");
         hexMapNose.put('a', "J");
         hexMapNose.put('b', "7");
-        hexMapNose.put('c', ".");
-        hexMapNose.put('d', ",");
-        hexMapNose.put('e', "^");
-        hexMapNose.put('f', "'");
+        hexMapNose.put('c', "^");
+        hexMapNose.put('d', "~");
+        hexMapNose.put('e', "y");
+        hexMapNose.put('f', "0");
 
         HashMap<Character, String> hexMapMouth = new HashMap<Character, String>();
-        hexMapMouth.put('0', "b");
+        hexMapMouth.put('0', "P");
         hexMapMouth.put('1', "B");
         hexMapMouth.put('2', "]");
         hexMapMouth.put('3', "[");
@@ -419,8 +428,8 @@ public class ResultsActivity extends AppCompatActivity {
         hexMapMouth.put('b', "{)");
         hexMapMouth.put('c', "{(");
         hexMapMouth.put('d', "{|");
-        hexMapMouth.put('e', "D");
-        hexMapMouth.put('f', "{D");
+        hexMapMouth.put('e', "/");
+        hexMapMouth.put('f', "{/");
 
         QRVisual = hexMapHead.get(hashedSubstring.charAt(0))+hexMapEyes.get(hashedSubstring.charAt(1))+hexMapNose.get(hashedSubstring.charAt(2))+hexMapMouth.get(hashedSubstring.charAt(3));
         Log.d("QRVisual:", QRVisual);
@@ -454,17 +463,22 @@ public class ResultsActivity extends AppCompatActivity {
     }
 
     /**
-     * Convert bitmap to bytes and upload to Cloud Storage.
+     * Convert bitmap to bytes and upload to Cloud Storage. Includes userID as metadata of image.
      */
     public void uploadImage () {
         StorageReference storageRef = storage.getReference();
-        StorageReference qrcRef = storageRef.child(hashed+".jpg");
+        StorageReference qrcRef = storageRef.child(hashed+".jpg"); // init storage ref image
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 75, baos);
         byte[] data = baos.toByteArray();
 
-        UploadTask uploadTask = qrcRef.putBytes(data);
+        StorageMetadata metadata = new StorageMetadata.Builder()
+                .setContentType("image/jpg")
+                .setCustomMetadata("UserID", FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .build();
+
+        UploadTask uploadTask = qrcRef.putBytes(data, metadata);
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
