@@ -49,6 +49,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -462,17 +463,22 @@ public class ResultsActivity extends AppCompatActivity {
     }
 
     /**
-     * Convert bitmap to bytes and upload to Cloud Storage.
+     * Convert bitmap to bytes and upload to Cloud Storage. Includes userID as metadata of image.
      */
     public void uploadImage () {
         StorageReference storageRef = storage.getReference();
-        StorageReference qrcRef = storageRef.child(hashed+".jpg");
+        StorageReference qrcRef = storageRef.child(hashed+".jpg"); // init storage ref image
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 75, baos);
         byte[] data = baos.toByteArray();
 
-        UploadTask uploadTask = qrcRef.putBytes(data);
+        StorageMetadata metadata = new StorageMetadata.Builder()
+                .setContentType("image/jpg")
+                .setCustomMetadata("UserID", FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .build();
+
+        UploadTask uploadTask = qrcRef.putBytes(data, metadata);
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
