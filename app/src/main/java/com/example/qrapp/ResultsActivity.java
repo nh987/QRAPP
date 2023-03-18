@@ -1,8 +1,12 @@
 package com.example.qrapp;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.media.Image;
 import android.os.Bundle;
@@ -11,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -43,7 +48,11 @@ import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -57,6 +66,22 @@ import android.provider.Settings.Secure;
 import android.Manifest;
 import android.widget.Toast;
 
+/**
+ * ResultsActivity gets bundle from ScanActivity containing a SHA-256 hashed string of the barcode
+ * and long score value of the hash according to the scoring system. Score is displayed in a TextView and
+ * The hashed string is then compared to a Firebase DB query to check if A.) hash already exists in QRCodes
+ * collection and B.) If it does exist, if in its field playerScanned arrayList does the UserID already exist inside
+ * the list. If  A or B are met the "Add Photo" and "Include Geolocation" options are hidden and the player
+ * can only continue to MainFeed (For now, will be updated to go to QRProfile instead) If only A is met
+ * userID will be added into the playerScanned array. If neither condition is met, a new barcode entry is
+ * created and the hash is used to generate a name and visual representation of the hash according to the first
+ * 6 digits of the hash. User will have the option to Add Photo and Include Geolocation. Add Photo opens a new activity
+ * PictureActivity that returns (? - implementation detail not sure yet) a image that is sent into Cloud Storage and
+ * returns to ResultsActivity. If checked - Include Geolocation will get user permissions and get latitude and longitude
+ * of the device and will be used to create a GeoPoint. After this the hash, score, name, visual, GeoPoint (can be null), Comments (array),
+ * playersScanned (array) are all combined to make a single QRCode instance that is sent into the DB. The User's UserID is then
+ * appended into the playersScanned array for the QRCode instance.
+ */
 public class ResultsActivity extends AppCompatActivity {
     String hashed;
     long score;
@@ -72,12 +97,14 @@ public class ResultsActivity extends AppCompatActivity {
     TextView textViewName;
     CheckBox checkBox;
     Button addPhoto; // TODO: addPhotoFragment -> CameraX integration
-    Image image; //  init as null
-
+    Bitmap imageBitmap;
+    Intent results;
+    private static final int CAMERA_REQUEST = 100;
     Double lat;
     Double lon;
     Button continueToPost;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseStorage storage = FirebaseStorage.getInstance();
     private FusedLocationProviderClient fusedLocationClient;
 
     @Override
@@ -123,7 +150,6 @@ public class ResultsActivity extends AppCompatActivity {
                             if (scannedPlayers.contains(FirebaseAuth.getInstance().getCurrentUser().getUid())) { // if user has already scanned QRCode
                                 Toast.makeText(ResultsActivity.this, "User has already scanned this QRCode", Toast.LENGTH_SHORT).show();
                                 hasScanned = true;
-                                // TODO: GOTO: QRProfile...
                             }
                         }
 
@@ -147,9 +173,9 @@ public class ResultsActivity extends AppCompatActivity {
         addPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent toResults = new Intent(ResultsActivity.this, PictureActivity.class);
-                toResults.putExtra("hashed", hashed);
-                startActivity(toResults);
+                isIntentAvailable(ResultsActivity.this, MediaStore.ACTION_IMAGE_CAPTURE);
+                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(takePictureIntent, CAMERA_REQUEST);
                 addPhoto.setVisibility(View.INVISIBLE);
             }
         });
@@ -221,7 +247,6 @@ public class ResultsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (!hasScanned && !doesExist) {
-                    // TODO: Send new QRCode to DB, update Player scanned QRCodes
                     Map<String,Object> newQRC = new HashMap<>();
 
 //                HashMap<String, String> nameDB = new HashMap<>();
@@ -233,7 +258,7 @@ public class ResultsActivity extends AppCompatActivity {
 //                HashMap<String, String> hashedDB = new HashMap<>();
                     newQRC.put("Hash", hashed);
 //                HashMap<String, Location> locationDB = new HashMap<>();
-                    if (includeGeolocation && lat != null && lon != null) { // TODO: WHY THE FUCK IS IT NULL SOMETIMES??? MAYBE SLOW TO GET COORDS?? - CORDS ARE SET TO GOOGLE'S LOCATION FOR EMULATOR BTW.
+                    if (includeGeolocation && lat != null && lon != null) {
                         GeoPoint geolocation = new GeoPoint(lat,lon);
                         Log.d("TAG", "GEOLOCATION "+geolocation);
                         newQRC.put("Geolocation", geolocation);
@@ -274,14 +299,20 @@ public class ResultsActivity extends AppCompatActivity {
                     }
 
                 }
-                finish();
 
+                finish(); // return to main activity TODO: go to QRProfile instead
             }
         });
 
     }
 
-    private String createName(String hashed) {
+    /**
+     * Pass in hashed barcode string and take first 6 digits that are mapped to various words that are then concatenated together to create
+     * a name.
+     * @param hashed
+     * @return string
+     */
+    public String createName(String hashed) {
         String hashedSubstring = hashed.substring(0,6);
         String QRName = "";
 
@@ -308,8 +339,13 @@ public class ResultsActivity extends AppCompatActivity {
         Log.d("QRName:", QRName);
         return QRName;
     }
-
-    private String createVisual (String hashed){
+    /**
+     * Pass in hashed barcode string and take first 4 digits that are mapped to various emoticon (head/hat, eyes, nose, mouth
+     * that are then concatenated together to create a visual representation.
+     * @param hashed
+     * @return string
+     */
+    public String createVisual (String hashed){
         String hashedSubstring = hashed.substring(0,4);
         String QRVisual = "";
 
@@ -377,7 +413,7 @@ public class ResultsActivity extends AppCompatActivity {
         hexMapMouth.put('5', "(");
         hexMapMouth.put('6', "|");
         hexMapMouth.put('7', "3");
-        hexMapMouth.put('8', "6");
+        hexMapMouth.put('8', "L");
         hexMapMouth.put('9', "{]"); // Mustaches
         hexMapMouth.put('a', "{[");
         hexMapMouth.put('b', "{)");
@@ -391,8 +427,54 @@ public class ResultsActivity extends AppCompatActivity {
         return QRVisual;
     }
 
-    // TODO: Functions
-    private void getImage() {} // will return Image from CameraX fragment...
+    /**
+     * check/get intent permissions
+     * @param context
+     * @param action
+     * @return boolean
+     */
+    public static boolean isIntentAvailable(Context context, String action) {
+        final PackageManager packageManager = context.getPackageManager();
+        final Intent intent = new Intent(action);
+        List<ResolveInfo> list =
+                packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        return list.size() > 0;
+    }
 
+    /**
+     * Get bitmap image from Intent bundle.
+     */
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
+            imageBitmap = (Bitmap) data.getExtras().get("data");
+            uploadImage();
 
+        }
+    }
+
+    /**
+     * Convert bitmap to bytes and upload to Cloud Storage.
+     */
+    public void uploadImage () {
+        StorageReference storageRef = storage.getReference();
+        StorageReference qrcRef = storageRef.child(hashed+".jpg");
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+
+        UploadTask uploadTask = qrcRef.putBytes(data);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                Toast.makeText(ResultsActivity.this,"Thumbnail uploaded", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Toast.makeText(ResultsActivity.this,"Thumbnail failed to upload", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 }

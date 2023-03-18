@@ -39,7 +39,10 @@ public class PlayerProfileActivity extends AppCompatActivity {
 
     @Override
     /**
-     * OnCreate method, initalizes all fields
+     * OnCreate method, init all fields
+     * @param savedInstanceState this is used to pass a username from PlayerListAdapter so we can query the db for all player
+     * information
+     * @return void
      */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,19 +58,31 @@ public class PlayerProfileActivity extends AppCompatActivity {
         TextView profileHeader = findViewById(R.id.profile);
         TextView usernameText = findViewById(R.id.username);
         TextView emailText = findViewById(R.id.email);
+        ImageView back = findViewById(R.id.back);
         String profile = username + "'s Profile";
         profileHeader.setText(profile);
         // Set player data, init db
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String finalUsername = username;
-        db.collection("Users").whereEqualTo("Username", username).get().addOnCompleteListener(task -> {
+        db.collection("Users").whereEqualTo("username", username).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult().getDocuments().get(0);
-                String email = document.getString("Email");
+                String email = document.getString("email");
                 usernameText.setText(finalUsername);
                 emailText.setText(email);
             }
             //TODO stats
+        });
+
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            /**
+             * On click method for back button
+             * @param v
+             */
+            public void onClick(View v) {
+                finish();
+            }
         });
 
     }

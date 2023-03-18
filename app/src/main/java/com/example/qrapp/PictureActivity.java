@@ -37,6 +37,7 @@ import java.util.concurrent.Executor;
 import android.Manifest;
 import android.widget.Toast;
 
+// TODO: THIS ACTIVITY IS UNFINISHED AND UNTESTED AND ISN'T INCLUDED IN THE HALF WAY POINT
 public class PictureActivity extends AppCompatActivity {
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private ImageButton backButton;
@@ -120,7 +121,7 @@ public class PictureActivity extends AppCompatActivity {
                     @Override
                     public void onCaptureSuccess(@NonNull ImageProxy image) {
                         super.onCaptureSuccess(image);
-                        Log.d("TAG", "onError: Successfully captured image");
+                        Log.d("TAG", "onSuccess: Successfully captured image");
                     }
                     @Override
                     public void onError(@NonNull ImageCaptureException exception) {

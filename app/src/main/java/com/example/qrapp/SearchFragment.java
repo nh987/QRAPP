@@ -4,6 +4,7 @@ package com.example.qrapp;
 import static java.lang.Math.toRadians;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -65,7 +66,8 @@ public class SearchFragment extends Fragment {
 
     PlayerListAdapter playerListAdapter;
 
-    @SuppressLint("CutPasteId")
+
+    @SuppressLint({"CutPasteId", "InflateParams"})
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -100,7 +102,7 @@ public class SearchFragment extends Fragment {
                     String searchText = searchView.getQuery().toString();
                     // query all users based on partial string matching
                     // works for partial string matching (i.e search:"User" --> "User1", "User2"
-                    db.collection("Users").orderBy("Username").startAt(searchText).endAt(searchText + "\uf8ff").get().addOnCompleteListener(task -> {
+                    db.collection("Users").orderBy("username").startAt(searchText).endAt(searchText + "\uf8ff").get().addOnCompleteListener(task -> {
 
                         if (task.isSuccessful()) {
                             // Handle out of bounds error with document snapshot.
@@ -116,10 +118,11 @@ public class SearchFragment extends Fragment {
                             List<DocumentSnapshot> documents = task.getResult().getDocuments();
                             // loop through all queried users, create player objects
                             for (DocumentSnapshot document : documents) {
-                                Log.d("myTag", document.getString("Username"));
-                                String username = document.getString("Username");
-                                String email = document.getString("Email");
-                                String phoneNumber = document.getString("PhoneNumber");
+                                Log.d("myTag", document.getString("username"));
+                                String username = document.getString("username");
+                                String email = document.getString("email");
+                                //String phoneNumber = document.getString("phoneNumber");
+                                String phoneNumber = "1234";
                                 String location = "edmonton"; // TODO  This is currently NOT in the db
                                 Player queriedPlayer = new Player(username, email, location, phoneNumber);
                                 playerList.add(queriedPlayer);
@@ -174,6 +177,7 @@ public class SearchFragment extends Fragment {
                 }
                 Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                 if (location == null) {
+                    // If the location cannot be grabbed from GPS we grab it from network
                     location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                 }
                 ArrayList<QRCode> qrCodeList = new ArrayList<>();
@@ -188,6 +192,7 @@ public class SearchFragment extends Fragment {
                     Toast.makeText(getContext(), "Location found (" + locationLatitude + ", " + locationLongitude + ")", Toast.LENGTH_SHORT).show();
                 }
                 GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
+                // Search the database for non null geolocations, within the max distance
                 db.collection("QRCodes")
                         .whereNotEqualTo("Geolocation", null)
                         .get()
@@ -206,11 +211,19 @@ public class SearchFragment extends Fragment {
                                         GeoPoint geolocation = document.getGeoPoint("Geolocation");
                                         Object comments =  document.get("Comments");
                                         QRCode queriedQR = new QRCode(comments, points, name, icon, playersScanned, geolocation);
+                                        // use a map to store the qr code and its distance from the current location
                                         Map.Entry<QRCode, Double> entry = new AbstractMap.SimpleEntry<>(queriedQR, distance);
                                         QRCodeListWithDistances.add(entry);
                                     }
                                 }
+                                // sort the list of qr codes by distance
                                 Collections.sort(QRCodeListWithDistances, new Comparator<Map.Entry<QRCode, Double>>() {
+                                    /**
+                                     * Compares two entries in the QRCodeListWithDistances list by their distance from the current location.
+                                     * @param a
+                                     * @param b
+                                     * @return
+                                     */
                                     public int compare(Map.Entry<QRCode, Double> a, Map.Entry<QRCode, Double> b) {
                                         return a.getValue().compareTo(b.getValue());
                                     }
@@ -324,4 +337,5 @@ public class SearchFragment extends Fragment {
 
         return view;
     }
+
 }

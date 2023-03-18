@@ -82,6 +82,7 @@ public class SignUpActivity extends AppCompatActivity {
                                                         newUser.put("email", email);
                                                         newUser.put("location", "");
                                                         newUser.put("phoneNumber", "");
+                                                        // creates a new user in the database
                                                         db.collection("Users").document(auth.getCurrentUser().getUid()).set(newUser);
                                                         Toast.makeText(SignUpActivity.this, "Sign up successful", Toast.LENGTH_SHORT).show();
                                                         finish();

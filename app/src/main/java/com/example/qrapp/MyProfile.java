@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,6 +17,17 @@ import com.google.firebase.firestore.GeoPoint;
 
 import java.util.ArrayList;
 
+/**
+ * The MyProfile class is the activity that is used to display the user's profile
+ *  and their stats, when called, it will get the user's UID from auth, then
+ *  get the user's data from the database, then get the QRCodes they have scanned
+ *  and display the stats & information based on that data.
+ *  It also has a button to view the highest and lowest QRCodes scanned by the user, which
+ *  will open a new activity "QRProfile", passing the QRCode object to it.
+ *  it displays the user's username, email, highest and lowest QRCodes scanned, total score,
+ *  and total number of QRCodes scanned. It has buttons to view the highest and lowest QRCodes, and
+ *  a back button to return to the previous activity.
+ */
 public class MyProfile extends AppCompatActivity {
 
 
@@ -41,6 +53,12 @@ public class MyProfile extends AppCompatActivity {
     private FirebaseFirestore db;
     //TODO Stats section
 
+    /**
+     * the onCreate method finds all the views and sets the onclick listeners,
+     *  as well as establishing the database connection, then calls updateUserInfo()
+     *  and getQRCodes() in order to get the user data and the QRCodes they have scanned
+     * @param savedInstanceState the saved instance state of the activity, not used except to call the super method
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +91,12 @@ public class MyProfile extends AppCompatActivity {
         //close activity when back button is pressed
         backButton.setOnClickListener(v -> finish());
 
+        //set the view highest and lowest buttons to invisible and disabled until if and when the highest and lowest scores are found
+        viewHighestQRCButton.setEnabled(false);
+        viewHighestQRCButton.setVisibility(View.INVISIBLE);
+        viewLowestQRCButton.setEnabled(false);
+        viewLowestQRCButton.setVisibility(View.INVISIBLE);
+
     }
 
     /**
@@ -103,20 +127,21 @@ public class MyProfile extends AppCompatActivity {
         });
     }
 
+    /**
+     * UpdateScores finds the highest, lowest and total scores of the user using the QRCodeList,
+     * sets the text views to their corresponding values,
+     * sets if the view highest and lowest buttons are enabled or not,
+     * sets the buttons to open the QRProfile activity with the highest and lowest QRCode respectively
+     */
     private void updateScores(){
 
         if (QRCodeList.size() == 0){
-            //if the user has not scanned any QR codes, set the text views to 0
+            //if the user has not scanned any QR codes, set the text views to null representing values
             highestQRCvalue.setText("N/A");
             lowestQRCvalue.setText("N/A");
             totalscoreValue.setText("0");
             codesScannedValue.setText("0");
 
-            // set the buttons to do nothing & be invisible
-            viewHighestQRCButton.setOnClickListener(v -> {});
-            viewHighestQRCButton.setVisibility(ImageButton.INVISIBLE);
-            viewLowestQRCButton.setOnClickListener(v -> {});
-            viewLowestQRCButton.setVisibility(ImageButton.INVISIBLE);
             return;
         }
 
@@ -142,6 +167,12 @@ public class MyProfile extends AppCompatActivity {
         totalscoreValue.setText(String.valueOf(total));
         codesScannedValue.setText(String.valueOf(QRCodeList.size()));
 
+        // enable the buttons
+        viewHighestQRCButton.setEnabled(true);
+        viewHighestQRCButton.setVisibility(View.VISIBLE);
+        viewLowestQRCButton.setEnabled(true);
+        viewLowestQRCButton.setVisibility(View.VISIBLE);
+
         //set the buttons to open the QRProfile activity
         final QRCode finalLowestQR = lowestQR;
         final QRCode finalHighestQR = highestQR;
@@ -158,7 +189,8 @@ public class MyProfile extends AppCompatActivity {
     }
 
     /**
-     * Gets the username and email of the user from the database, sets the text views
+     * UpdateUserInfo Gets the username and email of the user from the database,
+     * and sets the text views to their corresponding values
      */
     private void updateUserInfo(){
         db.collection("Users").document(userID).get().addOnCompleteListener(task -> {

@@ -10,24 +10,35 @@ import com.google.firebase.firestore.GeoPoint;
 
 import org.junit.Test;
 
+/**
+ * Test the QRCode class
+ */
 public class QRCodeTest {
     QRCode qrCode;
     public QRCode MockQRCode() {
         QRCode qrCode = new QRCode(null, null, null, null, null, null);
         return qrCode;
     }
+    /**
+     * Test setting comments
+     */
     @Test
     public void setCommentsTest() {
         QRCode qrCode = MockQRCode();
         qrCode.setComments("comments");
         assertEquals(qrCode.getComments(), "comments");
     }
-
+    /**
+     * Test getting comments
+     */
     @Test
     public void getCommentsTest() {
         QRCode qrCode = MockQRCode();
         assertEquals(qrCode.getComments(), null);
     }
+    /**
+     * Test getting point value
+     */
     @Test
     public void getPointsTest() {
         QRCode qrCode = MockQRCode();
@@ -36,6 +47,9 @@ public class QRCodeTest {
         String points = qrCode.getPoints();
         assertEquals(expectedPoints.toString(), points);
     }
+    /**
+     * Test setting point value
+     */
     @Test
     public void setPointsTest() {
         QRCode qrCode = MockQRCode();
@@ -43,12 +57,27 @@ public class QRCodeTest {
         qrCode.setPoints(expectedPoints);
         assertEquals(expectedPoints, qrCode.points);
     }
+    /**
+     * Test setting name
+     */
     @Test
     public void setNameTest() {
         QRCode qrCode = MockQRCode();
         qrCode.setName("New QR Code");
         assertEquals(qrCode.getName(), "New QR Code");
     }
+    /**
+     * Test getting name
+     */
+    @Test
+    public void getNameTest() {
+        QRCode qrCode = MockQRCode();
+        qrCode.setName("QR Code");
+        assertEquals(qrCode.getName(), "QR Code");
+    }
+    /**
+     * Test getting icon
+     */
     @Test
     public void getNameTest() {
         QRCode qrCode = MockQRCode();
@@ -61,28 +90,43 @@ public class QRCodeTest {
         qrCode.setIcon(":)");
         assertEquals(qrCode.getIcon(), ":)");
     }
+    /**
+     * Test setting icon
+     */
     @Test
     public void setIconTest() {
         QRCode qrCode = MockQRCode();
         qrCode.setIcon("new icon");
         assertEquals(qrCode.getIcon(), "new icon");
     }
+    /**
+     * Test getting players scanned
+     */
     @Test
     public void getPlayersScannedTest() {
         QRCode qrCode = MockQRCode();
         assertEquals(qrCode.getPlayersScanned(), null);
     }
+    /**
+     * Test setting players scanned
+     */
     @Test
     public void setPlayersScannedTest() {
         QRCode qrCode = MockQRCode();
         qrCode.setPlayersScanned("players scanned");
         assertEquals(qrCode.getPlayersScanned(), "players scanned");
     }
+    /**
+     * Test getting geolocation
+     */
     @Test
     public void getGeolocationTest() {
         QRCode qrCode = MockQRCode();
         assertEquals(qrCode.getGeolocation(), null);
     }
+    /**
+     * Test setting geolocation
+     */
     @Test
     public void setGeolocationTest() {
         QRCode qrCode = MockQRCode();
