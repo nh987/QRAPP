@@ -79,6 +79,12 @@ public class QRCodeTest {
      * Test getting icon
      */
     @Test
+    public void getNameTest() {
+        QRCode qrCode = MockQRCode();
+        qrCode.setName("QR Code");
+        assertEquals(qrCode.getName(), "QR Code");
+    }
+    @Test
     public void getIconTest() {
         QRCode qrCode = MockQRCode();
         qrCode.setIcon(":)");
