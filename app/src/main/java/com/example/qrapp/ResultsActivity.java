@@ -482,12 +482,12 @@ public class ResultsActivity extends AppCompatActivity {
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
-                Toast.makeText(ResultsActivity.this,"Thumbnail uploaded", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ResultsActivity.this,"Thumbnail upload failed", Toast.LENGTH_SHORT).show();
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Toast.makeText(ResultsActivity.this,"Thumbnail failed to upload", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ResultsActivity.this,"Thumbnail upload successful", Toast.LENGTH_SHORT).show();
             }
         });
     }
