@@ -15,11 +15,25 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
+
 public class RankFragment extends Fragment {
 
 
     Spinner RANK_SPINNER;
     ArrayAdapter<CharSequence> RankSpinnerAdapter;
+
+    //Database
+    FirebaseAuth Auth;
+    FirebaseFirestore DB;
+
+    //tops
+    ArrayList<RankPair> Sum_Or_Count;
+    ArrayList<RankTriple> Score_Or_Local;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,30 +66,35 @@ public class RankFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Fragment selected = new RankScoreFragment();
-                //Fragment selected = null;
-                // not really necessary to initially set to anything but places emphasis that the app loads to main fragment
-
-
-            /*Overview:
-            Code works by creating a new, respective frament when each of the items are clicked
-            The clicked fragment is commited to the "frame" of the Main Activity->see activity_main.xml for frame
-            There is always at least and only 1 fragment chosen at any given time.
-            This is the fragment that is commited
-             */
-
 
                 switch (position){
                     case 0:
                         selected = new RankScoreFragment();
+
+                        //order top 20 by Highest QRcodes in whole app
+
+                        //1. get the highest QRCodes of all players
+
+
+                        //2. put in an ordered list
+
+                        //3. get the top 20
+
                         break;
                     case 1:
                         selected = new RankSumFragment();
+
+                        //order top 20 by Sum of QRCodes
                         break;
                     case 2:
                         selected = new RankCountFragment();
+
+                        //order top 20 by Count of QRCodes
                         break;
                     case 3:
                         selected = new RankLocalFragment();
+
+                        //order top 20 by Highest QRCodes locally(ANA of Postal code)
                         break;
                 }
 
