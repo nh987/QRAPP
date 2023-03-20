@@ -1,12 +1,14 @@
 package com.example.qrapp;
 
 
+import android.Manifest;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
@@ -32,8 +34,11 @@ public class RankFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_rank, container, false);
 
-        //SET SPINNER
+
+
         RANK_SPINNER = (Spinner) view.findViewById(R.id.spinnerRank);
+
+        //SET SPINNER
         // Create an ArrayAdapter using the string array and a default spinner layout
         RankSpinnerAdapter = ArrayAdapter.createFromResource(getContext(),
                 R.array.rank_criteria, android.R.layout.simple_spinner_item);
@@ -84,6 +89,9 @@ public class RankFragment extends Fragment {
 
             }
         });
+
+
+
 
 
 
