@@ -34,6 +34,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.firebase.firestore.GeoPoint;
 
+import org.checkerframework.checker.units.qual.A;
+
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Objects;
@@ -105,7 +107,7 @@ public class HelperMapFragment extends Fragment{
         View view = inflater.inflate(R.layout.fragment_map_helper, container, false);
 
 
-        //A button to find yourself
+//        A button to find yourself
         CENTRE = view.findViewById(R.id.centre);
         CENTRE.setOnClickListener(new View.OnClickListener() {
             @Override
