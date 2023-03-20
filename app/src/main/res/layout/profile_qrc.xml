@@ -100,8 +100,7 @@
                 app:layout_constraintBottom_toTopOf="@+id/qrprofile_scannedby"
                 app:layout_constraintStart_toEndOf="@+id/icon"
                 app:layout_constraintTop_toBottomOf="@+id/textView3"
-                app:srcCompat="@drawable/ic_baseline_scan2"
-                tools:srcCompat="@android:drawable/ic_menu_camera" />
+                app:srcCompat="@android:drawable/ic_menu_camera" />
 
             <TextView
                 android:id="@+id/qrprofile_scannedby"

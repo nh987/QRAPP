@@ -11,13 +11,13 @@ import android.widget.ListView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import android.content.Context;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
 
@@ -43,45 +43,46 @@ public class ScannedBy extends AppCompatActivity {
         listView.setAdapter(playerListAdapter);
         backButton = findViewById(R.id.scannedby_back);
 
-        backButton.setOnClickListener(new View.OnClickListener() {
+        backButton.setOnClickListener(new View.OnClickListener() { //  Return to MainFeed
             @Override
             public void onClick(View view) {finish(); }
         });
+
         Log.d("TAG", "list size: " + playersList.size());
         Log.d("TAG", "userIDs: " + playersList);
-        if (playersList.size() > 0) {
-            for (int i = 0; i < playersList.size(); i++) { // get info of each user that scanned qr
-                DocumentReference userRef = db.collection("Users").document(playersList.get(i).toString());
-                userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (task.isSuccessful()) {
-                            DocumentSnapshot userDoc = task.getResult();
-                            if (userDoc.exists()) {
-                                String username = userDoc.getString("username");
-                                String email = userDoc.getString("email");
-                                String phoneNumber = userDoc.getString("phoneNumber");
-                                String location = userDoc.getString("location");
-                                Log.d("TAG", "docItems: "+ username + email + phoneNumber + location);
-                                Player newPlayer = new Player(username, email, location, phoneNumber);
-                                players.add(newPlayer);
-                                Log.d("TAG", "current players count: " + players.size());
-                            }
-                            else {
-                                Log.d("TAG", "Document does not exist.");
-                            }
+        for (Object userID : playersList) { // Get info of each user that scanned qr and put into Player object
+            DocumentReference userRef = db.collection("Users").document((String) userID);
+            userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot userDoc = task.getResult();
+                        if (userDoc.exists()) {
+                            String username = userDoc.getString("username");
+                            String email = userDoc.getString("email");
+                            String phoneNumber = userDoc.getString("phoneNumber");
+                            String location = userDoc.getString("location");
+                            Log.d("TAG", "docItems: "+ username + email + phoneNumber + location);
+                            Player newPlayer = new Player(username, email, location, phoneNumber);
+                            players.add(newPlayer);
+                            Log.d("TAG", "current players count: " + players.size());
+
                         }
                         else {
-                            Log.d("TAG", "get failed with " + task.getException());
+                            Log.d("TAG", "Document does not exist.");
                         }
                     }
-                });
-            }
-            Log.d("TAG", "final players count: " + players.size());
-//            playerListAdapter = new PlayerListAdapter(players, this, ScannedBy.this);
-//            listView.setAdapter(playerListAdapter);
-//            playerListAdapter.notifyDataSetChanged();
+                    else {
+                        Log.d("TAG", "get failed with " + task.getException());
+                    }
+                    playerListAdapter = new PlayerListAdapter(players, getApplicationContext(), ScannedBy.this); // Update array per document iterations with new Player
+                    listView.setAdapter(playerListAdapter);
+                    playerListAdapter.notifyDataSetChanged();
+                }
+
+            });
         }
+
     }
 }
 
