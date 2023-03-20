@@ -25,28 +25,19 @@
 
 
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/photos_btn"
-                android:layout_width="161dp"
-                android:layout_height="51dp"
-                android:layout_marginTop="8dp"
+                android:id="@+id/qrprofile_players_btn"
+                android:layout_width="162dp"
+                android:layout_height="50dp"
                 android:background="@drawable/button_shape2"
                 android:padding="15dp"
-                android:text="Photos"
+                android:text="View players"
                 android:textSize="18dp"
-                app:layout_constraintStart_toEndOf="@+id/icon"
-                app:layout_constraintTop_toBottomOf="@+id/textView3" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/scannedby_btn"
-                android:layout_width="161dp"
-                android:layout_height="51dp"
-                android:layout_marginTop="68dp"
-                android:background="@drawable/button_shape2"
-                android:padding="15dp"
-                android:text="Scanned By"
-                android:textSize="18dp"
-                app:layout_constraintStart_toEndOf="@+id/icon"
-                app:layout_constraintTop_toBottomOf="@+id/textView3" />
+                app:layout_constraintBottom_toTopOf="@+id/commentsList"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.585"
+                app:layout_constraintStart_toEndOf="@+id/commentsText"
+                app:layout_constraintTop_toBottomOf="@+id/icon"
+                app:layout_constraintVertical_bias="0.6" />
 
             <TextView
                 android:id="@+id/textView3"
@@ -93,15 +84,38 @@
                 android:id="@+id/commentsList"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_marginTop="16dp"
                 android:layout_marginStart="32dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="32dp"
                 android:layout_marginBottom="32dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/commentsText" />
 
+            <ImageView
+                android:id="@+id/qrprofile_image"
+                android:layout_width="124dp"
+                android:layout_height="112dp"
 
+                app:layout_constraintBottom_toTopOf="@+id/qrprofile_scannedby"
+                app:layout_constraintStart_toEndOf="@+id/icon"
+                app:layout_constraintTop_toBottomOf="@+id/textView3"
+                app:srcCompat="@drawable/ic_baseline_scan2"
+                tools:srcCompat="@android:drawable/ic_menu_camera" />
+
+            <TextView
+                android:id="@+id/qrprofile_scannedby"
+                android:layout_width="162dp"
+                android:layout_height="32dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginBottom="7dp"
+                android:text="Scanned by 0 players."
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="15dp"
+                app:layout_constraintBottom_toTopOf="@+id/qrprofile_players_btn"
+                app:layout_constraintEnd_toEndOf="@+id/qrprofile_players_btn"
+                app:layout_constraintStart_toEndOf="@+id/icon" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
