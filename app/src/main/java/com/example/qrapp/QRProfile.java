@@ -67,4 +67,10 @@ public class QRProfile extends AppCompatActivity {
             }
         });
     }
+    public void getImage() {
+
+    }
+    public void getPlayers() {
+
+    }
 }

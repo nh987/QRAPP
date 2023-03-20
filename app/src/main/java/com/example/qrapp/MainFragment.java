@@ -78,7 +78,8 @@ public class MainFragment extends Fragment {
                 Object playersScanned = document.get("playersScanned");
                 GeoPoint geolocation = document.getGeoPoint("Geolocation");
                 Object comments = document.get("Comments");
-                QRCode queriedQR = new QRCode(comments, points, name, icon, playersScanned, geolocation);
+                String hashed = document.getString("Hash");
+                QRCode queriedQR = new QRCode(comments, points, name, icon, playersScanned, geolocation, hashed);
                 QRCodeList.add(queriedQR);
             }
 

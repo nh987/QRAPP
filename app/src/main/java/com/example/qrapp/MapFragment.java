@@ -434,7 +434,8 @@ public class MapFragment extends Fragment {
                                         (String)QRcDoc.get("Name"),
                                         (String)QRcDoc.get("icon"),
                                         (Object)QRcDoc.get("playersScanned"),
-                                        QRcLocation) );
+                                        QRcLocation,
+                                        (String)QRcDoc.get("Hash")) );
                                 count++;
                             }
                             if(count==max_count){

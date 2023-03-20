@@ -20,6 +20,7 @@ public class QRCode implements Parcelable {
     public String icon;
     public Object playersScanned;
     public GeoPoint geolocation;
+    public String hashed;
 
     /**
 
@@ -31,14 +32,27 @@ public class QRCode implements Parcelable {
      @param playersScanned The list of players who have scanned the QR code.
      @param geolocation The geographical location of the QR code.
      */
-    public QRCode(Object comments, Integer points, String name, String icon, Object playersScanned, GeoPoint geolocation) {
+    public QRCode(Object comments, Integer points, String name, String icon, Object playersScanned, GeoPoint geolocation, String hashed) {
         this.comments = comments;
         this.points = points;
         this.name = name;
         this.icon = icon;
         this.playersScanned = playersScanned;
         this.geolocation = geolocation;
+        this.hashed = hashed;
     }
+
+    /**
+     * get the hash of the qrc
+     * @return hashed
+     */
+    public String getHashed() {return hashed;}
+
+    /**
+     * set the hashed string of the qrc
+     * @param hashed
+     */
+    public void setHashed(String hashed) {this.hashed = hashed;}
 
     /**
      * Returns the comments associated with the QR code.
