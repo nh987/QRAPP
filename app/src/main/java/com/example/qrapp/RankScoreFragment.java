@@ -12,6 +12,8 @@ import androidx.fragment.app.Fragment;
 
 public class RankScoreFragment extends Fragment {
 
+    RankTripleAdapter rankAdapterB;
+
 
     @Nullable
     @Override

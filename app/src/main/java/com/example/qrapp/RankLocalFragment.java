@@ -12,6 +12,8 @@ import androidx.fragment.app.Fragment;
 
 public class RankLocalFragment extends Fragment {
 
+    RankTripleAdapter rankAdapterB;
+
 
     @Nullable
     @Override

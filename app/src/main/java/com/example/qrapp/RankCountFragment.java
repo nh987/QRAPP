@@ -12,6 +12,8 @@ import androidx.fragment.app.Fragment;
 
 public class RankCountFragment extends Fragment {
 
+    RankPairAdapter rankAdapterA;
+
 
     @Nullable
     @Override

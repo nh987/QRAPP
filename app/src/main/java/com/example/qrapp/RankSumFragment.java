@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
 
 public class RankSumFragment extends Fragment {
 
+    RankPairAdapter rankAdapterA;
 
     @Nullable
     @Override

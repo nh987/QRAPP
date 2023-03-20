@@ -34,6 +34,7 @@ public class RankFragment extends Fragment {
     ArrayList<RankPair> Sum_Or_Count;
     ArrayList<RankTriple> Score_Or_Local;
 
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,8 +73,9 @@ public class RankFragment extends Fragment {
                         selected = new RankScoreFragment();
 
                         //order top 20 by Highest QRcodes in whole app
-
                         //1. get the highest QRCodes of all players
+                        Score_Or_Local = new ArrayList<>();
+                        
 
 
                         //2. put in an ordered list
@@ -85,16 +87,38 @@ public class RankFragment extends Fragment {
                         selected = new RankSumFragment();
 
                         //order top 20 by Sum of QRCodes
+                        //1. get the highest QRCodes of all players
+                        Sum_Or_Count = new ArrayList<>();
+
+
+                        //2. put in an ordered list
+
+                        //3. get the top 20
                         break;
                     case 2:
                         selected = new RankCountFragment();
 
                         //order top 20 by Count of QRCodes
+                        //1. get the highest QRCodes of all players
+                        Sum_Or_Count = new ArrayList<>();
+
+
+                        //2. put in an ordered list
+
+                        //3. get the top 20
+
                         break;
                     case 3:
                         selected = new RankLocalFragment();
 
                         //order top 20 by Highest QRCodes locally(ANA of Postal code)
+                        //1. get the highest QRCodes of all players
+                        Score_Or_Local = new ArrayList<>();
+
+
+                        //2. put in an ordered list
+
+                        //3. get the top 20
                         break;
                 }
 
