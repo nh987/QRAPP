@@ -26,6 +26,7 @@
     <string name="loading">Loading...</string>
     <string name="framed_face">C|=\'#~        1  points</string>
     <string name="Another">Cpt cool SloYoUltraSonicSquid</string>
+
     <string-array name="numbers">
         <item>0.5 km</item>
         <item>1 km</item>
@@ -33,4 +34,12 @@
         <item>5 km</item>
         <item>10 km</item>
     </string-array>-array>
+
+
+    <string-array name="rank_criteria">
+        <item>Score</item>
+        <item>Sum</item>
+        <item>Count</item>
+        <item>Local</item>
+    </string-array>
 </resources>
