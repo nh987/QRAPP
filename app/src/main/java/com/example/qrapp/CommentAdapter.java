@@ -34,32 +34,17 @@ public class CommentAdapter extends ArrayAdapter<Comment> {
 
         TextView authorUsername = rowView.findViewById(R.id.username);
         TextView commentText = rowView.findViewById(R.id.commentText);
-        EditText commentEditText = rowView.findViewById(R.id.commentEditText);
-        ImageButton editText = rowView.findViewById(R.id.editButton);
+
 
         Comment comment = comments.get(position);
         authorUsername.setText(comment.getAuthorUsername());
         commentText.setText(comment.getCommentText());
-        if (comment.getAuthorId().equals(currentUserId)) {
-            editText.setVisibility(View.VISIBLE);
-        } else {
-            editText.setVisibility(View.GONE);
-        }
-
-        editText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                commentText.setVisibility(View.GONE);
-                commentEditText.setVisibility(View.VISIBLE);
-                commentEditText.setText(comment.getCommentText());
-            }
-        });
-
-        // ALSO UPDATE THE CHANGE IN THE DATABASE
 
         return rowView;
     }
 }
+
+
 
 
 

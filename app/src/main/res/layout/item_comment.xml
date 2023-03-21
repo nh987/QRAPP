@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="10dp">
@@ -9,41 +10,29 @@
         android:id="@+id/username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#824a5a"
+        android:layout_margin="5dp"
         android:fontFamily="sans-serif-black"
-        android:textSize="12sp"
-        android:text="hot GloUltraSonicShark" />
+        android:text="hot GloUltraSonicShark"
+        android:textColor="#824a5a"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/commentText"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textColor="#000000"
-        android:textSize="12sp"
-        android:text="hot GloUltraSonicShark"
-        android:layout_toRightOf="@id/username"
-        android:layout_marginStart="10dp"
-        android:layout_alignTop="@id/username"
-        android:layout_alignBottom="@id/username" />
+        android:fontFamily="sans-serif-medium"
+        android:text="Test"
+        android:layout_marginStart="12dp"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@id/username"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/commentEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:textSize="12sp"
-        android:layout_toRightOf="@id/username"
-        android:layout_marginStart="10dp"
-        android:layout_below="@id/commentText" />
 
-    <ImageButton
-        android:id="@+id/editButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@id/username"
-        android:layout_alignParentEnd="true"
-        android:background="@null"
-        android:src="@drawable/pencil"
-        android:visibility="gone"/>
+</androidx.constraintlayout.widget.ConstraintLayout>
 
-</RelativeLayout>

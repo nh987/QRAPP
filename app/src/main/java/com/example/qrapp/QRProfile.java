@@ -49,6 +49,7 @@ public class QRProfile extends AppCompatActivity {
     private AppCompatButton players;
     private ArrayList playersList;
     private ArrayList commentsList;
+    private ListView commentListView;
     FirebaseStorage storage = FirebaseStorage.getInstance();
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -73,6 +74,8 @@ public class QRProfile extends AppCompatActivity {
         image = findViewById(R.id.qrprofile_image);
         scannedBy = findViewById(R.id.qrprofile_scannedby);
         players = findViewById(R.id.qrprofile_players_btn);
+        commentListView = findViewById(R.id.commentsList);
+
 
         playersList = (ArrayList) qrCode.getPlayersScanned();
         commentsList = (ArrayList) qrCode.getComments();
@@ -106,7 +109,6 @@ public class QRProfile extends AppCompatActivity {
 
                                             if (completedCallbacks.incrementAndGet() == commentsList.size()) {
                                                 CommentAdapter adapter = new CommentAdapter(QRProfile.this, R.layout.item_comment, commentList, FirebaseAuth.getInstance().getCurrentUser().getUid());
-                                                ListView commentListView = findViewById(R.id.commentsList);
                                                 commentListView.setAdapter(adapter);
                                             }
                                         }
@@ -117,9 +119,6 @@ public class QRProfile extends AppCompatActivity {
                     });
         }
 
-
-
-
         Log.d("LIST", playersList.toString());
         scannedBy.setText("Scanned by "+playersList.size()+" player(s).");
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -127,8 +126,7 @@ public class QRProfile extends AppCompatActivity {
         QRCName.setText(qrCode.getName()); // set the name text
         points.setText(qrCode.getPoints() + " Points"); // set the points text
         icon.setText(qrCode.getIcon());
-//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, commentsList);
-//        comments.setAdapter(adapter);
+
 
         getImage(qrCode);
 
