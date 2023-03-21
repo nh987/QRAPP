@@ -1,17 +1,13 @@
 package com.example.qrapp;
 
-import com.google.android.material.color.utilities.Score;
-
 public class RankTriple {
 
     public String PlayerID="";
-    public Long Score = 0L;
-    public String Name = "";
+    public QRCode QRc=null;
 
-    public RankTriple(String playerID, Long score, String name){
+    public RankTriple(String playerID, QRCode qrCode){
         this.PlayerID=playerID;
-        this.Score=score;
-        this.Name=name;
+        this.QRc=qrCode;
     }
 
 }
