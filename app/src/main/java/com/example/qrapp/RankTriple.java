@@ -1,6 +1,8 @@
 package com.example.qrapp;
 
-public class RankTriple {
+import java.io.Serializable;
+
+public class RankTriple implements Serializable {
 
     public String PlayerID="";
     public String QRcFace = "";
