@@ -120,8 +120,9 @@ public class RankFragment extends Fragment {
                                 if(task.isSuccessful()){
 
                                     for (QueryDocumentSnapshot userDoc: task.getResult()) {//GO OVER USERS
-
+                                        Score_Or_Local.clear();
                                         userID = userDoc.getId();
+
                                         QRCodeCR.whereArrayContains("playersScanned", userID).get()
 
                                                 // STARTS TO BE DIFFERENT
