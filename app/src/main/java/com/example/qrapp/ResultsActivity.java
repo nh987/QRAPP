@@ -286,10 +286,8 @@ public class ResultsActivity extends AppCompatActivity {
                                 });
 
                         comments.add(commentRefId);
-                        newQRC.put("Comments", comments);
-                    } else {
-                        // handle empty comment here, e.g. show an error message to the user
                     }
+                    newQRC.put("Comments", comments);
                     playersScanned.add(FirebaseAuth.getInstance().getCurrentUser().getUid());
                     newQRC.put("playersScanned", playersScanned);
 
@@ -342,7 +340,7 @@ public class ResultsActivity extends AppCompatActivity {
                     }
 
                     final Map<String,Object> updateGeolocation = new HashMap<>();
-                    if (includeGeolocation) { // reset geolocation
+                    if (includeGeolocation) { // update geolocation
                         GeoPoint geolocation = new GeoPoint(lat,lon);
                         Log.d("TAG", "UPDATE GEOLOCATION "+geolocation);
                         updateGeolocation.put("Geolocation", geolocation);
