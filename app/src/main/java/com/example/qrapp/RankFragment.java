@@ -147,6 +147,7 @@ public class RankFragment extends Fragment {
                                                         //Log.d("RANK", userDoc.getString("username") + " " + highest);
                                                         int N_Players = Score_Or_Local.size();
                                                         Log.d("RANK2",String.valueOf(N_Players));
+                                                        topTriples.clear();
                                                         for(int i=1; i<X && i<N_Players; i++){
                                                             topTriples.add(kthLargestTriple(Score_Or_Local,i));
                                                             Log.d("RANK2", topTriples.get(i-1).PlayerID + " " + topTriples.get(i-1).QRcPoints);
