@@ -11,6 +11,7 @@ import android.location.Location;
 import android.media.Image;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -268,22 +269,27 @@ public class ResultsActivity extends AppCompatActivity {
                         newQRC.put("Geolocation", null);
                     }
 
-                    Map<String, Object> commentMap = new HashMap<>();
-                    commentMap.put("Comment", comment.getText().toString());
-                    commentMap.put("Author", FirebaseAuth.getInstance().getCurrentUser().getUid());
-                    commentMap.put("QRCode", hashed);
-                    DocumentReference newCommentRef = db.collection("Comments").document();
-                    final String commentRefId = newCommentRef.getId();
-                    newCommentRef.set(commentMap)
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void unused) {
-                                    // Add the comment ID to the 'comments' list
-                                }
-                            });
+                    String commentText = comment.getText().toString();
+                    if (!TextUtils.isEmpty(commentText)) { // check if comment is not empty
+                        Map<String, Object> commentMap = new HashMap<>();
+                        commentMap.put("Comment", commentText);
+                        commentMap.put("Author", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                        commentMap.put("QRCode", hashed);
+                        DocumentReference newCommentRef = db.collection("Comments").document();
+                        final String commentRefId = newCommentRef.getId();
+                        newCommentRef.set(commentMap)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void unused) {
+                                        // Add the comment ID to the 'comments' list
+                                    }
+                                });
 
-                    comments.add(commentRefId);
-                    newQRC.put("Comments", comments);
+                        comments.add(commentRefId);
+                        newQRC.put("Comments", comments);
+                    } else {
+                        // handle empty comment here, e.g. show an error message to the user
+                    }
                     playersScanned.add(FirebaseAuth.getInstance().getCurrentUser().getUid());
                     newQRC.put("playersScanned", playersScanned);
 
@@ -306,7 +312,7 @@ public class ResultsActivity extends AppCompatActivity {
                 }
 
                 else {
-
+                    // if the qr code already exists
                     Map<String, Object> commentMap = new HashMap<>();
                     commentMap.put("Comment", comment.getText().toString());
                     commentMap.put("Author", FirebaseAuth.getInstance().getCurrentUser().getUid());

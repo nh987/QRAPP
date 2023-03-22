@@ -19,6 +19,13 @@ public class CommentAdapter extends ArrayAdapter<Comment> {
     private List<Comment> comments;
     private String currentUserId;
 
+    /**
+     * Constructor for the CommentAdapter class
+     * @param context
+     * @param resource
+     * @param comments
+     * @param currentUserId
+     */
     public CommentAdapter(@NonNull Context context, int resource, @NonNull List<Comment> comments, String currentUserId) {
         super(context, resource, comments);
         this.context = context;
@@ -28,6 +35,13 @@ public class CommentAdapter extends ArrayAdapter<Comment> {
 
     @NonNull
     @Override
+    /**
+     * Returns the view for the comment
+     * @param position The position of the comment in the list
+     * @param convertView The view to be converted
+     * @param parent The parent view
+     * @return The view for the comment
+     */
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         LayoutInflater inflater = LayoutInflater.from(getContext());
         View rowView = inflater.inflate(R.layout.item_comment, parent, false);
