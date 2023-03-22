@@ -118,7 +118,9 @@ public class RankFragment extends Fragment {
                             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                 String userID;
                                 if(task.isSuccessful()){
+
                                     for (QueryDocumentSnapshot userDoc: task.getResult()) {//GO OVER USERS
+
                                         userID = userDoc.getId();
                                         QRCodeCR.whereArrayContains("playersScanned", userID).get()
 
@@ -148,7 +150,7 @@ public class RankFragment extends Fragment {
                                                         int N_Players = Score_Or_Local.size();
                                                         Log.d("RANK2",String.valueOf(N_Players));
                                                         topTriples.clear();
-                                                        for(int i=1; i<X && i<N_Players; i++){
+                                                        for(int i=1; i<=X && i<=N_Players; i++){
                                                             topTriples.add(kthLargestTriple(Score_Or_Local,i));
                                                             Log.d("RANK2", topTriples.get(i-1).PlayerID + " " + topTriples.get(i-1).QRcPoints);
 
