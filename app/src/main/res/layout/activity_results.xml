@@ -44,6 +44,7 @@
         android:text="Include geolocation?"
         android:textColor="#824a5a"
         android:textSize="22dp"
+        android:layout_marginBottom="80dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -64,6 +65,20 @@
         app:layout_constraintStart_toStartOf="@+id/results_checkbox"
         app:layout_constraintTop_toBottomOf="@+id/results_checkbox" />
 
+
+    <EditText
+        android:id="@+id/results_comment"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_shape2"
+        android:padding="15dp"
+        android:hint="Enter A Comment"
+        android:textSize="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/results_continue_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/results_add_photo_btn" />
+
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/results_continue_btn"
         android:layout_width="wrap_content"
@@ -71,6 +86,7 @@
         android:padding="15dp"
         android:text="Continue to post"
         android:textSize="20dp"
+        android:layout_marginTop="60dp"
         android:background = "@drawable/button_shape2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/results_add_photo_btn"
@@ -95,7 +111,7 @@
         android:id="@+id/results_visual"
         android:layout_width="208dp"
         android:layout_height="50dp"
-        android:layout_marginTop="72dp"
+        android:layout_marginTop="40dp"
         android:fontFamily="sans-serif-black"
         android:text="qrc visual"
         android:textAlignment="center"
@@ -111,7 +127,7 @@
         android:id="@+id/results_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="12dp"
         android:fontFamily="sans-serif-black"
         android:text="qrc name"
         android:textAlignment="center"

@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -54,6 +55,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -98,6 +100,7 @@ public class ResultsActivity extends AppCompatActivity {
     Button addPhoto; // TODO: addPhotoFragment -> CameraX integration
     Bitmap imageBitmap;
     Intent results;
+    EditText comment;
     private static final int CAMERA_REQUEST = 100;
     Double lat;
     Double lon;
@@ -123,12 +126,14 @@ public class ResultsActivity extends AppCompatActivity {
         addPhoto = (Button) findViewById(R.id.results_add_photo_btn);
         checkBox = (CheckBox) findViewById(R.id.results_checkbox);
         continueToPost = (Button) findViewById(R.id.results_continue_btn);
+        comment = (EditText) findViewById(R.id.results_comment);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         db = FirebaseFirestore.getInstance();
 
         // init db collectionsRefs
         final CollectionReference collectionReferenceQR = db.collection("QRCodes");
         final CollectionReference collectionReferencePlayer = db.collection("Users");
+        final CollectionReference collectionReferenceComments = db.collection("Comments");
 
        // Checking if QR Code exists..
         DocumentReference QRCExists = db.collection("QRCodes").document(hashed);
@@ -253,6 +258,7 @@ public class ResultsActivity extends AppCompatActivity {
                     newQRC.put("Points",score);
                     newQRC.put("Hash", hashed);
 
+
                     if (includeGeolocation && lat != null && lon != null) {
                         GeoPoint geolocation = new GeoPoint(lat,lon);
                         Log.d("TAG", "GEOLOCATION "+geolocation);
@@ -262,6 +268,21 @@ public class ResultsActivity extends AppCompatActivity {
                         newQRC.put("Geolocation", null);
                     }
 
+                    Map<String, Object> commentMap = new HashMap<>();
+                    commentMap.put("Comment", comment.getText().toString());
+                    commentMap.put("Author", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                    commentMap.put("QRCode", hashed);
+                    DocumentReference newCommentRef = db.collection("Comments").document();
+                    final String commentRefId = newCommentRef.getId();
+                    newCommentRef.set(commentMap)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void unused) {
+                                    // Add the comment ID to the 'comments' list
+                                }
+                            });
+
+                    comments.add(commentRefId);
                     newQRC.put("Comments", comments);
                     playersScanned.add(FirebaseAuth.getInstance().getCurrentUser().getUid());
                     newQRC.put("playersScanned", playersScanned);
@@ -284,7 +305,28 @@ public class ResultsActivity extends AppCompatActivity {
                             });
                 }
 
-                else { // if qrc already exists in db
+                else {
+
+                    Map<String, Object> commentMap = new HashMap<>();
+                    commentMap.put("Comment", comment.getText().toString());
+                    commentMap.put("Author", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                    commentMap.put("QRCode", hashed);
+
+                    DocumentReference newCommentRef = db.collection("Comments").document();
+                    final String commentRefId = newCommentRef.getId();
+                    newCommentRef.set(commentMap)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void unused) {
+                                    // Add the comment ID to the 'comments' list
+                                    comments.add(commentRefId);
+                                }
+                            });
+                    Map<String, Object> updateComments = new HashMap<>();
+                    updateComments.put("Comments", FieldValue.arrayUnion(commentRefId));
+                    db.collection("QRCodes").document(hashed)
+                            .update(updateComments);
+
 
                     if (!hasScanned) { // user has not scanned this QR code yet
                         final Map<String,Object> addUser = new HashMap<>();

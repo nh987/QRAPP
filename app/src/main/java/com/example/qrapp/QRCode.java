@@ -160,7 +160,7 @@ public class QRCode implements Parcelable {
         hashed = in.readString();
         playersScanned = in.readArrayList(String.class.getClassLoader());
         // pass the comments list
-        // comments = in.readArrayList(String.class.getClassLoader());
+        comments = in.readArrayList(String.class.getClassLoader());
     }
 
     /**
@@ -199,7 +199,7 @@ public class QRCode implements Parcelable {
         parcel.writeString(icon);
         parcel.writeString(hashed);
         parcel.writeList((ArrayList<String>) playersScanned);
-        // parcel.writeList((ArrayList<String>) comments);
+        parcel.writeList((ArrayList<String>) comments);
     }
 
 }
