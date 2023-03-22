@@ -7,7 +7,7 @@
     <TextView
         android:id="@+id/triple_ranknumber"
         android:layout_width="wrap_content"
-        android:layout_height="50dp"
+        android:layout_height="65dp"
         android:contentDescription="@string/app_name"
         android:text="1"
         android:textSize="20dp"
@@ -16,27 +16,27 @@
     <TextView
         android:id="@+id/triple_playername"
         android:layout_width="0dp"
-        android:layout_height="50dp"
+        android:layout_height="65dp"
         android:contentDescription="@string/app_name"
         android:text="Team#23"
         android:textSize="20dp"
         android:padding="10dp"
-        android:layout_weight="1"/>
+        android:layout_weight="3"/>
 
     <TextView
         android:id="@+id/triple_codeface"
         android:layout_width="0dp"
-        android:layout_height="50dp"
+        android:layout_height="65dp"
         android:contentDescription="@string/app_name"
         android:text="[|:'o"
         android:textSize="20dp"
         android:padding="10dp"
-        android:layout_weight="1"/>
+        android:layout_weight="3"/>
 
     <TextView
         android:id="@+id/triple_codepoints"
         android:layout_width="0dp"
-        android:layout_height="50dp"
+        android:layout_height="65dp"
         android:contentDescription="@string/app_name"
         android:text="2"
         android:textSize="20dp"
