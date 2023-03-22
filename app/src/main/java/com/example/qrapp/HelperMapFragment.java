@@ -34,6 +34,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.firebase.firestore.GeoPoint;
 
+import org.checkerframework.checker.units.qual.A;
+
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Objects;
@@ -56,7 +58,7 @@ public class HelperMapFragment extends Fragment{
 
     //Map
     SupportMapFragment SMH; //the google map needs its own support fragment
-    int Zoom = 18; // how much to zoom in
+    int Zoom = 14; // how much to zoom in
     QRcMarkerInfoWindowAdapter QRcMarkerAdapter; // a custom view and behaviour for the markers for QRcs
 
     //Buttons
@@ -105,13 +107,14 @@ public class HelperMapFragment extends Fragment{
         View view = inflater.inflate(R.layout.fragment_map_helper, container, false);
 
 
-        //A button to find yourself
+//        A button to find yourself
         CENTRE = view.findViewById(R.id.centre);
         CENTRE.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 LatLng myLL = new LatLng(current.getLatitude(), current.getLongitude());
-                Map.animateCamera(CameraUpdateFactory.newLatLngZoom(myLL, Zoom));
+                Map.animateCamera(CameraUpdateFactory.newLatLngZoom(myLL, Zoom+3));
+
             }
         });
 

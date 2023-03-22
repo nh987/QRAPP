@@ -20,6 +20,7 @@ public class QRCode implements Parcelable {
     public String icon;
     public Object playersScanned;
     public GeoPoint geolocation;
+    public String hashed;
 
     /**
 
@@ -30,15 +31,29 @@ public class QRCode implements Parcelable {
      @param icon The icon associated with the QR code.
      @param playersScanned The list of players who have scanned the QR code.
      @param geolocation The geographical location of the QR code.
+     @param hashed The hash of the QR code.
      */
-    public QRCode(Object comments, Integer points, String name, String icon, Object playersScanned, GeoPoint geolocation) {
+    public QRCode(Object comments, Integer points, String name, String icon, Object playersScanned, GeoPoint geolocation, String hashed) {
         this.comments = comments;
         this.points = points;
         this.name = name;
         this.icon = icon;
         this.playersScanned = playersScanned;
         this.geolocation = geolocation;
+        this.hashed = hashed;
     }
+
+    /**
+     * Get the hashed string of the QR Code.
+     * @return hashed
+     */
+    public String getHashed() {return hashed;}
+
+    /**
+     * Set the hashed string of the QR Code.
+     * @param hashed
+     */
+    public void setHashed(String hashed) {this.hashed = hashed;}
 
     /**
      * Returns the comments associated with the QR code.
@@ -135,13 +150,15 @@ public class QRCode implements Parcelable {
     }
 
     /**
-     * Represents a QR code with a name, number of points, and icon.
+     * Represents a QR code with a name, number of points, and icon, scannedPlayers.
      * @param in The name of the QR code.
      */
     protected QRCode(Parcel in) {
         name = in.readString();
         points = Integer.parseInt(in.readString());
         icon = in.readString();
+        hashed = in.readString();
+        playersScanned = in.readArrayList(String.class.getClassLoader());
         // pass the comments list
         // comments = in.readArrayList(String.class.getClassLoader());
     }
@@ -180,6 +197,8 @@ public class QRCode implements Parcelable {
         parcel.writeString(name);
         parcel.writeString(String.valueOf(points));
         parcel.writeString(icon);
+        parcel.writeString(hashed);
+        parcel.writeList((ArrayList<String>) playersScanned);
         // parcel.writeList((ArrayList<String>) comments);
     }
 

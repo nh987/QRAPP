@@ -114,8 +114,9 @@ public class MyProfile extends AppCompatActivity {
                     Object playersScanned = document.get("playersScanned");
                     Object comments = document.get("Comments");
                     GeoPoint geolocation = document.getGeoPoint("Geolocation");
+                    String hashed = document.getString("Hash");
 
-                    QRCode queriedQR = new QRCode(comments, points, name, icon, playersScanned, geolocation);
+                    QRCode queriedQR = new QRCode(comments, points, name, icon, playersScanned, geolocation, hashed);
                     QRCodeList.add(queriedQR);
                 }
                 updateScores();

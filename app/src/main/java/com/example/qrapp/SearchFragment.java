@@ -210,7 +210,8 @@ public class SearchFragment extends Fragment {
                                         Object playersScanned = document.get("playersScanned");
                                         GeoPoint geolocation = document.getGeoPoint("Geolocation");
                                         Object comments =  document.get("Comments");
-                                        QRCode queriedQR = new QRCode(comments, points, name, icon, playersScanned, geolocation);
+                                        String hashed = document.getString("Hash");
+                                        QRCode queriedQR = new QRCode(comments, points, name, icon, playersScanned, geolocation, hashed);
                                         // use a map to store the qr code and its distance from the current location
                                         Map.Entry<QRCode, Double> entry = new AbstractMap.SimpleEntry<>(queriedQR, distance);
                                         QRCodeListWithDistances.add(entry);

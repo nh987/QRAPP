@@ -195,14 +195,27 @@ public class MapFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 //startLocUpdates();
-                requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+                //Ask permission
+                if (ActivityCompat
+                        .checkSelfPermission(getContext(),
+                                android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    startLocUpdates();
+                }else {
+                    requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+                }
             }
         });
 
         //want to show immediate created
         //startLocUpdates();
+        if (ActivityCompat
+                .checkSelfPermission(getContext(),
+                        android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            startLocUpdates();
+        }else {
+            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+        }
 
-        requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
 
 
         return view;
@@ -387,14 +400,13 @@ public class MapFragment extends Fragment {
 
 
     //add new set of nearby locations
-    //TODO: This is where the db/a list of the closest  QRc locations to the phone is set
     //If i can get a list of all the QRcodes from a db or something, I can show the closest within a given range
     private void addLocationsToMap() {
         if(closestQRcs.size()>=10 || curr_location==null){
             return;
         }
         closestQRcs.clear();
-        int Contact_Radius = 500000; //all QRc within a xkm radius
+        int Contact_Radius = 5; //all QRc within a xkm radius
         int max_count = 10; // I want only x qrcs to show
 
 
@@ -422,7 +434,8 @@ public class MapFragment extends Fragment {
                                         (String)QRcDoc.get("Name"),
                                         (String)QRcDoc.get("icon"),
                                         (Object)QRcDoc.get("playersScanned"),
-                                        QRcLocation) );
+                                        QRcLocation,
+                                        (String)QRcDoc.get("Hash")) );
                                 count++;
                             }
                             if(count==max_count){
