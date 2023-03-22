@@ -129,12 +129,12 @@ public class RankFragment extends Fragment {
                                                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                                     @Override
                                                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                                        Long QRcPoints;
-                                                        Long highest = 0L;
+                                                        int QRcPoints;
+                                                        int highest = 0;
                                                         String highestFace = "----";
                                                         if (task.isSuccessful()) {
                                                             for (QueryDocumentSnapshot qrcDoc : task.getResult()) {
-                                                                QRcPoints = qrcDoc.getLong("Points");
+                                                                QRcPoints = qrcDoc.getLong("Points").intValue();
                                                                 if (highest <= QRcPoints) {
                                                                     highest = QRcPoints;
                                                                     highestFace = (String) qrcDoc.get("icon");

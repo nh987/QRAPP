@@ -4,9 +4,9 @@ public class RankTriple {
 
     public String PlayerID="";
     public String QRcFace = "";
-    public Long QRcPoints = 0L;
+    public int QRcPoints = 0;
 
-    public RankTriple(String playerID, String qrcFace, Long qrcPoints){
+    public RankTriple(String playerID, String qrcFace, int qrcPoints){
         this.PlayerID=playerID;
         this.QRcFace = qrcFace;
         this.QRcPoints = qrcPoints;
