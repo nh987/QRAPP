@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import com.example.qrapp.Comment;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -21,16 +22,19 @@ import androidx.appcompat.widget.AppCompatButton;
 import com.example.qrapp.QRCode;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import org.w3c.dom.Comment;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class QRProfile extends AppCompatActivity {
@@ -44,7 +48,10 @@ public class QRProfile extends AppCompatActivity {
     private TextView scannedBy;
     private AppCompatButton players;
     private ArrayList playersList;
+    private ArrayList commentsList;
+    private ListView commentListView;
     FirebaseStorage storage = FirebaseStorage.getInstance();
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     /**
@@ -67,14 +74,60 @@ public class QRProfile extends AppCompatActivity {
         image = findViewById(R.id.qrprofile_image);
         scannedBy = findViewById(R.id.qrprofile_scannedby);
         players = findViewById(R.id.qrprofile_players_btn);
+        commentListView = findViewById(R.id.commentsList);
+
 
         playersList = (ArrayList) qrCode.getPlayersScanned();
+        commentsList = (ArrayList) qrCode.getComments();
+        // iterate through the items in comments list using for each loop
+        // for each comment in the list, get the comment text from the database
+        HashMap<String, String> commentHashMap = new HashMap<>();
+        AtomicInteger completedCallbacks = new AtomicInteger(0);
+        System.out.println("SIZE before loop " + commentsList.size());
+        ArrayList<Comment> commentList = new ArrayList<>();
+
+        for (int i = 0; i < commentsList.size(); i++) {
+            String commentId = (String) commentsList.get(i);
+            DocumentReference commentRef = db.collection("Comments").document(commentId);
+            commentRef.get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            if (documentSnapshot.exists()) {
+                                // Document found, process the data
+                                String commentText = documentSnapshot.getString("Comment");
+                                String author = documentSnapshot.getString("Author");
+
+                                DocumentReference userRef = db.collection("Users").document(author);
+                                userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onSuccess(DocumentSnapshot userDocumentSnapshot) {
+                                        if (userDocumentSnapshot.exists()) {
+                                            String username = userDocumentSnapshot.getString("username");
+                                            Comment comment = new Comment(author, username, commentText);
+                                            commentList.add(comment);
+
+                                            if (completedCallbacks.incrementAndGet() == commentsList.size()) {
+                                                CommentAdapter adapter = new CommentAdapter(QRProfile.this, R.layout.item_comment, commentList, FirebaseAuth.getInstance().getCurrentUser().getUid());
+                                                commentListView.setAdapter(adapter);
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    });
+        }
+
         Log.d("LIST", playersList.toString());
         scannedBy.setText("Scanned by "+playersList.size()+" player(s).");
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         QRCName.setText(qrCode.getName()); // set the name text
         points.setText(qrCode.getPoints() + " Points"); // set the points text
         icon.setText(qrCode.getIcon());
+
+
         getImage(qrCode);
 
         players.setOnClickListener(new View.OnClickListener() {
