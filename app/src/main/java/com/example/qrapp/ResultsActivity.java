@@ -397,15 +397,15 @@ public class ResultsActivity extends AppCompatActivity {
         hexMapName.put('3', "Cap");
         hexMapName.put('4', "Fleek");
         hexMapName.put('5', "Drip");
-        hexMapName.put('6', "Pog");
+        hexMapName.put('6', "Poggers");
         hexMapName.put('7', "Lit");
         hexMapName.put('8', "Ratio");
-        hexMapName.put('9', "Slay");
+        hexMapName.put('9', "Slayyy");
         hexMapName.put('a', "Mid");
         hexMapName.put('b', "Dub");
         hexMapName.put('c', "Fire");
         hexMapName.put('d', "Oof");
-        hexMapName.put('e', "Ong");
+        hexMapName.put('e', "Bussin");
         hexMapName.put('f', "Rizz");
 
         QRName = hexMapName.get(hashedSubstring.charAt(0))+" "+hexMapName.get(hashedSubstring.charAt(1))+hexMapName.get(hashedSubstring.charAt(2))+hexMapName.get(hashedSubstring.charAt(3))+hexMapName.get(hashedSubstring.charAt(4))+hexMapName.get(hashedSubstring.charAt(5));
