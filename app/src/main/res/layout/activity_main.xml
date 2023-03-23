@@ -28,15 +28,34 @@
                 android:src="@drawable/ic_baseline_myprofile"
                 android:contentDescription="Main[Middle] Action Button, Scan QRc" />
         </LinearLayout>
-
-
-
-        <FrameLayout
-            android:id="@+id/frame"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="bottom">
-        </FrameLayout>
+            android:layout_height="wrap_content">
+
+            <FrameLayout
+                android:id="@+id/frame"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="bottom">
+            </FrameLayout>
+
+            <ImageView
+                android:id="@+id/button_backtomain"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_round_arrow_forward_ios_24"
+                android:layout_alignEnd="@id/frame"
+                android:paddingTop="2dp"
+                android:paddingRight="12dp"
+                android:paddingLeft="12dp"
+                android:paddingBottom="2dp" />
+
+        </RelativeLayout>
+
+
+
+
+
 
     </LinearLayout>
 

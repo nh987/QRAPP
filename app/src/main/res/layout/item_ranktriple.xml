@@ -1,12 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView
-        android:layout_width="70dp"
-        android:layout_height="70dp"
+        android:id="@+id/triple_ranknumber"
+        android:layout_width="wrap_content"
+        android:layout_height="65dp"
         android:contentDescription="@string/app_name"
-        android:padding="10dp"/>
-</RelativeLayout>
+        android:text="1"
+        android:textSize="20dp"
+        android:padding="5dp"/>
+
+    <TextView
+        android:id="@+id/triple_playername"
+        android:layout_width="0dp"
+        android:layout_height="65dp"
+        android:contentDescription="@string/app_name"
+        android:text="Team#23"
+        android:textSize="20dp"
+        android:padding="10dp"
+        android:layout_weight="3"/>
+
+    <TextView
+        android:id="@+id/triple_codeface"
+        android:layout_width="0dp"
+        android:layout_height="65dp"
+        android:contentDescription="@string/app_name"
+        android:text="[|:'o"
+        android:textSize="20dp"
+        android:padding="10dp"
+        android:layout_weight="3"/>
+
+    <TextView
+        android:id="@+id/triple_codepoints"
+        android:layout_width="0dp"
+        android:layout_height="65dp"
+        android:contentDescription="@string/app_name"
+        android:text="2"
+        android:textSize="20dp"
+        android:padding="10dp"
+        android:layout_weight="1"/>
+</LinearLayout>

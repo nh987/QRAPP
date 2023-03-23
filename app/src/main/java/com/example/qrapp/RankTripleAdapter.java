@@ -67,6 +67,19 @@ public class RankTripleAdapter extends BaseAdapter {
     public View getView(int i, View view, ViewGroup viewGroup) {
         LayoutInflater inflater = LayoutInflater.from(mycontext);
         View row = inflater.inflate(R.layout.item_ranktriple, viewGroup, false);
+
+        RankTriple row_data = items.get(i);
+
+        TextView tv_rankN = row.findViewById(R.id.triple_ranknumber);
+        TextView tv_playerName = row.findViewById(R.id.triple_playername);
+        TextView tv_codeFace = row.findViewById(R.id.triple_codeface);
+        TextView tv_codeScore = row.findViewById(R.id.triple_codepoints);
+
+        tv_rankN.setText(String.valueOf(i+1));
+        tv_playerName.setText(row_data.PlayerID);
+        tv_codeFace.setText(row_data.QRcFace);
+        tv_codeScore.setText(String.valueOf(row_data.QRcPoints));
+
         return row;
     }
 

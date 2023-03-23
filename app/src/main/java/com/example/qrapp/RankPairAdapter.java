@@ -66,6 +66,7 @@ public class RankPairAdapter extends BaseAdapter {
      */
     public View getView(int i, View view, ViewGroup viewGroup) {
         LayoutInflater inflater = LayoutInflater.from(mycontext);
+
         View row = inflater.inflate(R.layout.item_rankpair, viewGroup, false);
         return row;
     }

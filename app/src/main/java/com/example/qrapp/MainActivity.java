@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Scro
     BottomNavigationView nav_bar;//nav bar object
     ImageButton SCAN;// scan button object
     ImageButton MYPROFILE;// get to myprofile page
+    ImageView BACK;// get back to main fragment from Leaderboard
     FirebaseAuth auth;
 
 
@@ -53,6 +55,10 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Scro
         MYPROFILE = findViewById(R.id.button_MYprofile);
         //set scan button
         SCAN = findViewById(R.id.button_scan);
+        //set back to main button
+        BACK = findViewById(R.id.button_backtomain);
+        BACK.setVisibility(View.GONE);//visible only in rank fragment
+
         //set nav_bar
         nav_bar = findViewById(R.id.nav_barview);
         nav_bar.setOnItemSelectedListener(navbar_listener);
@@ -122,7 +128,21 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Scro
             }
         });
 
+        //go back to main from rank
+        BACK.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bottomAppBar.setVisibility(View.VISIBLE);
+                SCAN.setVisibility(View.VISIBLE);
+                BACK.setVisibility(View.GONE);
+                nav_bar.setSelectedItemId(R.id.main_tab);
+            }
+        });
+
         }
+
+
+
 
 
 
@@ -151,6 +171,9 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Scro
 
             switch (item.getItemId()){
                 case R.id.leaderboard_tab:
+                    bottomAppBar.setVisibility(View.INVISIBLE);
+                    SCAN.setVisibility(View.INVISIBLE);
+                    BACK.setVisibility(View.VISIBLE);
                     selected = new RankFragment();
                     break;
                 case R.id.main_tab:

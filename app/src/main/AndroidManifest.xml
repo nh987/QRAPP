@@ -84,6 +84,7 @@
             android:value="${API_maps}"/>
         <uses-library android:name="com.google.android.maps"/>
 
+
     </application>
 
 </manifest>
