@@ -391,22 +391,22 @@ public class ResultsActivity extends AppCompatActivity {
 
         // 16^5 = 1.04 million unique combos.
         HashMap<Character, String> hexMapName = new HashMap<Character, String>();
-        hexMapName.put('0', "Alpha");
-        hexMapName.put('1', "Bravo");
-        hexMapName.put('2', "Charlie");
-        hexMapName.put('3', "Delta");
-        hexMapName.put('4', "Echo");
-        hexMapName.put('5', "Foxtrot");
-        hexMapName.put('6', "Golf");
-        hexMapName.put('7', "Hotel");
-        hexMapName.put('8', "India");
-        hexMapName.put('9', "Juliet");
-        hexMapName.put('a', "Kilo");
-        hexMapName.put('b', "Lima");
-        hexMapName.put('c', "Mike");
-        hexMapName.put('d', "November");
-        hexMapName.put('e', "Oscar");
-        hexMapName.put('f', "Papa");
+        hexMapName.put('0', "Bet");
+        hexMapName.put('1', "Sus");
+        hexMapName.put('2', "Yeet");
+        hexMapName.put('3', "Cap");
+        hexMapName.put('4', "Fleek");
+        hexMapName.put('5', "Drip");
+        hexMapName.put('6', "Pog");
+        hexMapName.put('7', "Lit");
+        hexMapName.put('8', "Ratio");
+        hexMapName.put('9', "Slay");
+        hexMapName.put('a', "Mid");
+        hexMapName.put('b', "Dub");
+        hexMapName.put('c', "Fire");
+        hexMapName.put('d', "Oof");
+        hexMapName.put('e', "Ong");
+        hexMapName.put('f', "Rizz");
 
         QRName = hexMapName.get(hashedSubstring.charAt(0))+" "+hexMapName.get(hashedSubstring.charAt(1))+hexMapName.get(hashedSubstring.charAt(2))+hexMapName.get(hashedSubstring.charAt(3))+hexMapName.get(hashedSubstring.charAt(4))+hexMapName.get(hashedSubstring.charAt(5));
         Log.d("QRName:", QRName);
