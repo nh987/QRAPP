@@ -118,8 +118,15 @@ public class QRProfile extends AppCompatActivity {
                         });
             }
         }
-
-        scannedBy.setText("Scanned by "+playersList.size()+" player(s).");
+        int size;
+        try{
+            size  = playersList.size();
+        }
+        catch (Exception e)
+        {
+            size = 0;
+        }
+        scannedBy.setText("Scanned by "+size+" player(s).");
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         QRCName.setText(qrCode.getName()); // set the name text
