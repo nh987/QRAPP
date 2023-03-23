@@ -18,6 +18,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -38,9 +39,11 @@ public class RankFragment extends Fragment {
     FirebaseAuth Auth;
     FirebaseFirestore DB;
     CollectionReference UserCR, QRCodeCR;
+    String userID;
 
     //dataholders
     List<String> players;
+    String my_region;
 
     //tops
     int X = 10;
@@ -63,12 +66,23 @@ public class RankFragment extends Fragment {
         DB = FirebaseFirestore.getInstance();
         UserCR = DB.collection("Users");
         QRCodeCR = DB.collection("QRCodes");
+        userID = Auth.getCurrentUser().getUid();
+        setRegion();
 
 
         players = new ArrayList<>();
 
 
 
+    }
+
+    private void setRegion() {
+        UserCR.document(userID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                my_region = task.getResult().getString("location");
+            }
+        });
     }
 
     @Nullable
@@ -116,7 +130,7 @@ public class RankFragment extends Fragment {
                         UserCR.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                             @Override
                             public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                String userID;
+                                //String userID;
                                 if(task.isSuccessful()){
 
                                     for (QueryDocumentSnapshot userDoc: task.getResult()) {//GO OVER USERS
@@ -156,18 +170,22 @@ public class RankFragment extends Fragment {
                                                             Log.d("RANK2", topTriples.get(i-1).PlayerID + " " + topTriples.get(i-1).QRcPoints);
 
                                                         }
-                                                        //Bundle em up
-                                                        Bundle RankBundle = new Bundle();
-                                                        RankBundle.putSerializable(RankBundleKey, topTriples);
 
-                                                        //make new RankScoreFragment with data
-                                                        Fragment selected = new RankScoreFragment();
-                                                        selected.setArguments(RankBundle);
+                                                        if(topTriples.size()==X){
+                                                            //Bundle em up
+                                                            Bundle RankBundle = new Bundle();
+                                                            RankBundle.putSerializable(RankBundleKey, topTriples);
 
-                                                        //show it
-                                                        getActivity().getSupportFragmentManager()
-                                                                .beginTransaction()
-                                                                .replace(R.id.rankframe, selected).commit();//SHOW FRAGMENT
+                                                            //make new RankScoreFragment with data
+                                                            Fragment selected = new RankScoreFragment();
+                                                            selected.setArguments(RankBundle);
+
+                                                            //show it
+                                                            getActivity().getSupportFragmentManager()
+                                                                    .beginTransaction()
+                                                                    .replace(R.id.rankframe, selected).commit();//SHOW FRAGMENT
+                                                        }
+
 
                                                     }
                                                 });
@@ -232,6 +250,84 @@ public class RankFragment extends Fragment {
                         //order top 20 by Highest QRCodes locally(ANA of Postal code)
                         //1. get the highest QRCodes of all players
                         Score_Or_Local = new ArrayList<>();
+                        topTriples = new ArrayList<>();
+
+
+                        //get all players with the same region as me
+                        UserCR.whereEqualTo("location",my_region).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                String userID;
+                                if(task.isSuccessful()){
+
+                                    for (QueryDocumentSnapshot userDoc: task.getResult()) {//GO OVER USERS
+                                        Score_Or_Local.clear();
+                                        userID = userDoc.getId();
+
+                                        QRCodeCR.whereArrayContains("playersScanned", userID).get()
+
+                                                // STARTS TO BE DIFFERENT
+                                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                        int QRcPoints;
+                                                        int highest = 0;
+                                                        String highestFace = "----";
+                                                        if (task.isSuccessful()) {
+                                                            for (QueryDocumentSnapshot qrcDoc : task.getResult()) {
+                                                                QRcPoints = qrcDoc.getLong("Points").intValue();
+                                                                if (highest <= QRcPoints) {
+                                                                    highest = QRcPoints;
+                                                                    highestFace = (String) qrcDoc.get("icon");
+                                                                }
+                                                            }
+                                                        } else {
+                                                            Log.d("RANK", "Failed to get QRCodes");
+                                                        }
+
+
+                                                        if(userDoc.getString("username")!=null)
+                                                            Score_Or_Local.add(new RankTriple(userDoc.getString("username"), highestFace, highest));
+                                                        //Log.d("RANK", userDoc.getString("username") + " " + highest);
+                                                        int N_Players = Score_Or_Local.size();
+                                                        Log.d("RANK3",String.valueOf(N_Players));
+                                                        topTriples.clear();
+                                                        for(int i=1; i<=X && i<=N_Players; i++){
+                                                            topTriples.add(kthLargestTriple(Score_Or_Local,i));
+                                                            Log.d("RANK3", topTriples.get(i-1).PlayerID + " " + topTriples.get(i-1).QRcPoints);
+
+                                                        }
+
+                                                        if(topTriples.size()==X){
+                                                            //Bundle em up
+                                                            Bundle RankBundle = new Bundle();
+                                                            RankBundle.putSerializable(RankBundleKey, topTriples);
+
+                                                            //make new RankLocalFragment with data
+                                                            Fragment selected = new RankLocalFragment();
+                                                            selected.setArguments(RankBundle);
+
+                                                            //show it
+                                                            getActivity().getSupportFragmentManager()
+                                                                    .beginTransaction()
+                                                                    .replace(R.id.rankframe, selected).commit();//SHOW FRAGMENT
+                                                        }
+
+
+                                                    }
+                                                });
+
+
+                                    }
+
+                                }else{
+                                    Log.d("RANK","Failed to get Users");
+                                }
+                            }
+
+                            //int N_Players = Score_Or_Local.size();
+
+                        });
 
 
                         //2. put in an ordered list

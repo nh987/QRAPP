@@ -41,6 +41,11 @@ import java.util.Locale;
 import java.util.Objects;
 
 //Fragment Class to show map on
+
+/**
+ * This class extends the Fragment class. The "HelperMapFragment" class presents the data
+ * maintained by the "MapFragment" class on an interactive map.
+ */
 public class HelperMapFragment extends Fragment{
 
     //Data
@@ -48,7 +53,6 @@ public class HelperMapFragment extends Fragment{
     int N; //number of locations
     Location current;
     String Username;
-
     Bundle LocationBundle; // bundle of all needed items for map markers
 
     // keys
@@ -56,21 +60,24 @@ public class HelperMapFragment extends Fragment{
     String MyLocationDataKey = "myLB";
     String MeDataKey = "ME";
 
-    //Map
-    SupportMapFragment SMH; //the google map needs its own support fragment
-    int Zoom = 14; // how much to zoom in
-    QRcMarkerInfoWindowAdapter QRcMarkerAdapter; // a custom view and behaviour for the markers for QRcs
 
     //Buttons
     ImageButton CENTRE;
 
-    //
+    //Map
+    SupportMapFragment SMH; //the google map needs its own support fragment
+    int Zoom = 14; // how much to zoom in
+    QRcMarkerInfoWindowAdapter QRcMarkerAdapter; // a custom view and behaviour for the markers for QRcs
     GoogleMap Map;
 
+
+    /**
+     * The onCreate method gets the data passed to the "HelperMapFragment" by the "MapFragment" and
+     * @param savedInstanceState
+     */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 
         LocationBundle = getArguments();
 
@@ -87,19 +94,17 @@ public class HelperMapFragment extends Fragment{
 
         //Marker need their own view adapter
         QRcMarkerAdapter = new QRcMarkerInfoWindowAdapter(getContext());
-
-
-
-
-
     }
 
 
-
-
-
-
-
+    /**
+     * The onCreateView method prepares to display the data on the map by setting all the view
+     * attributes and items. It puts all the markers on the map and makes the map interactive.
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -214,6 +219,13 @@ public class HelperMapFragment extends Fragment{
     }
 
     //make a marker bounce in place
+
+    /**
+     * This method causes the google map markers to bounce in place
+     * @param googleMap
+     * @param marker
+     * @param markerLocation
+     */
     private void markerBounce(GoogleMap googleMap, Marker marker, LatLng markerLocation) {
         final Handler handler = new Handler();
         final long start = SystemClock.uptimeMillis();
@@ -239,6 +251,11 @@ public class HelperMapFragment extends Fragment{
         });
     }
 
+    /**
+     * This method return the QRcode the user selects on a the map
+     * @param chosen
+     * @return
+     */
     private QRCode getQRc(String chosen) {
         QRCode placeholder = null;
         for (QRCode QRc:QRcs) {
@@ -251,6 +268,12 @@ public class HelperMapFragment extends Fragment{
 
 
     // convert from GeoPoint to LatLng, maps used LatLng
+
+    /**
+     * This method converts a GeoPoint object to a LatLng object
+     * @param geo
+     * @return
+     */
     private LatLng LatLngify(GeoPoint geo){
         return new LatLng(geo.getLatitude(),geo.getLongitude());
     }
