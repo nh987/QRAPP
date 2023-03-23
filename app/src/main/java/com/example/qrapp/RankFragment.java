@@ -156,18 +156,22 @@ public class RankFragment extends Fragment {
                                                             Log.d("RANK2", topTriples.get(i-1).PlayerID + " " + topTriples.get(i-1).QRcPoints);
 
                                                         }
-                                                        //Bundle em up
-                                                        Bundle RankBundle = new Bundle();
-                                                        RankBundle.putSerializable(RankBundleKey, topTriples);
 
-                                                        //make new RankScoreFragment with data
-                                                        Fragment selected = new RankScoreFragment();
-                                                        selected.setArguments(RankBundle);
+                                                        if(topTriples.size()==X){
+                                                            //Bundle em up
+                                                            Bundle RankBundle = new Bundle();
+                                                            RankBundle.putSerializable(RankBundleKey, topTriples);
 
-                                                        //show it
-                                                        getActivity().getSupportFragmentManager()
-                                                                .beginTransaction()
-                                                                .replace(R.id.rankframe, selected).commit();//SHOW FRAGMENT
+                                                            //make new RankScoreFragment with data
+                                                            Fragment selected = new RankScoreFragment();
+                                                            selected.setArguments(RankBundle);
+
+                                                            //show it
+                                                            getActivity().getSupportFragmentManager()
+                                                                    .beginTransaction()
+                                                                    .replace(R.id.rankframe, selected).commit();//SHOW FRAGMENT
+                                                        }
+
 
                                                     }
                                                 });
