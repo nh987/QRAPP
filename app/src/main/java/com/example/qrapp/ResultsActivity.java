@@ -98,13 +98,14 @@ public class ResultsActivity extends AppCompatActivity {
     TextView textViewVisual;
     TextView textViewName;
     CheckBox checkBox;
-    Button addPhoto; // TODO: addPhotoFragment -> CameraX integration
+    Button addPhoto;
     Bitmap imageBitmap;
     Intent results;
     EditText comment;
     private static final int CAMERA_REQUEST = 100;
     Double lat;
     Double lon;
+    GeoPoint geolocation;
     Button continueToPost;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -311,26 +312,26 @@ public class ResultsActivity extends AppCompatActivity {
 
                 else {
                     // if the qr code already exists
-                    Map<String, Object> commentMap = new HashMap<>();
-                    commentMap.put("Comment", comment.getText().toString());
-                    commentMap.put("Author", FirebaseAuth.getInstance().getCurrentUser().getUid());
-                    commentMap.put("QRCode", hashed);
-
-                    DocumentReference newCommentRef = db.collection("Comments").document();
-                    final String commentRefId = newCommentRef.getId();
-                    newCommentRef.set(commentMap)
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void unused) {
-                                    // Add the comment ID to the 'comments' list
-                                    comments.add(commentRefId);
-                                }
-                            });
-                    Map<String, Object> updateComments = new HashMap<>();
-                    updateComments.put("Comments", FieldValue.arrayUnion(commentRefId));
-                    db.collection("QRCodes").document(hashed)
-                            .update(updateComments);
-
+                    if (!TextUtils.isEmpty(comment.getText().toString())) { // if comment box is not empty add it into Comments and QRCode's Comments array
+                        Map<String, Object> commentMap = new HashMap<>();
+                        commentMap.put("Comment", comment.getText().toString());
+                        commentMap.put("Author", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                        commentMap.put("QRCode", hashed);
+                        DocumentReference newCommentRef = db.collection("Comments").document();
+                        final String commentRefId = newCommentRef.getId();
+                        newCommentRef.set(commentMap)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void unused) {
+                                        // Add the comment ID to the 'comments' list
+                                        comments.add(commentRefId);
+                                    }
+                                });
+                        Map<String, Object> updateComments = new HashMap<>();
+                        updateComments.put("Comments", FieldValue.arrayUnion(commentRefId));
+                        db.collection("QRCodes").document(hashed)
+                                .update(updateComments);
+                    }
 
                     if (!hasScanned) { // user has not scanned this QR code yet
                         final Map<String,Object> addUser = new HashMap<>();
@@ -342,7 +343,7 @@ public class ResultsActivity extends AppCompatActivity {
                     final Map<String,Object> updateGeolocation = new HashMap<>();
                     if (includeGeolocation) { // update geolocation
                         GeoPoint geolocation = new GeoPoint(lat,lon);
-                        Log.d("TAG", "UPDATE GEOLOCATION "+geolocation);
+                        Log.d("TAG", "UPDATED GEOLOCATION "+geolocation);
                         updateGeolocation.put("Geolocation", geolocation);
                     }
                     else {
@@ -352,8 +353,27 @@ public class ResultsActivity extends AppCompatActivity {
                     db.collection("QRCodes").document(hashed)
                             .update(updateGeolocation);
                 }
-
-                finish(); // return to main activity TODO: go to QRProfile instead
+                DocumentReference docRef = db.collection("QRCodes").document(hashed); // get the qrcode from the db and package contents into qrcode to send into qrprofile
+                docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                Log.d("TAG", "DocumentSnapshot data: " + document.getData());
+                                QRCode qrCode = new QRCode(document.get("Comments"), ((Long) document.get("Points")).intValue(), (String) document.get("Name"), (String) document.get("icon"), document.get("playersScanned"), (GeoPoint) document.get("Geolocation"), (String) document.get("Hash"));
+                                Intent intent = new Intent(ResultsActivity.this, QRProfile.class);
+                                intent.putExtra("qr_code",qrCode);
+                                ResultsActivity.this.startActivity(intent);
+                            } else {
+                                Log.d("TAG", "No such document");
+                            }
+                        } else {
+                            Log.d("TAG", "get failed with ", task.getException());
+                        }
+                    }
+                });
+                finish();
             }
         });
 
