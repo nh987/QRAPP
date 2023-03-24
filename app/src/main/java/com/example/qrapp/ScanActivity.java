@@ -72,7 +72,7 @@ public class ScanActivity extends AppCompatActivity implements ImageAnalysis.Ana
         BACK_ARROW.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (cameraProviderFuture.isDone()) { // potential solution to crashing on back button press during start up
+                if (cameraProviderFuture.isDone()) { // potential solution to crashing on fast back button press during start up
                     finish();
                 }
             }
@@ -201,11 +201,11 @@ public class ScanActivity extends AppCompatActivity implements ImageAnalysis.Ana
      * grows exponentially according to the length of the combo chain. Follows format of value raised to combo minus 1
      * zero is a special digit as it is the only value that alone is worth 1 and chained is twenty raised to combo length minus 1
      * @param hex
-     * @return long
+     * @return long score
      */
     public long score(String hex) {
         long score = 0;
-        HashMap<Character, Integer> hexMap = new HashMap<Character, Integer>();
+        HashMap<Character, Integer> hexMap = new HashMap<Character, Integer>(); // hash map of hexadecimal values to decimal
         hexMap.put('0', 20); // handle 0 as 20^X based on proposed scoring system
         hexMap.put('1', 1);
         hexMap.put('2', 2);

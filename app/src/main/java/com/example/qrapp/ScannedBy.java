@@ -22,7 +22,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 
 /**
- * ListView of players that have scanned a particular QR Code. Can click to view players' profiles.
+ * Activity for displaying ListView of players that have scanned a particular QR Code. Can click to view players' profiles. Uses playerListAdapter.
  */
 public class ScannedBy extends AppCompatActivity {
     private ImageButton backButton;
@@ -45,7 +45,7 @@ public class ScannedBy extends AppCompatActivity {
 
         backButton.setOnClickListener(new View.OnClickListener() { //  Return to MainFeed
             @Override
-            public void onClick(View view) {finish(); }
+            public void onClick(View view) {finish();}
         });
 
         Log.d("TAG", "list size: " + playersList.size());
@@ -75,7 +75,7 @@ public class ScannedBy extends AppCompatActivity {
                     else {
                         Log.d("TAG", "get failed with " + task.getException());
                     }
-                    playerListAdapter = new PlayerListAdapter(players, getApplicationContext(), ScannedBy.this); // Update array per document iterations with new Player
+                    playerListAdapter = new PlayerListAdapter(players, getApplicationContext(), ScannedBy.this); // Update array per document iterations with new Player bc listener requires this implementation
                     listView.setAdapter(playerListAdapter);
                     playerListAdapter.notifyDataSetChanged();
                 }

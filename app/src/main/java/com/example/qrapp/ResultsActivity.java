@@ -149,8 +149,6 @@ public class ResultsActivity extends AppCompatActivity {
                         Log.d("TAG", "QR Code already exists in DB!");
                         Toast.makeText(ResultsActivity.this, "QR Code already exists", Toast.LENGTH_SHORT).show();
                         doesExist = true;
-//                        checkBox.setVisibility(View.INVISIBLE);
-//                        addPhoto.setVisibility(View.INVISIBLE);
                         List<String> scannedPlayers = (List<String>) document.get("playersScanned");
                         if (scannedPlayers != null) {
                             if (scannedPlayers.contains(FirebaseAuth.getInstance().getCurrentUser().getUid())) { // if user has already scanned QRCode
@@ -183,7 +181,6 @@ public class ResultsActivity extends AppCompatActivity {
                 isIntentAvailable(ResultsActivity.this, MediaStore.ACTION_IMAGE_CAPTURE);
                 Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 startActivityForResult(takePictureIntent, CAMERA_REQUEST);
-//                addPhoto.setVisibility(View.INVISIBLE);
             }
         });
 
@@ -240,7 +237,7 @@ public class ResultsActivity extends AppCompatActivity {
                                 }
                             });
                 }
-                else { // reset
+                else { // reset if checkbox unchecked
                     includeGeolocation =  false;
                     lat = null;
                     lon = null;
@@ -249,7 +246,7 @@ public class ResultsActivity extends AppCompatActivity {
             }
         });
 
-        // Update DB and return to MainFeed
+        // Update DB and goto qr profile
         continueToPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -383,30 +380,30 @@ public class ResultsActivity extends AppCompatActivity {
      * Pass in hashed barcode string and take first 6 digits that are mapped to various words that are then concatenated together to create
      * a name.
      * @param hashed
-     * @return string
+     * @return name string
      */
     public String createName(String hashed) {
         String hashedSubstring = hashed.substring(0,6);
         String QRName = "";
 
-        // 16^5 = 1.04 million unique combos.
+        // 16^6 = 16.8 million unique combos.
         HashMap<Character, String> hexMapName = new HashMap<Character, String>();
-        hexMapName.put('0', "Bet");
-        hexMapName.put('1', "Sus");
-        hexMapName.put('2', "Yeet");
-        hexMapName.put('3', "Cap");
-        hexMapName.put('4', "Fleek");
-        hexMapName.put('5', "Drip");
-        hexMapName.put('6', "Poggers");
-        hexMapName.put('7', "Lit");
-        hexMapName.put('8', "Ratio");
-        hexMapName.put('9', "Slayyy");
-        hexMapName.put('a', "Mid");
-        hexMapName.put('b', "Dub");
-        hexMapName.put('c', "Fire");
-        hexMapName.put('d', "Oof");
-        hexMapName.put('e', "Bussin");
-        hexMapName.put('f', "Rizz");
+        hexMapName.put('0', "Alpha");
+        hexMapName.put('1', "Bravo");
+        hexMapName.put('2', "Charlie");
+        hexMapName.put('3', "Delta");
+        hexMapName.put('4', "Echo");
+        hexMapName.put('5', "Foxtrot");
+        hexMapName.put('6', "Golf");
+        hexMapName.put('7', "Hotel");
+        hexMapName.put('8', "India");
+        hexMapName.put('9', "Juliet");
+        hexMapName.put('a', "Kilo");
+        hexMapName.put('b', "Lima");
+        hexMapName.put('c', "Mike");
+        hexMapName.put('d', "November");
+        hexMapName.put('e', "Oscar");
+        hexMapName.put('f', "Papa");
 
         QRName = hexMapName.get(hashedSubstring.charAt(0))+" "+hexMapName.get(hashedSubstring.charAt(1))+hexMapName.get(hashedSubstring.charAt(2))+hexMapName.get(hashedSubstring.charAt(3))+hexMapName.get(hashedSubstring.charAt(4))+hexMapName.get(hashedSubstring.charAt(5));
         Log.d("QRName:", QRName);
@@ -416,14 +413,14 @@ public class ResultsActivity extends AppCompatActivity {
      * Pass in hashed barcode string and take first 4 digits that are mapped to various emoticon (head/hat, eyes, nose, mouth
      * that are then concatenated together to create a visual representation.
      * @param hashed
-     * @return string
+     * @return visual string
      */
     public String createVisual (String hashed){
         String hashedSubstring = hashed.substring(0,4);
         String QRVisual = "";
 
-        // 16^4 = 65K combos (65K X 1.04 Million = 1.1*10^12 combos)
-        HashMap<Character, String> hexMapHead = new HashMap<Character, String>();
+        // 16^4 = 65K combos (65K X 16.8 Million = 1.1*10^12 combos)
+        HashMap<Character, String> hexMapHead = new HashMap<Character, String>(); // emoticons hats
         hexMapHead.put('0', "C|");
         hexMapHead.put('1', "[|");
         hexMapHead.put('2', "<|");
@@ -441,7 +438,7 @@ public class ResultsActivity extends AppCompatActivity {
         hexMapHead.put('e', "c|");
         hexMapHead.put('f', "*=|");
 
-        HashMap<Character, String> hexMapEyes = new HashMap<Character, String>();
+        HashMap<Character, String> hexMapEyes = new HashMap<Character, String>(); // emoticons eyes
         hexMapEyes.put('0', ":");
         hexMapEyes.put('1', ";");
         hexMapEyes.put('2', "$");
@@ -459,7 +456,7 @@ public class ResultsActivity extends AppCompatActivity {
         hexMapEyes.put('e', "D");
         hexMapEyes.put('f', ">D");
 
-        HashMap<Character, String> hexMapNose = new HashMap<Character, String>();
+        HashMap<Character, String> hexMapNose = new HashMap<Character, String>(); // emoticon noses
         hexMapNose.put('0', "c");
         hexMapNose.put('1', "<");
         hexMapNose.put('2', ">");
@@ -477,7 +474,7 @@ public class ResultsActivity extends AppCompatActivity {
         hexMapNose.put('e', "y");
         hexMapNose.put('f', "0");
 
-        HashMap<Character, String> hexMapMouth = new HashMap<Character, String>();
+        HashMap<Character, String> hexMapMouth = new HashMap<Character, String>(); // emoticon mouths
         hexMapMouth.put('0', "P");
         hexMapMouth.put('1', "B");
         hexMapMouth.put('2', "]");
@@ -504,7 +501,7 @@ public class ResultsActivity extends AppCompatActivity {
      * check/get intent permissions
      * @param context
      * @param action
-     * @return boolean
+     * @return boolean intent permission
      */
     public static boolean isIntentAvailable(Context context, String action) {
         final PackageManager packageManager = context.getPackageManager();
@@ -515,14 +512,16 @@ public class ResultsActivity extends AppCompatActivity {
     }
 
     /**
-     * Get bitmap image from Intent bundle.
+     * Get bitmap image from Intent bundle from startActivityForResult() and start uploadImage().
+     * @param requestCode
+     * @param resultCode
+     * @param data
      */
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
             imageBitmap = (Bitmap) data.getExtras().get("data");
             uploadImage();
-
         }
     }
 
@@ -531,9 +530,9 @@ public class ResultsActivity extends AppCompatActivity {
      */
     public void uploadImage () {
         StorageReference storageRef = storage.getReference();
-        StorageReference qrcRef = storageRef.child(hashed+".jpg"); // init storage ref image
+        StorageReference qrcRef = storageRef.child(hashed+".jpg"); // init storage ref image as qr hash + .jpg
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(); // convert bitmap into byte array
         imageBitmap.compress(Bitmap.CompressFormat.JPEG, 75, baos);
         byte[] data = baos.toByteArray();
 
