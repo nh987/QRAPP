@@ -255,7 +255,7 @@ public class PlayerProfileActivity extends AppCompatActivity {
 
     public void setPlayerCodesScanned(ArrayList<QRCode> qrList) {
         viewCodesScanned.setOnClickListener(v -> {
-            Fragment selected = new ViewPlayerScannedFragment(qrList);
+            Fragment selected = new ViewPlayerScannedFragment(qrList, false);
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.frame, selected).commit(); //SHOW FRAGMENT

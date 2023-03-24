@@ -1,6 +1,7 @@
 package com.example.qrapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Button;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
@@ -42,6 +44,8 @@ public class MyProfile extends AppCompatActivity {
     private ImageButton viewHighestQRCButton;
     private ImageButton viewLowestQRCButton;
 
+    private Button viewScansButton;
+
     private String userID;
 
     private String username;
@@ -74,11 +78,33 @@ public class MyProfile extends AppCompatActivity {
         codesScannedValue = findViewById(R.id.codesScannedValue);
         viewHighestQRCButton = findViewById(R.id.viewHighestQRCButton);
         viewLowestQRCButton = findViewById(R.id.viewLowestQRCButton);
+        viewScansButton = findViewById(R.id.myQRCbutton);
 
         db = FirebaseFirestore.getInstance();
 
-        // if you don't log in this will error...
+        //check if user is logged in
+        if(FirebaseAuth.getInstance().getCurrentUser() == null){
+            Toast.makeText(this, "You are not logged in", Toast.LENGTH_SHORT).show();
+            finish();
+        }
         userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        //set the buttons related to highest & lowest QR codes to invisible and disabled until the data is loaded
+        viewHighestQRCButton.setEnabled(false);
+        viewHighestQRCButton.setVisibility(View.INVISIBLE);
+        viewLowestQRCButton.setEnabled(false);
+        viewLowestQRCButton.setVisibility(View.INVISIBLE);
+
+        //set the view scans button to open the ViewPlayerScannedFragment Fragment
+        viewScansButton.setOnClickListener(v -> {
+            Fragment selected = new ViewPlayerScannedFragment(QRCodeList, true);
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.frame, selected).commit(); //SHOW FRAGMENT
+        });
+
+        // set the view scans button to disabled until the data is loaded
+        viewScansButton.setEnabled(false);
 
 
         // get the user data from the database
@@ -92,11 +118,7 @@ public class MyProfile extends AppCompatActivity {
         //close activity when back button is pressed
         backButton.setOnClickListener(v -> finish());
 
-        //set the view highest and lowest buttons to invisible and disabled until if and when the highest and lowest scores are found
-        viewHighestQRCButton.setEnabled(false);
-        viewHighestQRCButton.setVisibility(View.INVISIBLE);
-        viewLowestQRCButton.setEnabled(false);
-        viewLowestQRCButton.setVisibility(View.INVISIBLE);
+
 
     }
 
@@ -121,6 +143,11 @@ public class MyProfile extends AppCompatActivity {
                     QRCodeList.add(queriedQR);
                 }
                 updateScores();
+
+                //enable the view scans button
+                viewScansButton.setEnabled(true);
+
+
             } else {
                 Toast.makeText(MyProfile.this, "Error getting user data", Toast.LENGTH_SHORT).show();
                 finish();

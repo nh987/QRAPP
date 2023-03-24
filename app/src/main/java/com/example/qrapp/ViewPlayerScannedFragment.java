@@ -32,23 +32,28 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Main fragment for the app
- * Acts as the home screen and main feed where all scans are delivered
+ * This fragment shows a user's scanned QR codes. it is built to show either the current user's
+ * or another user's scanned QR codes. If the current user is viewing their own QR codes, they
+ * can delete them from the list. If they are viewing another user's QR codes, they can only
+ * view them.
  */
 public class ViewPlayerScannedFragment extends Fragment {
 
     private ListView qrListView;
     private QRcAdapter qRcAdapter;
     private ArrayList<QRCode> QRCodeList;
+
+    private Boolean isCurrentUser;
     private ListenerRegistration qrCodeListener;
 
     //I added a "Scrolling" interface to hide the nav bar when scrolling down.
     //I noticed that the very last item in the Listview is difficult if not impossible
     //to see. Not a tremendous issue but addressed it since I could
     //See->"for scrolling interface" below
-    public ViewPlayerScannedFragment(ArrayList<QRCode> list)
+    public ViewPlayerScannedFragment(ArrayList<QRCode> list, Boolean isCurrentUser)
     {
         this.QRCodeList = list;
+        isCurrentUser = isCurrentUser;
     }
 
     public interface Scrollable {
@@ -78,39 +83,7 @@ public class ViewPlayerScannedFragment extends Fragment {
 
 
 
-        qrCodeListener = db.collection("QRCodes").addSnapshotListener((value, error) -> {
-            QRCodeList.clear();
-            for (DocumentSnapshot document : value.getDocuments()) {
-                Integer points = document.getLong("Points").intValue();
-                String name = document.getString("Name");
-                String icon = document.getString("icon");
-                Object playersScanned = document.get("playersScanned");
-                GeoPoint geolocation = document.getGeoPoint("Geolocation");
-                Object comments = document.get("Comments");
-                String hashed = document.getString("Hash");
-                QRCode queriedQR = new QRCode(comments, points, name, icon, playersScanned, geolocation, hashed);
-                QRCodeList.add(queriedQR);
-            }
 
-            qRcAdapter.notifyDataSetChanged();
-            qrListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                /**
-                 * On click listener for the list view
-                 * @param adapterView
-                 * @param view
-                 * @param i
-                 * @param l
-                 */
-                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    System.out.println(QRCodeList.size());
-                    QRCode qrCode = QRCodeList.get(i);
-                    Intent intent = new Intent(getActivity(), QRProfile.class);
-                    intent.putExtra("qr_code", qrCode); // pass the clicked item to the QRCProfile class
-                    startActivity(intent);
-                }
-            });
-        });
 
         qRcAdapter = new QRcAdapter(QRCodeList, getContext());
         qrListView.setAdapter(qRcAdapter);
