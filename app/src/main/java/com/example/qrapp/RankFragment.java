@@ -273,7 +273,7 @@ public class RankFragment extends Fragment {
                                                                Log.d("RANK3", "Failed to get QRCodes");
                                                            }
 
-                                                           //ADD USER HIGHEST CODE TO LIST, also track the null users so can know when to get top 10
+                                                           //ADD USER SCORE SUM TO LIST, also track the null users so can know when to get top 10
                                                            if (userDoc.getString("username") != null) {
                                                                Sum_Or_Count.add(new RankPair(userDoc.getString("username"), QRCSum));
                                                            } else {
@@ -331,13 +331,89 @@ public class RankFragment extends Fragment {
                         //order top 10 by Count of QRCodes
                         //1. get the highest QRCodes of all players
                         Sum_Or_Count = new ArrayList<>();
+                        topPairs = new ArrayList<>();
 
 
-                        //2. put in an ordered list
+                        UserCR.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                //String userID;
+                                if (task.isSuccessful()) {
+                                    int P = task.getResult().size(); //used to make querying quicker
 
-                        //3. get the top 10
+                                    Log.d("RANK4", P + "docs");
+                                    for (QueryDocumentSnapshot userDoc : task.getResult()) {//GO OVER USERS
+                                        Sum_Or_Count.clear(); //remove whatever is there
+                                        userID = userDoc.getId();
 
-                        break;
+                                        QRCodeCR.whereArrayContains("playersScanned", userID).get()
+
+                                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                        int QRCCount = 0;
+                                                        if (task.isSuccessful()) {
+                                                            for (QueryDocumentSnapshot qrcDoc : task.getResult()) {//GO OVER USER'S CODES, GET COUNT OF SCANS
+                                                                if (qrcDoc.getLong("Points").intValue() >= 0) {
+                                                                    QRCCount++;
+                                                                }
+                                                            }
+                                                        } else {
+                                                            Log.d("RANK4", "Failed to get QRCodes");
+                                                        }
+
+                                                        //ADD USER CODE COUNT TO LIST, also track the null users so can know when to get top 10
+                                                        if (userDoc.getString("username") != null) {
+                                                            Sum_Or_Count.add(new RankPair(userDoc.getString("username"), QRCCount));
+                                                        } else {
+                                                            null_users++;
+                                                        }
+
+                                                        //Log.d("RANK", userDoc.getString("username") + " " + highest);
+                                                        int N_Players = Sum_Or_Count.size();
+                                                        Log.d("RANK4", String.valueOf(N_Players));
+
+
+                                                        //ONLY GET TOP 10 WHEN ALL PLayers's highest is gotten
+                                                        if (N_Players + null_users == P) {
+
+                                                            //2)
+                                                            //top 10
+                                                            for (int i = 1; i <= X && i <= N_Players; i++){
+                                                                topPairs.add(kthLargestPair(Sum_Or_Count, i));
+                                                                Log.d("RANK4", topPairs.get(i - 1).PlayerID + " " + topPairs.get(i - 1).Number);
+                                                            }
+
+                                                            //3)
+                                                            //Bundle em up
+                                                            Bundle RankBundle = new Bundle();
+                                                            RankBundle.putSerializable(RankBundleKey, topPairs);
+
+                                                            //4)
+                                                            //make new RankCountFragment with data
+                                                            Fragment selected = new RankCountFragment();
+                                                            selected.setArguments(RankBundle);
+
+                                                            //5)
+                                                            //show it
+                                                            getActivity().getSupportFragmentManager()
+                                                                    .beginTransaction()
+                                                                    .replace(R.id.rankframe, selected).commit();//SHOW FRAGMENT
+                                                        }
+
+
+                                                    }
+                                                });
+                                    }
+                                } else {
+                                    Log.d("RANK", "Failed to get Users");
+                                }
+                            }
+                        });
+
+
+                        null_users=0; //reset nulls
                     case 3: //Local
                         Log.d("RANK", "LOCAL RANK(SCORE)");
 
