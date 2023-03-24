@@ -79,10 +79,10 @@
         </activity>
 
         <!--for maps-->
-<!--        <meta-data-->
-<!--            android:name="com.google.android.geo.API_KEY"-->
-<!--            android:value="${API_maps}"/>-->
-<!--        <uses-library android:name="com.google.android.maps"/>-->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${API_maps}"/>
+        <uses-library android:name="com.google.android.maps"/>
 
 
     </application>

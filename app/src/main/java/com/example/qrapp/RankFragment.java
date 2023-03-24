@@ -27,36 +27,43 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * This is a class that extends the Fragment class. This "RankFragment" class contains and
+ * maintains the data that will be displayed on the leaderboard(s)
+ */
 public class RankFragment extends Fragment {
 
 
-    Spinner RANK_SPINNER;
+    Spinner RANK_SPINNER; //select 1 of 4 leaderboards
     ArrayAdapter<CharSequence> RankSpinnerAdapter;
 
     //Database
     FirebaseAuth Auth;
     FirebaseFirestore DB;
-    CollectionReference UserCR, QRCodeCR;
+    CollectionReference UserCR, QRCodeCR; //reference to the players and the qrcodes
     String userID;
 
-    //dataholders
-    List<String> players;
+    //dataholders, temporary storage of some data
+    //List<String> players;
     String my_region;
     int null_users = 0;
 
     //tops
-    int X = 10;
-    ArrayList<RankPair> Sum_Or_Count;
-    ArrayList<RankTriple> Score_Or_Local;
+    int X = 10; // will do top 10
+    ArrayList<RankPair> Sum_Or_Count; //holds data for all players for sum and count ranking
+    ArrayList<RankTriple> Score_Or_Local; //holds data for all players for score and local ranking
 
-    ArrayList<RankPair> topPairs;
+    ArrayList<RankPair> topPairs; //these will hold the true top 10
     ArrayList<RankTriple> topTriples;
 
     //passing data
-    String RankBundleKey = "RB";
+    String RankBundleKey = "RB"; //use the same key to get the data passed
 
 
-
+    /**
+     * The onCreate method sets most of the attributes required to maintain ranking data
+     * @param savedInstanceState
+     */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,12 +76,15 @@ public class RankFragment extends Fragment {
         setRegion();
 
 
-        players = new ArrayList<>();
+        //players = new ArrayList<>();
 
 
 
     }
 
+    /**
+     * This method sets the region of the current user to use for local rankings
+     */
     private void setRegion() {
         UserCR.document(userID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -84,6 +94,14 @@ public class RankFragment extends Fragment {
         });
     }
 
+    /**The onCreateView method sets the functionality for critical view parameters
+     *  for the RankFragment such as the display and interface of the Spinner
+     *  and its adapter. It returns the view
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return View
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -92,9 +110,9 @@ public class RankFragment extends Fragment {
 
 
         View view = inflater.inflate(R.layout.fragment_rank, container, false);
-        for (String playrID:players) {
-            Log.d("RANK",playrID + " is a player");
-        }
+//        for (String playrID:players) {
+//            Log.d("RANK",playrID + " is a player");
+//        }
 
 
         RANK_SPINNER = (Spinner) view.findViewById(R.id.spinnerRank);
@@ -453,16 +471,23 @@ public class RankFragment extends Fragment {
 
 
 
+    // to find the kth largest elem in an Arralist of Player hash string to QRCode pairs
+    //eg kthLargest(player_pairs, 1) returns the Player hash string and QRCode pair with
+    // the highest QRCode score in player_pairs
 
-        // to find the kth largest elem in an Arralist of Player hash string to QRCode pairs
-    //eg kthLargest(player_pairs, 1) returns the Player hash string and QRCode pair with the highest QRCode score in player_pairs
-    public RankTriple kthLargestTriple(ArrayList<RankTriple> arr, int k) {
+    /**
+     * This function returns the kth largest RankPair in an arraylist of rankpairs
+     * @param arr
+     * @param k
+     * @return RankPair
+     */
+    public RankPair kthLargestPair(ArrayList<RankPair> arr, int k) {
         //O(n)linear time + works for unsorted ordered containers
         int left = 0;
         int right = arr.size() - 1;
 
         while (left <= right) {
-            int pivotIndex = partition(arr, left, right);
+            int pivotIndex = partitionPair(arr, left, right);
 
             if (pivotIndex == k - 1) {
                 return arr.get(pivotIndex);
@@ -475,8 +500,72 @@ public class RankFragment extends Fragment {
         return null; // kth largest not found, default to null
     }
 
+
+
     //helper funct for kthLargest. Partitioning based on Quicksort
-    private static int partition(ArrayList<RankTriple> arr, int left, int right) {
+    /**
+     * This function is a helper function that partitions
+     * a given array to get the top X players for RankPairs
+     * @param arr
+     * @param left
+     * @param right
+     * @return int
+     */
+    private static int partitionPair(ArrayList<RankPair> arr, int left, int right) {
+        RankPair pivot = arr.get(right);
+        int i = left - 1;
+
+        for (int j = left; j < right; j++) {
+            if (arr.get(j).Number >= pivot.Number) {
+                i++;
+                Collections.swap(arr, i, j);
+            }
+        }
+
+        Collections.swap(arr, i + 1, right);
+
+        return i + 1;
+    }
+
+
+
+    /**
+     * This function returns the kth largest RankTriple in an arraylist of ranktriples
+     * @param arr
+     * @param k
+     * @return RankTriple
+     */
+    public RankTriple kthLargestTriple(ArrayList<RankTriple> arr, int k) {
+        //O(n)linear time + works for unsorted ordered containers
+        int left = 0;
+        int right = arr.size() - 1;
+
+        while (left <= right) {
+            int pivotIndex = partitionTriple(arr, left, right);
+
+            if (pivotIndex == k - 1) {
+                return arr.get(pivotIndex);
+            } else if (pivotIndex < k - 1) {
+                left = pivotIndex + 1;
+            } else {
+                right = pivotIndex - 1;
+            }
+        }
+        return null; // kth largest not found, default to null
+    }
+
+
+
+    //helper funct for kthLargest. Partitioning based on Quicksort
+    /**
+     * This function is a helper function that partitions
+     * a given array to get the top X players for RankTriples
+     * @param arr
+     * @param left
+     * @param right
+     * @return int
+     */
+    private static int partitionTriple(ArrayList<RankTriple> arr, int left, int right) {
         RankTriple pivot = arr.get(right);
         int i = left - 1;
 
