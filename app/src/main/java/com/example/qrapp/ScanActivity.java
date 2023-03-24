@@ -48,6 +48,27 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+// SOURCES:
+// 1.)
+// URL: https://developer.android.com/training/camerax/analyze
+// AUTHOR: n/a
+// SITE: https://developer.android.com/
+// 2.)
+// URL: https://developers.google.com/ml-kit/vision/barcode-scanning/android#try-it-out
+// AUTHOR: https://github.com/zhouyiself
+// SITE: https://developers.google.com/
+// 3.)
+// URL: https://www.youtube.com/watch?v=IrwhjDtpIU0
+// AUTHOR: https://www.youtube.com/@CodingReel
+// SITE: https://www.youtube.com/
+// 4.)
+// URL: https://stackoverflow.com/questions/63240081/mlkit-barcode-sanner-implementation-results-in-internal-error-when-executing-ml
+// AUTHOR: https://stackoverflow.com/users/2760299/topher217
+// SITE: https://stackoverflow.com/
+// 5.)
+// URL: https://stackoverflow.com/questions/5531455/how-to-hash-some-string-with-sha-256-in-java
+// AUTHOR: https://stackoverflow.com/users/69875/jonathan
+// SITE: https://stackoverflow.com/
 
 /**
  *  Scan activity uses CameraX and ML Kit to scan a barcode using the back-facing camera that is then hashed into SHA-256 hexadecimal using Guava.
@@ -72,7 +93,7 @@ public class ScanActivity extends AppCompatActivity implements ImageAnalysis.Ana
         BACK_ARROW.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (cameraProviderFuture.isDone()) { // potential solution to crashing on back button press during start up
+                if (cameraProviderFuture.isDone()) { // potential solution to crashing on fast back button press during start up
                     finish();
                 }
             }
@@ -201,11 +222,11 @@ public class ScanActivity extends AppCompatActivity implements ImageAnalysis.Ana
      * grows exponentially according to the length of the combo chain. Follows format of value raised to combo minus 1
      * zero is a special digit as it is the only value that alone is worth 1 and chained is twenty raised to combo length minus 1
      * @param hex
-     * @return long
+     * @return long score
      */
     public long score(String hex) {
         long score = 0;
-        HashMap<Character, Integer> hexMap = new HashMap<Character, Integer>();
+        HashMap<Character, Integer> hexMap = new HashMap<Character, Integer>(); // hash map of hexadecimal values to decimal
         hexMap.put('0', 20); // handle 0 as 20^X based on proposed scoring system
         hexMap.put('1', 1);
         hexMap.put('2', 2);

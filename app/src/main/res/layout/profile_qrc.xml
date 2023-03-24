@@ -49,6 +49,10 @@
                 android:text="100,000 Points"
                 android:textColor="#824a5a"
                 android:textSize="22dp"
+                app:autoSizeMaxTextSize="22dp"
+                app:autoSizeMinTextSize="8dp"
+                app:autoSizeStepGranularity="1dp"
+                app:autoSizeTextType="uniform"
                 app:layout_constraintStart_toEndOf="@+id/icon"
                 app:layout_constraintTop_toTopOf="@+id/icon" />
 
@@ -56,14 +60,19 @@
                 android:id="@+id/icon"
                 android:layout_width="174dp"
                 android:layout_height="184dp"
-                android:layout_marginStart="32dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="184dp"
                 android:contentDescription="@string/app_name"
                 android:gravity="center"
+                android:maxLines="1"
                 android:padding="10dp"
                 android:text=":)"
                 android:textColor="#000000"
                 android:textSize="48dp"
+                app:autoSizeMaxTextSize="100dp"
+                app:autoSizeMinTextSize="8dp"
+                app:autoSizeStepGranularity="1dp"
+                app:autoSizeTextType="uniform"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_baseline_scan2" />
@@ -97,9 +106,11 @@
                 android:layout_width="124dp"
                 android:layout_height="112dp"
 
+                android:layout_marginStart="20dp"
                 app:layout_constraintBottom_toTopOf="@+id/qrprofile_scannedby"
                 app:layout_constraintStart_toEndOf="@+id/icon"
                 app:layout_constraintTop_toBottomOf="@+id/textView3"
+                app:layout_constraintVertical_bias="0.407"
                 app:srcCompat="@android:drawable/ic_menu_camera" />
 
             <TextView
@@ -107,13 +118,18 @@
                 android:layout_width="162dp"
                 android:layout_height="32dp"
                 android:layout_marginEnd="4dp"
-                android:layout_marginBottom="7dp"
+                android:layout_marginBottom="8dp"
                 android:text="Scanned by 0 players."
                 android:textAlignment="center"
                 android:textColor="@color/black"
-                android:textSize="15dp"
+                android:textSize="16dp"
+                app:autoSizeMaxTextSize="16dp"
+                app:autoSizeMinTextSize="8dp"
+                app:autoSizeStepGranularity="1dp"
+                app:autoSizeTextType="uniform"
                 app:layout_constraintBottom_toTopOf="@+id/qrprofile_players_btn"
                 app:layout_constraintEnd_toEndOf="@+id/qrprofile_players_btn"
+                app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toEndOf="@+id/icon" />
 
 
@@ -143,7 +159,11 @@
                 android:gravity="center"
                 android:includeFontPadding="false"
                 android:text="hot GloUltraSonicShark"
-                android:textSize="16dp" />
+                android:textSize="20dp"
+                app:autoSizeMaxTextSize="20dp"
+                app:autoSizeMinTextSize="8dp"
+                app:autoSizeStepGranularity="1dp"
+                app:autoSizeTextType="uniform"/>
 
 
         </RelativeLayout>
