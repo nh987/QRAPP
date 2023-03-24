@@ -276,7 +276,7 @@ public class RankFragment extends Fragment {
 
                                                            //ADD USER HIGHEST CODE TO LIST, also track the null users so can know when to get top 10
                                                            if (userDoc.getString("username") != null) {
-                                                               Sum_Or_Count.add(new RankPair(userDoc.getString("username"), (long) QRCSum));
+                                                               Sum_Or_Count.add(new RankPair(userDoc.getString("username"), QRCSum));
                                                            } else {
                                                                null_users++;
                                                            }
@@ -454,15 +454,8 @@ public class RankFragment extends Fragment {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
-
             }
         });
-
-
-
-
-
 
         return view;
     }
