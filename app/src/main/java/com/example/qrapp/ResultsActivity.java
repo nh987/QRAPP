@@ -69,7 +69,27 @@ import java.util.Map;
 import android.provider.Settings.Secure;
 import android.Manifest;
 import android.widget.Toast;
-
+// SOURCES:
+// 1.)
+// URL: https://www.tutorialspoint.com/how-to-request-location-permission-at-run-time-in-android#
+// AUTHOR: https://www.tutorialspoint.com/authors/azhar
+// SITE: https://www.tutorialspoint.com/
+// 2.)
+// URL: https://stackoverflow.com/questions/5991319/capture-image-from-camera-and-display-in-activity
+// AUTHOR: https://stackoverflow.com/users/510872/jengelsma
+// SITE: https://stackoverflow.com/
+// 3.)
+// URL: https://firebase.google.com/docs/firestore
+// AUTHOR: n/a
+// SITE: https://firebase.google.com/
+// 4.)
+// URL: https://stackoverflow.com/questions/51202300/how-to-add-update-remove-array-elements-in-firebase-firestore-android-using-hash
+// AUTHOR: https://stackoverflow.com/users/8691696/anga
+// SITE: https://stackoverflow.com/
+// 5.)
+// URL: https://developer.android.com/reference/android/media/ExifInterface
+// AUTHOR: n/a
+// SITE: https://developer.android.com/
 /**
  * ResultsActivity gets bundle from ScanActivity containing a SHA-256 hashed string of the barcode
  * and long score value of the hash according to the scoring system. Score is displayed in a TextView and

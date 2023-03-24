@@ -21,6 +21,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
+// SOURCES:
+// 1.)
+// URL: https://stackoverflow.com/questions/52046182/arraylist-only-updated-inside-oncompletelistener-and-not-outside-it
+// AUTHOR: https://stackoverflow.com/users/5221149/andreas
+// SITE: https://stackoverflow.com/
 /**
  * Activity for displaying ListView of players that have scanned a particular QR Code. Can click to view players' profiles. Uses playerListAdapter.
  * Gets arrayList of userIDs and gets their information from the database to send into the playerListAdapter to display in the ListView.

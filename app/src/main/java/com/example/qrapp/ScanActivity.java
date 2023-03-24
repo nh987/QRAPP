@@ -48,6 +48,27 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+// SOURCES:
+// 1.)
+// URL: https://developer.android.com/training/camerax/analyze
+// AUTHOR: n/a
+// SITE: https://developer.android.com/
+// 2.)
+// URL: https://developers.google.com/ml-kit/vision/barcode-scanning/android#try-it-out
+// AUTHOR: https://github.com/zhouyiself
+// SITE: https://developers.google.com/
+// 3.)
+// URL: https://www.youtube.com/watch?v=IrwhjDtpIU0
+// AUTHOR: https://www.youtube.com/@CodingReel
+// SITE: https://www.youtube.com/
+// 4.)
+// URL: https://stackoverflow.com/questions/63240081/mlkit-barcode-sanner-implementation-results-in-internal-error-when-executing-ml
+// AUTHOR: https://stackoverflow.com/users/2760299/topher217
+// SITE: https://stackoverflow.com/
+// 5.)
+// URL: https://stackoverflow.com/questions/5531455/how-to-hash-some-string-with-sha-256-in-java
+// AUTHOR: https://stackoverflow.com/users/69875/jonathan
+// SITE: https://stackoverflow.com/
 
 /**
  *  Scan activity uses CameraX and ML Kit to scan a barcode using the back-facing camera that is then hashed into SHA-256 hexadecimal using Guava.
