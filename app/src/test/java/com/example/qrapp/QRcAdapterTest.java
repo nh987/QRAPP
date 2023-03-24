@@ -24,8 +24,8 @@ public class QRcAdapterTest {
      */
     public void setUp() {
         ArrayList<QRCode> items = new ArrayList<>();
-        QRCode qr1 = new QRCode("comments", 10, "test", ":)", null, null);
-        QRCode qr2 = new QRCode("comments", 100, "test2", ":(", null, null);
+        QRCode qr1 = new QRCode("comments", 10, "test", ":)", null, null, null);
+        QRCode qr2 = new QRCode("comments", 100, "test2", ":(", null, null, null);
         items.add(qr1);
         items.add(qr2);
 

@@ -16,7 +16,7 @@ import org.junit.Test;
 public class QRCodeTest {
     QRCode qrCode;
     public QRCode MockQRCode() {
-        QRCode qrCode = new QRCode(null, null, null, null, null, null);
+        QRCode qrCode = new QRCode(null, null, null, null, null, null, null);
         return qrCode;
     }
     /**
