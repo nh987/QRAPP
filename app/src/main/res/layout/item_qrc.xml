@@ -10,6 +10,11 @@
         android:layout_height="70dp"
         android:contentDescription="@string/app_name"
         android:padding="10dp"
+        android:maxLines="1"
+        app:autoSizeMaxTextSize="15dp"
+        app:autoSizeMinTextSize="8dp"
+        app:autoSizeStepGranularity="1dp"
+        app:autoSizeTextType="uniform"
         app:srcCompat="@drawable/ic_baseline_scan2" />
 
     <TextView
@@ -21,6 +26,11 @@
         android:padding = "10dp"
         android:fontFamily="sans-serif-black"
         android:textSize="16dp"
+        android:maxLines="1"
+        app:autoSizeMaxTextSize="16dp"
+        app:autoSizeMinTextSize="8dp"
+        app:autoSizeStepGranularity="1dp"
+        app:autoSizeTextType="uniform"
         android:text = "hot GloUltraSonicShark"/>
 
     <TextView
@@ -33,5 +43,9 @@
         android:fontFamily="sans-serif-black"
         android:paddingLeft = "10dp"
         android:textSize="14dp"
+        app:autoSizeMaxTextSize="14dp"
+        app:autoSizeMinTextSize="8dp"
+        app:autoSizeStepGranularity="1dp"
+        app:autoSizeTextType="uniform"
         android:text = "100,000 Points"/>
 </RelativeLayout>
