@@ -19,9 +19,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -114,7 +112,6 @@ public class RankFragment extends Fragment {
         RANK_SPINNER.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Fragment selected = new RankSumFragment();
 
                 //will use kth largest instead of sorting to get ranks
                 switch (position){
@@ -229,6 +226,84 @@ public class RankFragment extends Fragment {
                         //order top 10 by Sum of QRCodes
                         //1. get the highest QRCodes of all players
                         Sum_Or_Count = new ArrayList<>();
+                        topPairs = new ArrayList<>();
+
+
+                        UserCR.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                               @Override
+                               public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                   //String userID;
+                                   if (task.isSuccessful()) {
+                                       int P = task.getResult().size(); //used to make querying quicker
+
+                                       Log.d("RANK2", P + "docs");
+                                       for (QueryDocumentSnapshot userDoc : task.getResult()) {//GO OVER USERS
+                                           Sum_Or_Count.clear(); //remove whatever is there
+                                           userID = userDoc.getId();
+
+                                           QRCodeCR.whereArrayContains("playersScanned", userID).get()
+
+                                                   .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+
+                                                       @Override
+                                                       public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                           int QRCSum = 0;
+                                                           if (task.isSuccessful()) {
+                                                               for (QueryDocumentSnapshot qrcDoc : task.getResult()) {//GO OVER USER'S CODES, GET HIGHEST
+                                                                   QRCSum += qrcDoc.getLong("Points").intValue();
+                                                               }
+                                                           } else {
+                                                               Log.d("RANK2", "Failed to get QRCodes");
+                                                           }
+
+                                                           //ADD USER HIGHEST CODE TO LIST, also track the null users so can know when to get top 10
+                                                           if (userDoc.getString("username") != null) {
+                                                               Sum_Or_Count.add(new RankPair(userDoc.getString("username"), (long) QRCSum));
+                                                           } else {
+                                                               null_users++;
+                                                           }
+
+                                                           //Log.d("RANK", userDoc.getString("username") + " " + highest);
+                                                           int N_Players = Sum_Or_Count.size();
+                                                           Log.d("RANK2", String.valueOf(N_Players));
+
+
+                                                           //ONLY GET TOP 10 WHEN ALL PLayers's highest is gotten
+                                                           if (N_Players + null_users == P) {
+
+                                                               //2)
+                                                               //top 10
+                                                               for (int i = 1; i <= X && i <= N_Players; i++){
+                                                                     topPairs.add(kthLargestPair(Sum_Or_Count, i));
+                                                                   Log.d("RANK2", topPairs.get(i - 1).PlayerID + " " + topPairs.get(i - 1).Number);
+                                                               }
+
+                                                               //3)
+                                                               //Bundle em up
+                                                               Bundle RankBundle = new Bundle();
+                                                               RankBundle.putSerializable(RankBundleKey, topPairs);
+
+                                                               //4)
+                                                               //make new RankScoreFragment with data
+                                                               Fragment selected = new RankSumFragment();
+                                                               selected.setArguments(RankBundle);
+
+                                                               //5)
+                                                               //show it
+                                                               getActivity().getSupportFragmentManager()
+                                                                       .beginTransaction()
+                                                                       .replace(R.id.rankframe, selected).commit();//SHOW FRAGMENT
+                                                           }
+
+
+                                                       }
+                                                   });
+                                       }
+                                   } else {
+                                       Log.d("RANK", "Failed to get Users");
+                                   }
+                               }
+                           });
 
 
 
@@ -237,6 +312,7 @@ public class RankFragment extends Fragment {
                         //2. put in an ordered list
 
                         //3. get the top 10
+                        null_users=0; //reset nulls
                         break;
                     case 2: //Count
                         Log.d("RANK", "GLOBAL RANK(COUNT)");
@@ -406,6 +482,44 @@ public class RankFragment extends Fragment {
 
         for (int j = left; j < right; j++) {
             if (arr.get(j).QRcPoints >= pivot.QRcPoints) {
+                i++;
+                Collections.swap(arr, i, j);
+            }
+        }
+
+        Collections.swap(arr, i + 1, right);
+
+        return i + 1;
+    }
+
+    // to find the kth largest elem in an Arralist of Player hash string to QRCode pairs
+    //eg kthLargest(player_pairs, 1) returns the Player hash string and QRCode pair with the highest QRCode score in player_pairs
+    public RankPair kthLargestPair(ArrayList<RankPair> arr, int k) {
+        //O(n)linear time + works for unsorted ordered containers
+        int left = 0;
+        int right = arr.size() - 1;
+
+        while (left <= right) {
+            int pivotIndex = pairPartition(arr, left, right);
+
+            if (pivotIndex == k - 1) {
+                return arr.get(pivotIndex);
+            } else if (pivotIndex < k - 1) {
+                left = pivotIndex + 1;
+            } else {
+                right = pivotIndex - 1;
+            }
+        }
+        return null; // kth largest not found, default to null
+    }
+
+    //helper funct for kthLargest. Partitioning based on Quicksort
+    private static int pairPartition(ArrayList<RankPair> arr, int left, int right) {
+        RankPair pivot = arr.get(right);
+        int i = left - 1;
+
+        for (int j = left; j < right; j++) {
+            if (arr.get(j).Number >= pivot.Number) {
                 i++;
                 Collections.swap(arr, i, j);
             }

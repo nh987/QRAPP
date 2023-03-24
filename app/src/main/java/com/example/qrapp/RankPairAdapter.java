@@ -68,6 +68,18 @@ public class RankPairAdapter extends BaseAdapter {
         LayoutInflater inflater = LayoutInflater.from(mycontext);
 
         View row = inflater.inflate(R.layout.item_rankpair, viewGroup, false);
+
+        RankPair row_data = items.get(i);
+
+        TextView rank = row.findViewById(R.id.pair_ranknumber);
+        TextView name = row.findViewById(R.id.pair_playername);
+        TextView score = row.findViewById(R.id.pair_codepoints);
+
+        rank.setText(String.valueOf(i+1));
+        name.setText(row_data.PlayerID);
+        score.setText(String.valueOf(row_data.Number));
+
+
         return row;
     }
 
