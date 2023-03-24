@@ -464,62 +464,11 @@ public class RankFragment extends Fragment {
 
 
 
+    
+
     // to find the kth largest elem in an Arralist of Player hash string to QRCode pairs
     //eg kthLargest(player_pairs, 1) returns the Player hash string and QRCode pair with
     // the highest QRCode score in player_pairs
-
-    /**
-     * This function returns the kth largest RankPair in an arraylist of rankpairs
-     * @param arr
-     * @param k
-     * @return RankPair
-     */
-    public RankPair kthLargestPair(ArrayList<RankPair> arr, int k) {
-        //O(n)linear time + works for unsorted ordered containers
-        int left = 0;
-        int right = arr.size() - 1;
-
-        while (left <= right) {
-            int pivotIndex = partitionPair(arr, left, right);
-
-            if (pivotIndex == k - 1) {
-                return arr.get(pivotIndex);
-            } else if (pivotIndex < k - 1) {
-                left = pivotIndex + 1;
-            } else {
-                right = pivotIndex - 1;
-            }
-        }
-        return null; // kth largest not found, default to null
-    }
-
-
-
-    //helper funct for kthLargest. Partitioning based on Quicksort
-    /**
-     * This function is a helper function that partitions
-     * a given array to get the top X players for RankPairs
-     * @param arr
-     * @param left
-     * @param right
-     * @return int
-     */
-    private static int partitionPair(ArrayList<RankPair> arr, int left, int right) {
-        RankPair pivot = arr.get(right);
-        int i = left - 1;
-
-        for (int j = left; j < right; j++) {
-            if (arr.get(j).Number >= pivot.Number) {
-                i++;
-                Collections.swap(arr, i, j);
-            }
-        }
-
-        Collections.swap(arr, i + 1, right);
-
-        return i + 1;
-    }
-
 
 
     /**
@@ -574,8 +523,13 @@ public class RankFragment extends Fragment {
         return i + 1;
     }
 
-    // to find the kth largest elem in an Arralist of Player hash string to QRCode pairs
-    //eg kthLargest(player_pairs, 1) returns the Player hash string and QRCode pair with the highest QRCode score in player_pairs
+
+    /**
+     * This function returns the kth largest RankPair in an arraylist of rankpairs
+     * @param arr
+     * @param k
+     * @return RankPair
+     */
     public RankPair kthLargestPair(ArrayList<RankPair> arr, int k) {
         //O(n)linear time + works for unsorted ordered containers
         int left = 0;
@@ -595,7 +549,16 @@ public class RankFragment extends Fragment {
         return null; // kth largest not found, default to null
     }
 
+
     //helper funct for kthLargest. Partitioning based on Quicksort
+    /**
+     * This function is a helper function that partitions
+     * a given array to get the top X players for RankPairs
+     * @param arr
+     * @param left
+     * @param right
+     * @return int
+     */
     private static int pairPartition(ArrayList<RankPair> arr, int left, int right) {
         RankPair pivot = arr.get(right);
         int i = left - 1;
