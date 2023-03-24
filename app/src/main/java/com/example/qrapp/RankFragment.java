@@ -27,36 +27,43 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * This is a class that extends the Fragment class. This "RankFragment" class contains and
+ * maintains the data that will be displayed on the leaderboard(s)
+ */
 public class RankFragment extends Fragment {
 
 
-    Spinner RANK_SPINNER;
+    Spinner RANK_SPINNER; //select 1 of 4 leaderboards
     ArrayAdapter<CharSequence> RankSpinnerAdapter;
 
     //Database
     FirebaseAuth Auth;
     FirebaseFirestore DB;
-    CollectionReference UserCR, QRCodeCR;
+    CollectionReference UserCR, QRCodeCR; //reference to the players and the qrcodes
     String userID;
 
-    //dataholders
-    List<String> players;
+    //dataholders, temporary storage of some data
+    //List<String> players;
     String my_region;
     int null_users = 0;
 
     //tops
-    int X = 10;
-    ArrayList<RankPair> Sum_Or_Count;
-    ArrayList<RankTriple> Score_Or_Local;
+    int X = 10; // will do top 10
+    ArrayList<RankPair> Sum_Or_Count; //holds data for all players for sum and count ranking
+    ArrayList<RankTriple> Score_Or_Local; //holds data for all players for score and local ranking
 
-    ArrayList<RankPair> topPairs;
+    ArrayList<RankPair> topPairs; //these will hold the true top 10
     ArrayList<RankTriple> topTriples;
 
     //passing data
-    String RankBundleKey = "RB";
+    String RankBundleKey = "RB"; //use the same key to get the data passed
 
 
-
+    /**
+     * The onCreate method sets most of the attributes required to maintain ranking data
+     * @param savedInstanceState
+     */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,12 +76,15 @@ public class RankFragment extends Fragment {
         setRegion();
 
 
-        players = new ArrayList<>();
+        //players = new ArrayList<>();
 
 
 
     }
 
+    /**
+     * This method sets the region of the current user to use for local rankings
+     */
     private void setRegion() {
         UserCR.document(userID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -84,6 +94,14 @@ public class RankFragment extends Fragment {
         });
     }
 
+    /**The onCreateView method sets the functionality for critical view parameters
+     *  for the RankFragment such as the display and interface of the Spinner
+     *  and its adapter. It returns the view
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return View
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -92,9 +110,9 @@ public class RankFragment extends Fragment {
 
 
         View view = inflater.inflate(R.layout.fragment_rank, container, false);
-        for (String playrID:players) {
-            Log.d("RANK",playrID + " is a player");
-        }
+//        for (String playrID:players) {
+//            Log.d("RANK",playrID + " is a player");
+//        }
 
 
         RANK_SPINNER = (Spinner) view.findViewById(R.id.spinnerRank);
@@ -218,7 +236,6 @@ public class RankFragment extends Fragment {
 
 
                         null_users=0; //reset nulls
-
                         break;
                     case 1: //Sum
                         Log.d("RANK", "GLOBAL RANK(SUM)");
@@ -236,7 +253,7 @@ public class RankFragment extends Fragment {
                                    if (task.isSuccessful()) {
                                        int P = task.getResult().size(); //used to make querying quicker
 
-                                       Log.d("RANK2", P + "docs");
+                                       Log.d("RANK3", P + "docs");
                                        for (QueryDocumentSnapshot userDoc : task.getResult()) {//GO OVER USERS
                                            Sum_Or_Count.clear(); //remove whatever is there
                                            userID = userDoc.getId();
@@ -249,23 +266,23 @@ public class RankFragment extends Fragment {
                                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                                            int QRCSum = 0;
                                                            if (task.isSuccessful()) {
-                                                               for (QueryDocumentSnapshot qrcDoc : task.getResult()) {//GO OVER USER'S CODES, GET HIGHEST
+                                                               for (QueryDocumentSnapshot qrcDoc : task.getResult()) {//GO OVER USER'S CODES, GET SUM OF SCANS
                                                                    QRCSum += qrcDoc.getLong("Points").intValue();
                                                                }
                                                            } else {
-                                                               Log.d("RANK2", "Failed to get QRCodes");
+                                                               Log.d("RANK3", "Failed to get QRCodes");
                                                            }
 
                                                            //ADD USER HIGHEST CODE TO LIST, also track the null users so can know when to get top 10
                                                            if (userDoc.getString("username") != null) {
-                                                               Sum_Or_Count.add(new RankPair(userDoc.getString("username"), (long) QRCSum));
+                                                               Sum_Or_Count.add(new RankPair(userDoc.getString("username"), QRCSum));
                                                            } else {
                                                                null_users++;
                                                            }
 
                                                            //Log.d("RANK", userDoc.getString("username") + " " + highest);
                                                            int N_Players = Sum_Or_Count.size();
-                                                           Log.d("RANK2", String.valueOf(N_Players));
+                                                           Log.d("RANK3", String.valueOf(N_Players));
 
 
                                                            //ONLY GET TOP 10 WHEN ALL PLayers's highest is gotten
@@ -275,7 +292,7 @@ public class RankFragment extends Fragment {
                                                                //top 10
                                                                for (int i = 1; i <= X && i <= N_Players; i++){
                                                                      topPairs.add(kthLargestPair(Sum_Or_Count, i));
-                                                                   Log.d("RANK2", topPairs.get(i - 1).PlayerID + " " + topPairs.get(i - 1).Number);
+                                                                   Log.d("RANK3", topPairs.get(i - 1).PlayerID + " " + topPairs.get(i - 1).Number);
                                                                }
 
                                                                //3)
@@ -284,7 +301,7 @@ public class RankFragment extends Fragment {
                                                                RankBundle.putSerializable(RankBundleKey, topPairs);
 
                                                                //4)
-                                                               //make new RankScoreFragment with data
+                                                               //make new RankSumFragment with data
                                                                Fragment selected = new RankSumFragment();
                                                                selected.setArguments(RankBundle);
 
@@ -306,12 +323,6 @@ public class RankFragment extends Fragment {
                            });
 
 
-
-
-
-                        //2. put in an ordered list
-
-                        //3. get the top 10
                         null_users=0; //reset nulls
                         break;
                     case 2: //Count
@@ -436,15 +447,8 @@ public class RankFragment extends Fragment {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
-
             }
         });
-
-
-
-
-
 
         return view;
     }
@@ -454,15 +458,24 @@ public class RankFragment extends Fragment {
 
 
 
-        // to find the kth largest elem in an Arralist of Player hash string to QRCode pairs
-    //eg kthLargest(player_pairs, 1) returns the Player hash string and QRCode pair with the highest QRCode score in player_pairs
+
+    // to find the kth largest elem in an Arralist of Player hash string to QRCode pairs
+    //eg kthLargest(player_pairs, 1) returns the Player hash string and QRCode pair with
+    // the highest QRCode score in player_pairs
+
+    /**
+     * This function returns the kth largest RankTriple in an arraylist of ranktriples
+     * @param arr
+     * @param k
+     * @return RankTriple
+     */
     public RankTriple kthLargestTriple(ArrayList<RankTriple> arr, int k) {
         //O(n)linear time + works for unsorted ordered containers
         int left = 0;
         int right = arr.size() - 1;
 
         while (left <= right) {
-            int pivotIndex = partition(arr, left, right);
+            int pivotIndex = partitionTriple(arr, left, right);
 
             if (pivotIndex == k - 1) {
                 return arr.get(pivotIndex);
@@ -475,8 +488,18 @@ public class RankFragment extends Fragment {
         return null; // kth largest not found, default to null
     }
 
+
+
     //helper funct for kthLargest. Partitioning based on Quicksort
-    private static int partition(ArrayList<RankTriple> arr, int left, int right) {
+    /**
+     * This function is a helper function that partitions
+     * a given array to get the top X players for RankTriples
+     * @param arr
+     * @param left
+     * @param right
+     * @return int
+     */
+    private static int partitionTriple(ArrayList<RankTriple> arr, int left, int right) {
         RankTriple pivot = arr.get(right);
         int i = left - 1;
 
@@ -492,8 +515,13 @@ public class RankFragment extends Fragment {
         return i + 1;
     }
 
-    // to find the kth largest elem in an Arralist of Player hash string to QRCode pairs
-    //eg kthLargest(player_pairs, 1) returns the Player hash string and QRCode pair with the highest QRCode score in player_pairs
+
+    /**
+     * This function returns the kth largest RankPair in an arraylist of rankpairs
+     * @param arr
+     * @param k
+     * @return RankPair
+     */
     public RankPair kthLargestPair(ArrayList<RankPair> arr, int k) {
         //O(n)linear time + works for unsorted ordered containers
         int left = 0;
@@ -513,7 +541,16 @@ public class RankFragment extends Fragment {
         return null; // kth largest not found, default to null
     }
 
+
     //helper funct for kthLargest. Partitioning based on Quicksort
+    /**
+     * This function is a helper function that partitions
+     * a given array to get the top X players for RankPairs
+     * @param arr
+     * @param left
+     * @param right
+     * @return int
+     */
     private static int pairPartition(ArrayList<RankPair> arr, int left, int right) {
         RankPair pivot = arr.get(right);
         int i = left - 1;
