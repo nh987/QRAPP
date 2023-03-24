@@ -236,7 +236,6 @@ public class RankFragment extends Fragment {
 
 
                         null_users=0; //reset nulls
-
                         break;
                     case 1: //Sum
                         Log.d("RANK", "GLOBAL RANK(SUM)");
@@ -254,7 +253,7 @@ public class RankFragment extends Fragment {
                                    if (task.isSuccessful()) {
                                        int P = task.getResult().size(); //used to make querying quicker
 
-                                       Log.d("RANK2", P + "docs");
+                                       Log.d("RANK3", P + "docs");
                                        for (QueryDocumentSnapshot userDoc : task.getResult()) {//GO OVER USERS
                                            Sum_Or_Count.clear(); //remove whatever is there
                                            userID = userDoc.getId();
@@ -267,11 +266,11 @@ public class RankFragment extends Fragment {
                                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                                            int QRCSum = 0;
                                                            if (task.isSuccessful()) {
-                                                               for (QueryDocumentSnapshot qrcDoc : task.getResult()) {//GO OVER USER'S CODES, GET HIGHEST
+                                                               for (QueryDocumentSnapshot qrcDoc : task.getResult()) {//GO OVER USER'S CODES, GET SUM OF SCANS
                                                                    QRCSum += qrcDoc.getLong("Points").intValue();
                                                                }
                                                            } else {
-                                                               Log.d("RANK2", "Failed to get QRCodes");
+                                                               Log.d("RANK3", "Failed to get QRCodes");
                                                            }
 
                                                            //ADD USER HIGHEST CODE TO LIST, also track the null users so can know when to get top 10
@@ -283,7 +282,7 @@ public class RankFragment extends Fragment {
 
                                                            //Log.d("RANK", userDoc.getString("username") + " " + highest);
                                                            int N_Players = Sum_Or_Count.size();
-                                                           Log.d("RANK2", String.valueOf(N_Players));
+                                                           Log.d("RANK3", String.valueOf(N_Players));
 
 
                                                            //ONLY GET TOP 10 WHEN ALL PLayers's highest is gotten
@@ -293,7 +292,7 @@ public class RankFragment extends Fragment {
                                                                //top 10
                                                                for (int i = 1; i <= X && i <= N_Players; i++){
                                                                      topPairs.add(kthLargestPair(Sum_Or_Count, i));
-                                                                   Log.d("RANK2", topPairs.get(i - 1).PlayerID + " " + topPairs.get(i - 1).Number);
+                                                                   Log.d("RANK3", topPairs.get(i - 1).PlayerID + " " + topPairs.get(i - 1).Number);
                                                                }
 
                                                                //3)
@@ -302,7 +301,7 @@ public class RankFragment extends Fragment {
                                                                RankBundle.putSerializable(RankBundleKey, topPairs);
 
                                                                //4)
-                                                               //make new RankScoreFragment with data
+                                                               //make new RankSumFragment with data
                                                                Fragment selected = new RankSumFragment();
                                                                selected.setArguments(RankBundle);
 
@@ -324,12 +323,6 @@ public class RankFragment extends Fragment {
                            });
 
 
-
-
-
-                        //2. put in an ordered list
-
-                        //3. get the top 10
                         null_users=0; //reset nulls
                         break;
                     case 2: //Count
@@ -464,12 +457,11 @@ public class RankFragment extends Fragment {
 
 
 
-    
+
 
     // to find the kth largest elem in an Arralist of Player hash string to QRCode pairs
     //eg kthLargest(player_pairs, 1) returns the Player hash string and QRCode pair with
     // the highest QRCode score in player_pairs
-
 
     /**
      * This function returns the kth largest RankTriple in an arraylist of ranktriples
