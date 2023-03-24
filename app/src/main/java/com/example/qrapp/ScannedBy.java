@@ -23,6 +23,7 @@ import java.util.ArrayList;
 
 /**
  * Activity for displaying ListView of players that have scanned a particular QR Code. Can click to view players' profiles. Uses playerListAdapter.
+ * Gets arrayList of userIDs and gets their information from the database to send into the playerListAdapter to display in the ListView.
  */
 public class ScannedBy extends AppCompatActivity {
     private ImageButton backButton;
