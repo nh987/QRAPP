@@ -44,6 +44,7 @@ public class RankFragment extends Fragment {
     //dataholders
     List<String> players;
     String my_region;
+    int null_users = 0;
 
     //tops
     int X = 10;
@@ -115,11 +116,10 @@ public class RankFragment extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Fragment selected = new RankSumFragment();
 
-
-
+                //will use kth largest instead of sorting to get ranks
                 switch (position){
                     case 0: //Score
-                        selected = new RankScoreFragment();
+                        Log.d("RANK", "GLOBAL RANK(SCORE)");
 
                         //order top 20 by Highest QRcodes in whole app
                         //1. get the highest QRCodes of all players
@@ -132,9 +132,11 @@ public class RankFragment extends Fragment {
                             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                 //String userID;
                                 if(task.isSuccessful()){
+                                    int P = task.getResult().size(); //used to make querying quicker
 
+                                    Log.d("RANK2",P + "docs");
                                     for (QueryDocumentSnapshot userDoc: task.getResult()) {//GO OVER USERS
-                                        Score_Or_Local.clear();
+                                        Score_Or_Local.clear(); //remove whatever is there
                                         userID = userDoc.getId();
 
                                         QRCodeCR.whereArrayContains("playersScanned", userID).get()
@@ -147,7 +149,7 @@ public class RankFragment extends Fragment {
                                                         int highest = 0;
                                                         String highestFace = "----";
                                                         if (task.isSuccessful()) {
-                                                            for (QueryDocumentSnapshot qrcDoc : task.getResult()) {
+                                                            for (QueryDocumentSnapshot qrcDoc : task.getResult()) {//GO OVER USER'S CODES, GET HIGHEST
                                                                 QRcPoints = qrcDoc.getLong("Points").intValue();
                                                                 if (highest <= QRcPoints) {
                                                                     highest = QRcPoints;
@@ -155,31 +157,42 @@ public class RankFragment extends Fragment {
                                                                 }
                                                             }
                                                         } else {
-                                                            Log.d("RANK", "Failed to get QRCodes");
+                                                            Log.d("RANK2", "Failed to get QRCodes");
                                                         }
 
 
-                                                        if(userDoc.getString("username")!=null)
+                                                        //ADD USER HIGHEST CODE TO LIST, also track the null users so can know when to get top 10
+                                                        if(userDoc.getString("username")!=null) {
                                                             Score_Or_Local.add(new RankTriple(userDoc.getString("username"), highestFace, highest));
+                                                        }else{
+                                                            null_users++;
+                                                        }
                                                         //Log.d("RANK", userDoc.getString("username") + " " + highest);
                                                         int N_Players = Score_Or_Local.size();
                                                         Log.d("RANK2",String.valueOf(N_Players));
-                                                        topTriples.clear();
-                                                        for(int i=1; i<=X && i<=N_Players; i++){
-                                                            topTriples.add(kthLargestTriple(Score_Or_Local,i));
-                                                            Log.d("RANK2", topTriples.get(i-1).PlayerID + " " + topTriples.get(i-1).QRcPoints);
 
-                                                        }
 
-                                                        if(topTriples.size()==X){
+                                                        //ONLY GET TOP 10 WHEN ALL PLayers's highest is gotten
+                                                        if(N_Players+null_users==P){
+
+                                                            //2)
+                                                            //top 10
+                                                            for(int i=1; i<=X && i<=N_Players; i++){
+                                                                topTriples.add(kthLargestTriple(Score_Or_Local,i));
+                                                                Log.d("RANK2", topTriples.get(i-1).PlayerID + " " + topTriples.get(i-1).QRcPoints);
+                                                            }
+
+                                                            //3)
                                                             //Bundle em up
                                                             Bundle RankBundle = new Bundle();
                                                             RankBundle.putSerializable(RankBundleKey, topTriples);
 
+                                                            //4)
                                                             //make new RankScoreFragment with data
                                                             Fragment selected = new RankScoreFragment();
                                                             selected.setArguments(RankBundle);
 
+                                                            //5)
                                                             //show it
                                                             getActivity().getSupportFragmentManager()
                                                                     .beginTransaction()
@@ -196,6 +209,7 @@ public class RankFragment extends Fragment {
                                 }else{
                                     Log.d("RANK","Failed to get Users");
                                 }
+
                             }
 
                             //int N_Players = Score_Or_Local.size();
@@ -206,20 +220,13 @@ public class RankFragment extends Fragment {
 
 
 
-
-
-                        //2. put in an ordered list
-                        //will use kth largest instead of sorting
-
-                        //3. get the top 10
-                        //Now, get the top 10 players!!
-
+                        null_users=0; //reset nulls
 
                         break;
                     case 1: //Sum
-                        selected = new RankSumFragment();
+                        Log.d("RANK", "GLOBAL RANK(SUM)");
 
-                        //order top 20 by Sum of QRCodes
+                        //order top 10 by Sum of QRCodes
                         //1. get the highest QRCodes of all players
                         Sum_Or_Count = new ArrayList<>();
 
@@ -229,25 +236,25 @@ public class RankFragment extends Fragment {
 
                         //2. put in an ordered list
 
-                        //3. get the top 20
+                        //3. get the top 10
                         break;
                     case 2: //Count
-                        selected = new RankCountFragment();
+                        Log.d("RANK", "GLOBAL RANK(COUNT)");
 
-                        //order top 20 by Count of QRCodes
+                        //order top 10 by Count of QRCodes
                         //1. get the highest QRCodes of all players
                         Sum_Or_Count = new ArrayList<>();
 
 
                         //2. put in an ordered list
 
-                        //3. get the top 20
+                        //3. get the top 10
 
                         break;
                     case 3: //Local
-                        selected = new RankLocalFragment();
+                        Log.d("RANK", "LOCAL RANK(SCORE)");
 
-                        //order top 20 by Highest QRCodes locally(ANA of Postal code)
+                        //order top 10 by Highest QRCodes locally(ANA of Postal code)
                         //1. get the highest QRCodes of all players
                         Score_Or_Local = new ArrayList<>();
                         topTriples = new ArrayList<>();
@@ -259,7 +266,9 @@ public class RankFragment extends Fragment {
                             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                 String userID;
                                 if(task.isSuccessful()){
+                                    int P = task.getResult().size(); //used to make querying quicker
 
+                                    Log.d("RANK5",P + "docs");
                                     for (QueryDocumentSnapshot userDoc: task.getResult()) {//GO OVER USERS
                                         Score_Or_Local.clear();
                                         userID = userDoc.getId();
@@ -274,7 +283,7 @@ public class RankFragment extends Fragment {
                                                         int highest = 0;
                                                         String highestFace = "----";
                                                         if (task.isSuccessful()) {
-                                                            for (QueryDocumentSnapshot qrcDoc : task.getResult()) {
+                                                            for (QueryDocumentSnapshot qrcDoc : task.getResult()) {//GO OVER USER'S CODES, GET THEIR HIGHEST
                                                                 QRcPoints = qrcDoc.getLong("Points").intValue();
                                                                 if (highest <= QRcPoints) {
                                                                     highest = QRcPoints;
@@ -282,31 +291,44 @@ public class RankFragment extends Fragment {
                                                                 }
                                                             }
                                                         } else {
-                                                            Log.d("RANK", "Failed to get QRCodes");
+                                                            Log.d("RANK5", "Failed to get QRCodes");
                                                         }
 
 
-                                                        if(userDoc.getString("username")!=null)
+                                                        //IF THEY ARE NOT A NULL USER, ADD THEM TO THE LIST, OTHERWISE TRACK NULLs to know when we can get top 10
+                                                        if(userDoc.getString("username")!=null) {
                                                             Score_Or_Local.add(new RankTriple(userDoc.getString("username"), highestFace, highest));
+                                                        }else{
+                                                            null_users++;
+                                                        }
+
                                                         //Log.d("RANK", userDoc.getString("username") + " " + highest);
                                                         int N_Players = Score_Or_Local.size();
-                                                        Log.d("RANK3",String.valueOf(N_Players));
-                                                        topTriples.clear();
-                                                        for(int i=1; i<=X && i<=N_Players; i++){
-                                                            topTriples.add(kthLargestTriple(Score_Or_Local,i));
-                                                            Log.d("RANK3", topTriples.get(i-1).PlayerID + " " + topTriples.get(i-1).QRcPoints);
+                                                        Log.d("RANK5",String.valueOf(N_Players));
 
-                                                        }
 
-                                                        if(topTriples.size()==X){
+
+                                                        //GET TOP 10 ONLY WHEN GONE OVER ALL PLAYERS
+                                                        if(N_Players+null_users==P){
+
+                                                            //2) top X=10
+                                                            for(int i=1; i<=X && i<=N_Players; i++){
+                                                                topTriples.add(kthLargestTriple(Score_Or_Local,i));
+                                                                Log.d("RANK5", topTriples.get(i-1).PlayerID + " " + topTriples.get(i-1).QRcPoints);
+
+                                                            }
+
+                                                            //3)
                                                             //Bundle em up
                                                             Bundle RankBundle = new Bundle();
                                                             RankBundle.putSerializable(RankBundleKey, topTriples);
 
+                                                            //4)
                                                             //make new RankLocalFragment with data
                                                             Fragment selected = new RankLocalFragment();
                                                             selected.setArguments(RankBundle);
 
+                                                            //5)
                                                             //show it
                                                             getActivity().getSupportFragmentManager()
                                                                     .beginTransaction()
@@ -321,18 +343,14 @@ public class RankFragment extends Fragment {
                                     }
 
                                 }else{
-                                    Log.d("RANK","Failed to get Users");
+                                    Log.d("RANK5","Failed to get Users");
                                 }
                             }
-
-                            //int N_Players = Score_Or_Local.size();
 
                         });
 
 
-                        //2. put in an ordered list
-
-                        //3. get the top 20
+                        null_users=0;//reset nulls
                         break;
                 }
 
