@@ -11,6 +11,7 @@ import android.location.Location;
 import android.media.Image;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -97,13 +98,14 @@ public class ResultsActivity extends AppCompatActivity {
     TextView textViewVisual;
     TextView textViewName;
     CheckBox checkBox;
-    Button addPhoto; // TODO: addPhotoFragment -> CameraX integration
+    Button addPhoto;
     Bitmap imageBitmap;
     Intent results;
     EditText comment;
     private static final int CAMERA_REQUEST = 100;
     Double lat;
     Double lon;
+    GeoPoint geolocation;
     Button continueToPost;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -268,21 +270,24 @@ public class ResultsActivity extends AppCompatActivity {
                         newQRC.put("Geolocation", null);
                     }
 
-                    Map<String, Object> commentMap = new HashMap<>();
-                    commentMap.put("Comment", comment.getText().toString());
-                    commentMap.put("Author", FirebaseAuth.getInstance().getCurrentUser().getUid());
-                    commentMap.put("QRCode", hashed);
-                    DocumentReference newCommentRef = db.collection("Comments").document();
-                    final String commentRefId = newCommentRef.getId();
-                    newCommentRef.set(commentMap)
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void unused) {
-                                    // Add the comment ID to the 'comments' list
-                                }
-                            });
+                    String commentText = comment.getText().toString();
+                    if (!TextUtils.isEmpty(commentText)) { // check if comment is not empty
+                        Map<String, Object> commentMap = new HashMap<>();
+                        commentMap.put("Comment", commentText);
+                        commentMap.put("Author", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                        commentMap.put("QRCode", hashed);
+                        DocumentReference newCommentRef = db.collection("Comments").document();
+                        final String commentRefId = newCommentRef.getId();
+                        newCommentRef.set(commentMap)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void unused) {
+                                        // Add the comment ID to the 'comments' list
+                                    }
+                                });
 
-                    comments.add(commentRefId);
+                        comments.add(commentRefId);
+                    }
                     newQRC.put("Comments", comments);
                     playersScanned.add(FirebaseAuth.getInstance().getCurrentUser().getUid());
                     newQRC.put("playersScanned", playersScanned);
@@ -306,27 +311,27 @@ public class ResultsActivity extends AppCompatActivity {
                 }
 
                 else {
-
-                    Map<String, Object> commentMap = new HashMap<>();
-                    commentMap.put("Comment", comment.getText().toString());
-                    commentMap.put("Author", FirebaseAuth.getInstance().getCurrentUser().getUid());
-                    commentMap.put("QRCode", hashed);
-
-                    DocumentReference newCommentRef = db.collection("Comments").document();
-                    final String commentRefId = newCommentRef.getId();
-                    newCommentRef.set(commentMap)
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void unused) {
-                                    // Add the comment ID to the 'comments' list
-                                    comments.add(commentRefId);
-                                }
-                            });
-                    Map<String, Object> updateComments = new HashMap<>();
-                    updateComments.put("Comments", FieldValue.arrayUnion(commentRefId));
-                    db.collection("QRCodes").document(hashed)
-                            .update(updateComments);
-
+                    // if the qr code already exists
+                    if (!TextUtils.isEmpty(comment.getText().toString())) { // if comment box is not empty add it into Comments and QRCode's Comments array
+                        Map<String, Object> commentMap = new HashMap<>();
+                        commentMap.put("Comment", comment.getText().toString());
+                        commentMap.put("Author", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                        commentMap.put("QRCode", hashed);
+                        DocumentReference newCommentRef = db.collection("Comments").document();
+                        final String commentRefId = newCommentRef.getId();
+                        newCommentRef.set(commentMap)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void unused) {
+                                        // Add the comment ID to the 'comments' list
+                                        comments.add(commentRefId);
+                                    }
+                                });
+                        Map<String, Object> updateComments = new HashMap<>();
+                        updateComments.put("Comments", FieldValue.arrayUnion(commentRefId));
+                        db.collection("QRCodes").document(hashed)
+                                .update(updateComments);
+                    }
 
                     if (!hasScanned) { // user has not scanned this QR code yet
                         final Map<String,Object> addUser = new HashMap<>();
@@ -336,9 +341,9 @@ public class ResultsActivity extends AppCompatActivity {
                     }
 
                     final Map<String,Object> updateGeolocation = new HashMap<>();
-                    if (includeGeolocation) { // reset geolocation
+                    if (includeGeolocation) { // update geolocation
                         GeoPoint geolocation = new GeoPoint(lat,lon);
-                        Log.d("TAG", "UPDATE GEOLOCATION "+geolocation);
+                        Log.d("TAG", "UPDATED GEOLOCATION "+geolocation);
                         updateGeolocation.put("Geolocation", geolocation);
                     }
                     else {
@@ -348,8 +353,27 @@ public class ResultsActivity extends AppCompatActivity {
                     db.collection("QRCodes").document(hashed)
                             .update(updateGeolocation);
                 }
-
-                finish(); // return to main activity TODO: go to QRProfile instead
+                DocumentReference docRef = db.collection("QRCodes").document(hashed); // get the qrcode from the db and package contents into qrcode to send into qrprofile
+                docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                Log.d("TAG", "DocumentSnapshot data: " + document.getData());
+                                QRCode qrCode = new QRCode(document.get("Comments"), ((Long) document.get("Points")).intValue(), (String) document.get("Name"), (String) document.get("icon"), document.get("playersScanned"), (GeoPoint) document.get("Geolocation"), (String) document.get("Hash"));
+                                Intent intent = new Intent(ResultsActivity.this, QRProfile.class);
+                                intent.putExtra("qr_code",qrCode);
+                                ResultsActivity.this.startActivity(intent);
+                            } else {
+                                Log.d("TAG", "No such document");
+                            }
+                        } else {
+                            Log.d("TAG", "get failed with ", task.getException());
+                        }
+                    }
+                });
+                finish();
             }
         });
 
@@ -367,22 +391,22 @@ public class ResultsActivity extends AppCompatActivity {
 
         // 16^5 = 1.04 million unique combos.
         HashMap<Character, String> hexMapName = new HashMap<Character, String>();
-        hexMapName.put('0', "Alpha");
-        hexMapName.put('1', "Bravo");
-        hexMapName.put('2', "Charlie");
-        hexMapName.put('3', "Delta");
-        hexMapName.put('4', "Echo");
-        hexMapName.put('5', "Foxtrot");
-        hexMapName.put('6', "Golf");
-        hexMapName.put('7', "Hotel");
-        hexMapName.put('8', "India");
-        hexMapName.put('9', "Juliet");
-        hexMapName.put('a', "Kilo");
-        hexMapName.put('b', "Lima");
-        hexMapName.put('c', "Mike");
-        hexMapName.put('d', "November");
-        hexMapName.put('e', "Oscar");
-        hexMapName.put('f', "Papa");
+        hexMapName.put('0', "Bet");
+        hexMapName.put('1', "Sus");
+        hexMapName.put('2', "Yeet");
+        hexMapName.put('3', "Cap");
+        hexMapName.put('4', "Fleek");
+        hexMapName.put('5', "Drip");
+        hexMapName.put('6', "Poggers");
+        hexMapName.put('7', "Lit");
+        hexMapName.put('8', "Ratio");
+        hexMapName.put('9', "Slayyy");
+        hexMapName.put('a', "Mid");
+        hexMapName.put('b', "Dub");
+        hexMapName.put('c', "Fire");
+        hexMapName.put('d', "Oof");
+        hexMapName.put('e', "Bussin");
+        hexMapName.put('f', "Rizz");
 
         QRName = hexMapName.get(hashedSubstring.charAt(0))+" "+hexMapName.get(hashedSubstring.charAt(1))+hexMapName.get(hashedSubstring.charAt(2))+hexMapName.get(hashedSubstring.charAt(3))+hexMapName.get(hashedSubstring.charAt(4))+hexMapName.get(hashedSubstring.charAt(5));
         Log.d("QRName:", QRName);

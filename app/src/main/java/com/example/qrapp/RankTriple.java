@@ -1,13 +1,17 @@
 package com.example.qrapp;
 
-public class RankTriple {
+import java.io.Serializable;
+
+public class RankTriple implements Serializable {
 
     public String PlayerID="";
-    public QRCode QRc=null;
+    public String QRcFace = "";
+    public int QRcPoints = 0;
 
-    public RankTriple(String playerID, QRCode qrCode){
+    public RankTriple(String playerID, String qrcFace, int qrcPoints){
         this.PlayerID=playerID;
-        this.QRc=qrCode;
+        this.QRcFace = qrcFace;
+        this.QRcPoints = qrcPoints;
     }
 
 }

@@ -77,6 +77,7 @@ public class MyProfile extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
 
+        // if you don't log in this will error...
         userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
 

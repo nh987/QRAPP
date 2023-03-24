@@ -79,48 +79,54 @@ public class QRProfile extends AppCompatActivity {
 
         playersList = (ArrayList) qrCode.getPlayersScanned();
         commentsList = (ArrayList) qrCode.getComments();
-        // iterate through the items in comments list using for each loop
-        // for each comment in the list, get the comment text from the database
-        HashMap<String, String> commentHashMap = new HashMap<>();
         AtomicInteger completedCallbacks = new AtomicInteger(0);
-        System.out.println("SIZE before loop " + commentsList.size());
         ArrayList<Comment> commentList = new ArrayList<>();
 
-        for (int i = 0; i < commentsList.size(); i++) {
-            String commentId = (String) commentsList.get(i);
-            DocumentReference commentRef = db.collection("Comments").document(commentId);
-            commentRef.get()
-                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                        @Override
-                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            if (documentSnapshot.exists()) {
-                                // Document found, process the data
-                                String commentText = documentSnapshot.getString("Comment");
-                                String author = documentSnapshot.getString("Author");
+        // iterate through the comments list
+        if (commentsList != null){
+            for (int i = 0; i < commentsList.size(); i++) {
+                String commentId = (String) commentsList.get(i);
+                // get the comment document so we can get the comment text and author
+                DocumentReference commentRef = db.collection("Comments").document(commentId);
+                commentRef.get()
+                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                if (documentSnapshot.exists()) {
+                                    // Document found, process the data
+                                    String commentText = documentSnapshot.getString("Comment");
+                                    String author = documentSnapshot.getString("Author");
+                                    // get the user document so we can get the user id
+                                    DocumentReference userRef = db.collection("Users").document(author);
+                                    userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onSuccess(DocumentSnapshot userDocumentSnapshot) {
+                                            if (userDocumentSnapshot.exists()) {
+                                                String username = userDocumentSnapshot.getString("username");
+                                                Comment comment = new Comment(author, username, commentText);
+                                                commentList.add(comment);
 
-                                DocumentReference userRef = db.collection("Users").document(author);
-                                userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                    @Override
-                                    public void onSuccess(DocumentSnapshot userDocumentSnapshot) {
-                                        if (userDocumentSnapshot.exists()) {
-                                            String username = userDocumentSnapshot.getString("username");
-                                            Comment comment = new Comment(author, username, commentText);
-                                            commentList.add(comment);
-
-                                            if (completedCallbacks.incrementAndGet() == commentsList.size()) {
-                                                CommentAdapter adapter = new CommentAdapter(QRProfile.this, R.layout.item_comment, commentList, FirebaseAuth.getInstance().getCurrentUser().getUid());
-                                                commentListView.setAdapter(adapter);
+                                                if (completedCallbacks.incrementAndGet() == commentsList.size()) {
+                                                    CommentAdapter adapter = new CommentAdapter(QRProfile.this, R.layout.item_comment, commentList, FirebaseAuth.getInstance().getCurrentUser().getUid());
+                                                    commentListView.setAdapter(adapter);
+                                                }
                                             }
                                         }
-                                    }
-                                });
+                                    });
+                                }
                             }
-                        }
-                    });
+                        });
+            }
         }
-
-        Log.d("LIST", playersList.toString());
-        scannedBy.setText("Scanned by "+playersList.size()+" player(s).");
+        int size;
+        try{
+            size  = playersList.size();
+        }
+        catch (Exception e)
+        {
+            size = 0;
+        }
+        scannedBy.setText("Scanned by "+size+" player(s).");
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         QRCName.setText(qrCode.getName()); // set the name text
