@@ -28,6 +28,6 @@ public class ScannedByTest {
     @Test
     public void testIntent() {
         when(scannedBy.getIntent()).thenReturn(null);
-        assertEquals(null, scannedBy.getIntent()); // Man, I hate unit testing activities.
+        assertEquals(null, scannedBy.getIntent()); 
     }
 }
