@@ -10,6 +10,7 @@
         android:layout_height="65dp"
         android:contentDescription="@string/app_name"
         android:text="1"
+        android:fontFamily="sans-serif-black"
         android:textSize="20dp"
         android:padding="5dp"/>
 
@@ -19,6 +20,7 @@
         android:layout_height="65dp"
         android:contentDescription="@string/app_name"
         android:text="Team#23"
+        android:fontFamily="sans-serif-black"
         android:textSize="20dp"
         android:padding="10dp"
         android:layout_weight="3"/>
@@ -29,16 +31,18 @@
         android:layout_height="65dp"
         android:contentDescription="@string/app_name"
         android:text="[|:'o"
+        android:fontFamily="sans-serif-black"
         android:textSize="20dp"
         android:padding="10dp"
         android:layout_weight="3"/>
 
     <TextView
         android:id="@+id/triple_codepoints"
-        android:layout_width="0dp"
-        android:layout_height="65dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:contentDescription="@string/app_name"
         android:text="2"
+        android:fontFamily="sans-serif-black"
         android:textSize="20dp"
         android:padding="10dp"
         android:layout_weight="1"/>

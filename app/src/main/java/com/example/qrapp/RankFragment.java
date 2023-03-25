@@ -120,7 +120,7 @@ public class RankFragment extends Fragment {
         //SET SPINNER
         // Create an ArrayAdapter using the string array and a default spinner layout
         RankSpinnerAdapter = ArrayAdapter.createFromResource(getContext(),
-                R.array.rank_criteria, android.R.layout.simple_spinner_item);
+                R.array.rank_criteria, R.layout.rankspinner_item);
         // Specify the layout to use when the list of choices appears
         RankSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
