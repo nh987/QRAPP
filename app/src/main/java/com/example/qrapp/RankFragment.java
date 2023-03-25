@@ -16,6 +16,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
@@ -58,8 +60,23 @@ public class RankFragment extends Fragment {
 
     //dataholders, temporary storage of some data
     //List<String> players;
-    String my_region;
     int null_users = 0;
+
+    //for location
+    //used whenvever a new last location is requested
+    String my_region;
+    private ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    updateRegion();
+                    Log.d("CURRENT LOCATION", "Permission Granted");
+                } else {
+                    //Permission not granted
+                    // Local Ranking will be unavailable or inaccurate
+                    //IGNORED flow from here since assuming we are getting permission
+                    Log.d("CURRENT LOCATION", "Permission Denied");
+                }
+            });
 
     //tops
     int X = 10; // will do top 10
@@ -98,13 +115,29 @@ public class RankFragment extends Fragment {
     /**
      * This method sets the region of the current user to use for local rankings
      */
-    @SuppressLint("MissingPermission")
+
     private void setRegion() {
-        LocationManager locationManager = (LocationManager) getActivity().getSystemService(getContext().LOCATION_SERVICE);
+
         if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // requirement to check permission
-            return;
+            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+            //return;
+        }else{
+            updateRegion();
         }
+
+
+    }
+
+    /**
+     * This method gets the user's postal code from their current location and update this value
+     * in the database. If the postal code cannot be determined,
+     * the last known region in the database is used
+     */
+    @SuppressLint("MissingPermission")
+    public void updateRegion(){
+        //get their current region
+        LocationManager locationManager = (LocationManager) getActivity().getSystemService(getContext().LOCATION_SERVICE);
         Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         if (location == null) {
             // If the location cannot be grabbed from GPS we grab it from network
@@ -112,10 +145,9 @@ public class RankFragment extends Fragment {
         }
 
         Geocoder PostalCodeFinder= new Geocoder(getContext());
-
-        try {
+        try {// try to get current region
             String ANANAN = PostalCodeFinder.getFromLocation(location.getLatitude(),location.getLongitude(),1).get(0).getPostalCode();
-            int start = 0, end = 3;
+            int start = 0, end = 3; // want ANA
             my_region = ANANAN.substring(start,end);
             Log.d("REGION", "User is in region "+my_region);
 
@@ -130,7 +162,7 @@ public class RankFragment extends Fragment {
             });
 
 
-        } catch (IOException e) {
+        } catch (IOException e) { //cant get a region, use whatever is in db
             e.printStackTrace();
             UserCR.document(userID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
@@ -139,8 +171,6 @@ public class RankFragment extends Fragment {
                 }
             });
         }
-
-
     }
 
     /**The onCreateView method sets the functionality for critical view parameters
