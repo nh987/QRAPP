@@ -64,9 +64,13 @@
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
-        </activity> <!-- for maps -->
+        </activity>
 
-        <uses-library android:name="com.google.android.maps" />
+        <!--for maps-->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${API_maps}"/>
+        <uses-library android:name="com.google.android.maps"/>
     </application>
 
 </manifest>
