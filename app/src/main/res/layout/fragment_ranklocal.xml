@@ -3,25 +3,21 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/holo_orange_dark">
+    android:background="@drawable/gradient_local">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=" "
-            android:textSize="20sp"
-            android:layout_gravity="center_horizontal|center_vertical"/>
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Player"
             android:textSize="20sp"
+            android:paddingLeft="5dp"
+            android:fontFamily="sans-serif-black"
             android:layout_gravity="center_horizontal|center_vertical"
             android:layout_weight="1"/>
 
@@ -30,6 +26,8 @@
             android:layout_height="wrap_content"
             android:text="Code"
             android:textSize="20sp"
+            android:fontFamily="sans-serif-black"
+            android:paddingLeft="35dp"
             android:layout_gravity="center_horizontal|center_vertical"
             android:layout_weight="1"/>
 
@@ -37,6 +35,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Score"
+            android:gravity="end"
+            android:paddingRight = "40dp"
+            android:fontFamily="sans-serif-black"
             android:textSize="20sp"
             android:layout_gravity="center_horizontal|center_vertical"
             android:layout_weight="1"/>
