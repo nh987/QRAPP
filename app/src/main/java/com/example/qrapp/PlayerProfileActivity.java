@@ -181,7 +181,8 @@ public class PlayerProfileActivity extends AppCompatActivity {
                                 // set the buttons to open the QRProfile activity
                                 setViewButtons(highestQR, lowestQR);
 
-                                // set the view QR codes button to open a listview fragment?
+                                // set the view QR codes button to open a listview activity?
+
                                 setPlayerCodesScanned(QrList);
 
                                 // show buttons now that querying is done
@@ -255,10 +256,10 @@ public class PlayerProfileActivity extends AppCompatActivity {
 
     public void setPlayerCodesScanned(ArrayList<QRCode> qrList) {
         viewCodesScanned.setOnClickListener(v -> {
-            Fragment selected = new ViewPlayerScannedFragment(qrList);
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.frame, selected).commit(); //SHOW FRAGMENT
+            Intent intent = new Intent(PlayerProfileActivity.this, ViewPlayerScannedQRActivity.class);
+            intent.putExtra("QRCodeList", qrList);
+            intent.putExtra("isCurrentUser", false);
+            startActivity(intent);
         });
 
     }
