@@ -95,13 +95,14 @@ public class MyProfile extends AppCompatActivity {
         viewLowestQRCButton.setEnabled(false);
         viewLowestQRCButton.setVisibility(View.INVISIBLE);
 
-        //set the view scans button to open the ViewPlayerScannedFragment Fragment
+        //set the view scans button to open the ViewPlayerScannedQR with currentUser true
         viewScansButton.setOnClickListener(v -> {
-            Fragment selected = new ViewPlayerScannedFragment(QRCodeList, true);
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.frame, selected).commit(); //SHOW FRAGMENT
+            Intent intent = new Intent(MyProfile.this, ViewPlayerScannedQRActivity.class);
+            intent.putExtra("currentUser", true);
+            intent.putExtra("QRCodeList", QRCodeList);
+            startActivity(intent);
         });
+
 
         // set the view scans button to disabled until the data is loaded
         viewScansButton.setEnabled(false);
@@ -110,17 +111,26 @@ public class MyProfile extends AppCompatActivity {
         // get the user data from the database
         updateUserInfo();
 
-        //get all QRCodes scanned by the user
+        //initialize the QRCodeList, this will be populated in the OnResume step of the lifecycle
         QRCodeList = new ArrayList<>();
-        getQRCodes();
 
 
         //close activity when back button is pressed
         backButton.setOnClickListener(v -> finish());
 
 
-
     }
+
+    /**
+     * onResume is called whenever the user opens or returns to this activity
+     * it calls getQRCodes() to update the QRCodeList in case the user updated their qr codes
+     */
+    @Override
+    protected void onResume(){
+        super.onResume();
+        getQRCodes();
+    }
+
 
     /**
      * Gets all the QRCodes that the user has scanned,
@@ -128,6 +138,15 @@ public class MyProfile extends AppCompatActivity {
      * then calls updateScores() to update the stats
      */
     private void getQRCodes(){
+        //reset everything before loading data
+        QRCodeList.clear();
+        String loading = getString(R.string.loading);
+        highestQRCvalue.setText(loading);
+        lowestQRCvalue.setText(loading);
+        totalscoreValue.setText(loading);
+        codesScannedValue.setText(loading);
+
+        //get new data
         db.collection("QRCodes").whereArrayContains("playersScanned", userID).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 for (DocumentSnapshot document : task.getResult()) {
@@ -154,6 +173,7 @@ public class MyProfile extends AppCompatActivity {
                 return;
             }
         });
+
     }
 
     /**
