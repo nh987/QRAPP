@@ -90,6 +90,10 @@ import android.widget.Toast;
 // URL: https://developer.android.com/reference/android/media/ExifInterface
 // AUTHOR: n/a
 // SITE: https://developer.android.com/
+// 6.)
+// URL: https://stackoverflow.com/questions/53030480/auto-adjust-text-size-to-fit-the-layout-android
+// AUTHOR: https://stackoverflow.com/users/5474351/reza-abedini
+// SITE: https://stackoverflow.com/
 /**
  * ResultsActivity gets bundle from ScanActivity containing a SHA-256 hashed string of the barcode
  * and long score value of the hash according to the scoring system. Score is displayed in a TextView and
@@ -120,12 +124,10 @@ public class ResultsActivity extends AppCompatActivity {
     CheckBox checkBox;
     Button addPhoto;
     Bitmap imageBitmap;
-    Intent results;
     EditText comment;
     private static final int CAMERA_REQUEST = 100;
     Double lat;
     Double lon;
-    GeoPoint geolocation;
     Button continueToPost;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -399,7 +401,7 @@ public class ResultsActivity extends AppCompatActivity {
     /**
      * Pass in hashed barcode string and take first 6 digits that are mapped to various words that are then concatenated together to create
      * a name.
-     * @param hashed
+     * @param hashed string of qrc
      * @return name string
      */
     public String createName(String hashed) {
@@ -432,7 +434,7 @@ public class ResultsActivity extends AppCompatActivity {
     /**
      * Pass in hashed barcode string and take first 4 digits that are mapped to various emoticon (head/hat, eyes, nose, mouth
      * that are then concatenated together to create a visual representation.
-     * @param hashed
+     * @param hashed string of qrc
      * @return visual string
      */
     public String createVisual (String hashed){
@@ -473,8 +475,8 @@ public class ResultsActivity extends AppCompatActivity {
         hexMapEyes.put('b', "%");
         hexMapEyes.put('c', ">%");
         hexMapEyes.put('d', ">=");
-        hexMapEyes.put('e', "D");
-        hexMapEyes.put('f', ">D");
+        hexMapEyes.put('e', "&");
+        hexMapEyes.put('f', ">&");
 
         HashMap<Character, String> hexMapNose = new HashMap<Character, String>(); // emoticon noses
         hexMapNose.put('0', "c");
@@ -496,7 +498,7 @@ public class ResultsActivity extends AppCompatActivity {
 
         HashMap<Character, String> hexMapMouth = new HashMap<Character, String>(); // emoticon mouths
         hexMapMouth.put('0', "P");
-        hexMapMouth.put('1', "B");
+        hexMapMouth.put('1', "D");
         hexMapMouth.put('2', "]");
         hexMapMouth.put('3', "[");
         hexMapMouth.put('4', ")");
