@@ -68,7 +68,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
+        android:hapticFeedbackEnabled="true"
 
+        app:backgroundTint="#ffffafbd"
         app:hideOnScroll="true"
         app:contentInsetStart="0dp"
         app:fabCradleMargin="20dp"

@@ -1,6 +1,12 @@
 package com.example.qrapp;
 
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.pm.PackageManager;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,8 +16,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -22,10 +31,16 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 
+import org.checkerframework.checker.units.qual.K;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This is a class that extends the Fragment class. This "RankFragment" class contains and
@@ -45,8 +60,23 @@ public class RankFragment extends Fragment {
 
     //dataholders, temporary storage of some data
     //List<String> players;
-    String my_region;
     int null_users = 0;
+
+    //for location
+    //used whenvever a new last location is requested
+    String my_region;
+    private ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    updateRegion();
+                    Log.d("CURRENT LOCATION", "Permission Granted");
+                } else {
+                    //Permission not granted
+                    // Local Ranking will be unavailable or inaccurate
+                    //IGNORED flow from here since assuming we are getting permission
+                    Log.d("CURRENT LOCATION", "Permission Denied");
+                }
+            });
 
     //tops
     int X = 10; // will do top 10
@@ -85,13 +115,62 @@ public class RankFragment extends Fragment {
     /**
      * This method sets the region of the current user to use for local rankings
      */
+
     private void setRegion() {
-        UserCR.document(userID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                my_region = task.getResult().getString("location");
-            }
-        });
+
+        if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // requirement to check permission
+            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+            //return;
+        }else{
+            updateRegion();
+        }
+
+
+    }
+
+    /**
+     * This method gets the user's postal code from their current location and update this value
+     * in the database. If the postal code cannot be determined,
+     * the last known region in the database is used
+     */
+    @SuppressLint("MissingPermission")
+    public void updateRegion(){
+        //get their current region
+        LocationManager locationManager = (LocationManager) getActivity().getSystemService(getContext().LOCATION_SERVICE);
+        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if (location == null) {
+            // If the location cannot be grabbed from GPS we grab it from network
+            location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        }
+
+        Geocoder PostalCodeFinder= new Geocoder(getContext());
+        try {// try to get current region
+            String ANANAN = PostalCodeFinder.getFromLocation(location.getLatitude(),location.getLongitude(),1).get(0).getPostalCode();
+            int start = 0, end = 3; // want ANA
+            my_region = ANANAN.substring(start,end);
+            Log.d("REGION", "User is in region "+my_region);
+
+            //update  location
+            HashMap<String,Object>region = new HashMap<>();
+            region.put("location",my_region);
+            UserCR.document(userID).set(region, SetOptions.merge()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    Log.d("REGION","Updated user region in database");
+                }
+            });
+
+
+        } catch (IOException e) { //cant get a region, use whatever is in db
+            e.printStackTrace();
+            UserCR.document(userID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    my_region = task.getResult().getString("location");
+                }
+            });
+        }
     }
 
     /**The onCreateView method sets the functionality for critical view parameters
@@ -120,7 +199,7 @@ public class RankFragment extends Fragment {
         //SET SPINNER
         // Create an ArrayAdapter using the string array and a default spinner layout
         RankSpinnerAdapter = ArrayAdapter.createFromResource(getContext(),
-                R.array.rank_criteria, android.R.layout.simple_spinner_item);
+                R.array.rank_criteria, R.layout.rankspinner_item);
         // Specify the layout to use when the list of choices appears
         RankSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
@@ -184,7 +263,7 @@ public class RankFragment extends Fragment {
                                                         }
                                                         //Log.d("RANK", userDoc.getString("username") + " " + highest);
                                                         int N_Players = Score_Or_Local.size();
-                                                        Log.d("RANK2",String.valueOf(N_Players));
+                                                        Log.d("RANK2",N_Players+" "+null_users);
 
 
                                                         //ONLY GET TOP 10 WHEN ALL PLayers's highest is gotten
@@ -467,7 +546,7 @@ public class RankFragment extends Fragment {
 
                                                         //Log.d("RANK", userDoc.getString("username") + " " + highest);
                                                         int N_Players = Score_Or_Local.size();
-                                                        Log.d("RANK5",String.valueOf(N_Players));
+                                                        Log.d("RANK5",N_Players+ " " +null_users);
 
 
 
