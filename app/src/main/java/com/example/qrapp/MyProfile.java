@@ -98,7 +98,7 @@ public class MyProfile extends AppCompatActivity {
         //set the view scans button to open the ViewPlayerScannedQR with currentUser true
         viewScansButton.setOnClickListener(v -> {
             Intent intent = new Intent(MyProfile.this, ViewPlayerScannedQRActivity.class);
-            intent.putExtra("currentUser", true);
+            intent.putExtra("isCurrentUser", true);
             intent.putExtra("QRCodeList", QRCodeList);
             startActivity(intent);
         });

@@ -40,9 +40,9 @@ public class ViewPlayerScannedQRActivity extends AppCompatActivity {
 
         // set up the adapter for the list view
         if (isCurrentUser) {
-            qRcAdapter = new QRcAdapter(QRCodeList, this);
-        } else {
             qRcAdapter = new RemovableQRCAdapter(QRCodeList, this);
+        } else {
+            qRcAdapter = new QRcAdapter(QRCodeList, this);
         }
         qrListView.setAdapter(qRcAdapter);
 
