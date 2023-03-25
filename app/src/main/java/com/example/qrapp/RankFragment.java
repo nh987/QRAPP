@@ -33,14 +33,11 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
-import org.checkerframework.checker.units.qual.K;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
 
 /**
  * This is a class that extends the Fragment class. This "RankFragment" class contains and
@@ -68,7 +65,7 @@ public class RankFragment extends Fragment {
     private ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (isGranted) {
-                    updateRegion();
+                    updateRegion(); //have permission to use region postal code
                     Log.d("CURRENT LOCATION", "Permission Granted");
                 } else {
                     //Permission not granted
@@ -113,9 +110,9 @@ public class RankFragment extends Fragment {
     }
 
     /**
-     * This method sets the region of the current user to use for local rankings
+     * This method sets the region of the current user to use for local rankings. It first checks
+     * for permissions and requests it. If permission is not granted, the default location is used
      */
-
     private void setRegion() {
 
         if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -175,7 +172,8 @@ public class RankFragment extends Fragment {
 
     /**The onCreateView method sets the functionality for critical view parameters
      *  for the RankFragment such as the display and interface of the Spinner
-     *  and its adapter. It returns the view
+     *  and its adapter. The view gives the user the ability to select the ranking they
+     *  choose with the spinner. The view returned once set.
      * @param inflater
      * @param container
      * @param savedInstanceState
@@ -273,7 +271,7 @@ public class RankFragment extends Fragment {
                                                             //top 10
                                                             for(int i=1; i<=X && i<=N_Players; i++){
                                                                 topTriples.add(kthLargestTriple(Score_Or_Local,i));
-                                                                Log.d("RANK2", topTriples.get(i-1).PlayerID + " " + topTriples.get(i-1).QRcPoints);
+                                                                Log.d("RANK2", topTriples.get(i-1).PlayerName + " " + topTriples.get(i-1).QRcPoints);
                                                             }
 
                                                             //3)
@@ -371,7 +369,7 @@ public class RankFragment extends Fragment {
                                                                //top 10
                                                                for (int i = 1; i <= X && i <= N_Players; i++){
                                                                      topPairs.add(kthLargestPair(Sum_Or_Count, i));
-                                                                   Log.d("RANK3", topPairs.get(i - 1).PlayerID + " " + topPairs.get(i - 1).Number);
+                                                                   Log.d("RANK3", topPairs.get(i - 1).PlayerName + " " + topPairs.get(i - 1).Number);
                                                                }
 
                                                                //3)
@@ -461,7 +459,7 @@ public class RankFragment extends Fragment {
                                                             //top 10
                                                             for (int i = 1; i <= X && i <= N_Players; i++){
                                                                 topPairs.add(kthLargestPair(Sum_Or_Count, i));
-                                                                Log.d("RANK4", topPairs.get(i - 1).PlayerID + " " + topPairs.get(i - 1).Number);
+                                                                Log.d("RANK4", topPairs.get(i - 1).PlayerName + " " + topPairs.get(i - 1).Number);
                                                             }
 
                                                             //3)
@@ -556,7 +554,7 @@ public class RankFragment extends Fragment {
                                                             //2) top X=10
                                                             for(int i=1; i<=X && i<=N_Players; i++){
                                                                 topTriples.add(kthLargestTriple(Score_Or_Local,i));
-                                                                Log.d("RANK5", topTriples.get(i-1).PlayerID + " " + topTriples.get(i-1).QRcPoints);
+                                                                Log.d("RANK5", topTriples.get(i-1).PlayerName + " " + topTriples.get(i-1).QRcPoints);
 
                                                             }
 
