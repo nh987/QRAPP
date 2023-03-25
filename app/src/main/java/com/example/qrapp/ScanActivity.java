@@ -127,7 +127,7 @@ public class ScanActivity extends AppCompatActivity implements ImageAnalysis.Ana
 
     /**
      * start cameraX instance
-     * @param cameraProvider
+     * @param cameraProvider singleton that binds camera lifecycle to context
      */
 
     private void startCameraX(ProcessCameraProvider cameraProvider) {
@@ -221,7 +221,7 @@ public class ScanActivity extends AppCompatActivity implements ImageAnalysis.Ana
      * the arbitrary worth of the barcode based on subsequent repeated numbers/letters - where the score
      * grows exponentially according to the length of the combo chain. Follows format of value raised to combo minus 1
      * zero is a special digit as it is the only value that alone is worth 1 and chained is twenty raised to combo length minus 1
-     * @param hex
+     * @param hex string
      * @return long score
      */
     public long score(String hex) {
