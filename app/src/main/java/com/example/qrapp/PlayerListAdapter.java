@@ -117,7 +117,6 @@ class PlayerListAdapter extends BaseAdapter {
                                 DocumentSnapshot userDoc = task.getResult();
                                 if (userDoc.exists()) {
                                     checkName.add(userDoc.getString("username"));
-                                    Log.d("TAG", "Listener: "+checkName);
                                     Log.d("TAG", "userNames: "+player.getUsername()+","+checkName);
                                     if (Objects.equals(player.getUsername(), checkName.get(0))) {
                                         Intent myProfileIntent = new Intent(myActivity, MyProfile.class);
