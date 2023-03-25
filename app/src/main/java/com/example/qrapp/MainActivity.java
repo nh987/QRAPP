@@ -25,6 +25,8 @@ import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -37,7 +39,13 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Scro
     ImageButton SCAN;// scan button object
     ImageButton MYPROFILE;// get to myprofile page
     ImageView BACK;// get back to main fragment from Leaderboard
-    FirebaseAuth auth;
+
+    FirebaseFirestore DB;
+    FirebaseAuth Auth;
+
+    String userID;
+    String username;
+    String UsernameBundleKey = "UB";
 
 
     @Override
@@ -66,10 +74,19 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Scro
         // start at menu
         nav_bar.setSelectedItemId(R.id.main_tab);
 
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        FirebaseUser user = auth.getCurrentUser();
 
-        auth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
+        //database
+        Auth = FirebaseAuth.getInstance();
+        DB = FirebaseFirestore.getInstance();
+        FirebaseUser user = Auth.getCurrentUser();
+
+        //get username to use for MapFragment
+        userID = user.getUid();
+        username="----";
+        setUsername(userID);
+
+
+        Auth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser currentUser = firebaseAuth.getCurrentUser();
@@ -84,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Scro
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
-                                FirebaseUser updatedUser = auth.getCurrentUser();
+                                FirebaseUser updatedUser = Auth.getCurrentUser();
                                 if (updatedUser == null) {
                                     // User account has been deleted
                                     System.out.println("User account has been deleted");
@@ -104,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Scro
             @Override
             public void onClick(View v) {
                 //NEW SCANNING ACTIVITY, might be easier to use an activity for this one
-                Toast.makeText(MainActivity.this, "scanow", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, "scanow", Toast.LENGTH_SHORT).show();
                 Intent ScanIntent = new Intent(MainActivity.this, ScanActivity.class);
                 startActivity(ScanIntent);
             }
@@ -176,12 +193,18 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Scro
                     BACK.setVisibility(View.VISIBLE);
                     selected = new RankFragment();
                     break;
+
                 case R.id.main_tab:
                     selected = new MainFragment();
                     break;
+
                 case R.id.map_tab:
                     selected = new MapFragment();
+                    Bundle UsernameBundle = new Bundle();
+                    UsernameBundle.putString(UsernameBundleKey,username);
+                    selected.setArguments(UsernameBundle);
                     break;
+
                 case R.id.search_tab:
                     selected = new SearchFragment();
                     break;
@@ -204,6 +227,23 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Scro
         }else{
             bottomAppBar.setVisibility(View.VISIBLE);
         }
+    }
+
+
+    /**
+     * This method sets the username of the user to be displayed on the map
+     * @param userID the user's unique ID
+     */
+    private void setUsername(String userID){
+        DB.collection("Users").document(userID).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {username = document.getString("username");}
+                //else {Toast.makeText(getContext(), "User Document doesnt exist", Toast.LENGTH_SHORT).show();}
+            }else {
+                //Toast.makeText(getContext(), "Username Task Unsuccessful", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 

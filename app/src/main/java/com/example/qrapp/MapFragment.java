@@ -84,6 +84,7 @@ public class MapFragment extends Fragment {
     Button UPDATE; //update locations
 
     //user
+    String UsernameBundleKey = "UB";
     String PlayerName;
 
 
@@ -100,9 +101,10 @@ public class MapFragment extends Fragment {
         DB = FirebaseFirestore.getInstance();
         Auth = FirebaseAuth.getInstance();
 
-        String userID = Auth.getCurrentUser().getUid();
-        PlayerName = "----"; // default if no username
-        setUsername(userID);
+        //String userID = Auth.getCurrentUser().getUid();
+        //PlayerName = "----"; // default if no username
+        //setUsername(userID);
+
 
         //MAPS RELATED VARS
         //get results every 10 secs
@@ -163,6 +165,7 @@ public class MapFragment extends Fragment {
         //Connect to XML
         View view = LayoutInflater.from(getContext()).inflate(R.layout.fragment_map, null);
 
+        PlayerName = getArguments().getString(UsernameBundleKey);
 
         LRequest = new LocationRequest.Builder(trackingACCURACY)
                 .setIntervalMillis(update_interval * 1000L)
@@ -439,21 +442,7 @@ public class MapFragment extends Fragment {
         return wantsIn <= threshold;
     }
 
-    /**
-     * This method sets the username of the user to be displayed on the map
-     * @param userID the user's unique ID
-     */
-    private void setUsername(String userID){
-        DB.collection("Users").document(userID).get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                DocumentSnapshot document = task.getResult();
-                if (document.exists()) {PlayerName = document.getString("username");}
-                //else {Toast.makeText(getContext(), "User Document doesnt exist", Toast.LENGTH_SHORT).show();}
-            }else {
-                //Toast.makeText(getContext(), "Username Task Unsuccessful", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
+
 
 
 
