@@ -116,7 +116,14 @@ public class MapFragment extends Fragment {
                 //can throw null
                 if(curr_location!=null) {
                     //addLocationsToMap();
+                    int current = Integer.parseInt(points.getText().toString());
                     updateView();
+
+                    //tell user to update if need be
+                    int next = closestQRcs.size();
+                    if(next!=current)
+                        Toast.makeText(getContext(), "Update to see new codes near you!", Toast.LENGTH_LONG).show();
+
                     Log.d("CURRENT LOCATION","started with location from callback");
                     LatLng curr_LL = new LatLng(curr_location.getLatitude(), curr_location.getLongitude());
                     Log.d("CURRENT LOCATION", String.valueOf(curr_LL.latitude) +  " " + String.valueOf(curr_LL.longitude) + " in callback");
@@ -406,10 +413,8 @@ public class MapFragment extends Fragment {
         //put location values in view
 
         //update points total
-        int current = Integer.parseInt(points.getText().toString());
         int next = closestQRcs.size();
-        if(next!=current)
-            Toast.makeText(getContext(), "Update to see new codes near you!", Toast.LENGTH_LONG).show();
+
         points.setText(String.format(Locale.CANADA, "%d", next));
     }
 
