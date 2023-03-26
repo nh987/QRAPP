@@ -122,7 +122,7 @@ public class MapFragment extends Fragment {
                     //tell user to update if need be
                     int next = closestQRcs.size();
                     if(next!=current)
-                        Toast.makeText(getContext(), "Update to see new codes near you!", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), "Refresh map to see new codes near you!", Toast.LENGTH_LONG).show();
 
                     Log.d("CURRENT LOCATION","started with location from callback");
                     LatLng curr_LL = new LatLng(curr_location.getLatitude(), curr_location.getLongitude());

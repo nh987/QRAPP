@@ -42,11 +42,9 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/leaf2" />
 
-            <androidx.fragment.app.FragmentContainerView
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/rankframe"
         android:textSize = "15sp"
-        android:textColor="#824a5a"
-        android:fontFamily="sans-serif-black"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintStart_toStartOf="parent"

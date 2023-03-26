@@ -15,13 +15,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Nearby Codes: "
-            android:textSize="25dp"/>
+            android:textSize="25dp"
+            android:textColor="#824a5a"
+            android:padding = "7dp"
+            android:fontFamily="sans-serif-black"/>
         <TextView
             android:id="@+id/textview_points"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="0"
-            android:textSize="25dp"/>
+            android:textSize="25dp"
+            android:textColor="#824a5a"
+            android:fontFamily="sans-serif-black"/>
 
         <Space
             android:layout_width="wrap_content"
@@ -33,9 +38,10 @@
             android:id="@+id/button_update"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="UPDATE"
+            android:text="REFRESH"
             android:textSize="20dp"
-            android:layout_marginRight="10dp"/>
+            android:layout_marginRight="10dp"
+            android:textColor="@color/ranker"/>
 
     </LinearLayout>
 

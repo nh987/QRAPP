@@ -1,11 +1,14 @@
 package com.example.qrapp;
 
 
-import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
@@ -14,7 +17,7 @@ import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
 
-//to display a leaderboard by highest qrcode scanned by top players
+//to display a leaderboard by highest qrcode scanned by top players locally
 /**
  * This is a class that extends the Fragment class. This "RankLocalFragment" class presents
  * and displays the data from the RankFragment for the Local highest QRCode leaderboard
@@ -24,8 +27,8 @@ public class RankLocalFragment extends Fragment {
     String RankBundleKey = "RB";
     ArrayList<RankTriple>topScorers;
 
-    ListView topScoreListView;
-    RankTripleAdapter topScoreAdapter;
+    ListView topLocalListView;
+    RankTripleAdapter topLocalAdapter;
 
 
     /**
@@ -57,13 +60,32 @@ public class RankLocalFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_ranklocal, container, false);
 
         //get the listview in the fragment ranscore layout
-        topScoreListView = view.findViewById(R.id.listview_ranklocal);
+        topLocalListView = view.findViewById(R.id.listview_ranklocal);
 
         //make an adapter for listview
-        topScoreAdapter = new RankTripleAdapter(topScorers,getContext());
+        topLocalAdapter = new RankTripleAdapter(topScorers,getContext());
 
         //set listviews adapter
-        topScoreListView.setAdapter(topScoreAdapter);
+        topLocalListView.setAdapter(topLocalAdapter);
+
+        //see the top player profile
+        topLocalListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d("RANK5","Who is this guy?");
+
+                //make intent
+                Activity currentActivity = getActivity();
+                Intent PlayerProfileIntent = new Intent(currentActivity, PlayerProfileActivity.class);
+
+                //add player info data to intent
+                RankTriple top_player = (RankTriple) topLocalAdapter.getItem(position);
+                PlayerProfileIntent.putExtra("player",top_player.PlayerName);
+
+                //show profile
+                currentActivity.startActivity(PlayerProfileIntent);
+            }
+        });
 
         //not need since leaderboard is static
         //topScoreAdapter.notifyDataSetChanged();
