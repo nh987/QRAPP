@@ -10,14 +10,17 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+/**
+ * The RankPairAdapter allows for a customized display of the data in a RankTriple.
+ */
 public class RankTripleAdapter extends BaseAdapter {
 
     ArrayList<RankTriple> items;
     Context mycontext;
 
     /**
-     * Constructor for QRcAdapter
-     * @param items list of QRCodes
+     * Constructor for RankTripleAdapter
+     * @param items list of RankTriples
      * @param context context
      */
     public RankTripleAdapter(ArrayList<RankTriple> items, Context context) {
@@ -58,7 +61,7 @@ public class RankTripleAdapter extends BaseAdapter {
 
     @Override
     /**
-     * Get the view at position i
+     * Get the view at position i and display RankTriple
      * @param i
      * @param view
      * @param viewGroup
@@ -76,7 +79,7 @@ public class RankTripleAdapter extends BaseAdapter {
         TextView tv_codeScore = row.findViewById(R.id.triple_codepoints);
 
         tv_rankN.setText(String.valueOf(i+1));
-        tv_playerName.setText(row_data.PlayerID);
+        tv_playerName.setText(row_data.PlayerName);
         tv_codeFace.setText(row_data.QRcFace);
         tv_codeScore.setText(String.valueOf(row_data.QRcPoints));
 

@@ -1,10 +1,14 @@
 package com.example.qrapp;
 
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
@@ -67,6 +71,24 @@ public class RankScoreFragment extends Fragment {
         //set listviews adapter
         topScoreListView.setAdapter(topScoreAdapter);
 
+        //see the top player profile
+        topScoreListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d("RANK2","Who is this guy?");
+
+                //make intent
+                Activity currentActivity = getActivity();
+                Intent PlayerProfileIntent = new Intent(currentActivity, PlayerProfileActivity.class);
+
+                //add player info data to intent
+                RankTriple top_player = (RankTriple) topScoreAdapter.getItem(position);
+                PlayerProfileIntent.putExtra("player",top_player.PlayerName);
+
+                //show profile
+                currentActivity.startActivity(PlayerProfileIntent);
+            }
+        });
         //not need since leaderboard is static
         //topScoreAdapter.notifyDataSetChanged();
         return view;
