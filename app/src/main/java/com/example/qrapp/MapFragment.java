@@ -7,6 +7,7 @@ import static java.lang.Math.toRadians;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Geocoder;
 import android.location.Location;
@@ -47,6 +48,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -82,10 +84,15 @@ public class MapFragment extends Fragment {
     //Views to display and/or update Model
     TextView points; //shows how many locations are saved
     Button UPDATE; //update locations
+    int codes_shown=0;//assume none to start
 
     //user
     String UsernameBundleKey = "UB";
+    String UserIDBundleKey = "ID";
+
     String PlayerName;
+    String PlayerID;
+
 
 
     /**
@@ -172,7 +179,9 @@ public class MapFragment extends Fragment {
         //Connect to XML
         View view = LayoutInflater.from(getContext()).inflate(R.layout.fragment_map, null);
 
-        PlayerName = getArguments().getString(UsernameBundleKey);
+        Bundle userInfo = getArguments();
+        PlayerName = userInfo.getString(UsernameBundleKey);
+        PlayerID = userInfo.getString(UserIDBundleKey);
 
         LRequest = new LocationRequest.Builder(trackingACCURACY)
                 .setIntervalMillis(update_interval * 1000L)
@@ -215,6 +224,9 @@ public class MapFragment extends Fragment {
 
         return view;
     }
+
+
+
 
 
     /**
@@ -366,13 +378,17 @@ public class MapFragment extends Fragment {
                             Location you = curr_location;
                             QRcLocation = (GeoPoint)QRcDoc.get("Geolocation");
 
-                            if(  inRange(Contact_Radius, calculateDistance(you, QRcLocation))  ){
+                            List<String> alreadyScanned = (List<String>) QRcDoc.get("playersScanned");
+                            boolean gotten = alreadyScanned!=null && alreadyScanned.contains(PlayerID);
+                            //true if already scanned not null and user has already scanned the code
+
+                            if(!gotten && inRange(Contact_Radius, calculateDistance(you, QRcLocation))  ){//dont add if already gotten
                                 closestQRcs.add( new QRCode(
                                         (Object)QRcDoc.get("Comments"),
                                         QRcDoc.getLong("Points").intValue(),
                                         (String)QRcDoc.get("Name"),
                                         (String)QRcDoc.get("icon"),
-                                        (Object)QRcDoc.get("playersScanned"),
+                                        (Object)alreadyScanned, //may still throw if null but same code everwhere...
                                         QRcLocation,
                                         (String)QRcDoc.get("Hash")) );
                                 count++;
@@ -414,7 +430,7 @@ public class MapFragment extends Fragment {
 
         //update points total
         int next = closestQRcs.size();
-
+        Log.d("MAP", String.valueOf(next));
         points.setText(String.format(Locale.CANADA, "%d", next));
     }
 
@@ -446,9 +462,6 @@ public class MapFragment extends Fragment {
     private boolean inRange(double threshold, double wantsIn){
         return wantsIn <= threshold;
     }
-
-
-
 
 
 }
