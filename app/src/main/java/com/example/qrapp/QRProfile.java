@@ -141,6 +141,7 @@ public class QRProfile extends AppCompatActivity {
                 Intent intent = new Intent(QRProfile.this, ScannedBy.class);
                 intent.putParcelableArrayListExtra("userIDs",playersList);
                 QRProfile.this.startActivity(intent);
+//                finish();
             }
         });
 
