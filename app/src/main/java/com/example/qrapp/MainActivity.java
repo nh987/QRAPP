@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -30,8 +31,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Objects;
 
-public class MainActivity extends AppCompatActivity implements MainFragment.Scrollable {
+public class MainActivity extends AppCompatActivity implements MainFragment.Scrollable,HelperMapFragment.HMFListener  {
 
     BottomAppBar bottomAppBar; //solely to hide nav bar when scrolling
 
@@ -46,6 +48,10 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Scro
     String userID;
     String username;
     String UsernameBundleKey = "UB";
+    String UserIDBundleKey = "ID";
+
+    //display fragments
+    Fragment selected;
 
 
     @Override
@@ -173,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Scro
 //            return false;
 
 
-            Fragment selected = new MainFragment();
+            selected = new MainFragment();
             //Fragment selected = null;
             // not really necessary to initially set to anything but places emphasis that the app loads to main fragment
 
@@ -200,9 +206,13 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Scro
 
                 case R.id.map_tab:
                     selected = new MapFragment();
+
+                    //passing the userID and player name so no need to query later in map
                     Bundle UsernameBundle = new Bundle();
                     UsernameBundle.putString(UsernameBundleKey,username);
+                    UsernameBundle.putString(UserIDBundleKey, userID);
                     selected.setArguments(UsernameBundle);
+
                     break;
 
                 case R.id.search_tab:
@@ -247,4 +257,14 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Scro
     }
 
 
+    @Override
+    public void onRemovedMarker(boolean lost) {
+        if(selected instanceof MapFragment && lost){
+            TextView ptsView = ((MapFragment) selected).points;
+            int curr = Integer.parseInt(ptsView.getText().toString());
+            if(curr>0){
+                ptsView.setText(String.valueOf(curr-1));
+            }
+        }
+    }
 }
