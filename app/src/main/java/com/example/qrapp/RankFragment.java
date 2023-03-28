@@ -491,6 +491,7 @@ public class RankFragment extends Fragment {
 
 
                         null_users=0; //reset nulls
+                        break;
                     case 3: //Local
                         Log.d("RANK", "LOCAL RANK(SCORE)");
 
