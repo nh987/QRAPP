@@ -69,7 +69,27 @@ import java.util.Map;
 import android.provider.Settings.Secure;
 import android.Manifest;
 import android.widget.Toast;
-
+// SOURCES:
+// 1.)
+// URL: https://www.tutorialspoint.com/how-to-request-location-permission-at-run-time-in-android#
+// AUTHOR: https://www.tutorialspoint.com/authors/azhar
+// SITE: https://www.tutorialspoint.com/
+// 2.)
+// URL: https://stackoverflow.com/questions/5991319/capture-image-from-camera-and-display-in-activity
+// AUTHOR: https://stackoverflow.com/users/510872/jengelsma
+// SITE: https://stackoverflow.com/
+// 3.)
+// URL: https://firebase.google.com/docs/firestore
+// AUTHOR: n/a
+// SITE: https://firebase.google.com/
+// 4.)
+// URL: https://stackoverflow.com/questions/51202300/how-to-add-update-remove-array-elements-in-firebase-firestore-android-using-hash
+// AUTHOR: https://stackoverflow.com/users/8691696/anga
+// SITE: https://stackoverflow.com/
+// 5.)
+// URL: https://developer.android.com/reference/android/media/ExifInterface
+// AUTHOR: n/a
+// SITE: https://developer.android.com/
 /**
  * ResultsActivity gets bundle from ScanActivity containing a SHA-256 hashed string of the barcode
  * and long score value of the hash according to the scoring system. Score is displayed in a TextView and
@@ -98,13 +118,14 @@ public class ResultsActivity extends AppCompatActivity {
     TextView textViewVisual;
     TextView textViewName;
     CheckBox checkBox;
-    Button addPhoto; // TODO: addPhotoFragment -> CameraX integration
+    Button addPhoto;
     Bitmap imageBitmap;
     Intent results;
     EditText comment;
     private static final int CAMERA_REQUEST = 100;
     Double lat;
     Double lon;
+    GeoPoint geolocation;
     Button continueToPost;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -148,8 +169,6 @@ public class ResultsActivity extends AppCompatActivity {
                         Log.d("TAG", "QR Code already exists in DB!");
                         Toast.makeText(ResultsActivity.this, "QR Code already exists", Toast.LENGTH_SHORT).show();
                         doesExist = true;
-//                        checkBox.setVisibility(View.INVISIBLE);
-//                        addPhoto.setVisibility(View.INVISIBLE);
                         List<String> scannedPlayers = (List<String>) document.get("playersScanned");
                         if (scannedPlayers != null) {
                             if (scannedPlayers.contains(FirebaseAuth.getInstance().getCurrentUser().getUid())) { // if user has already scanned QRCode
@@ -182,7 +201,6 @@ public class ResultsActivity extends AppCompatActivity {
                 isIntentAvailable(ResultsActivity.this, MediaStore.ACTION_IMAGE_CAPTURE);
                 Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 startActivityForResult(takePictureIntent, CAMERA_REQUEST);
-//                addPhoto.setVisibility(View.INVISIBLE);
             }
         });
 
@@ -239,7 +257,7 @@ public class ResultsActivity extends AppCompatActivity {
                                 }
                             });
                 }
-                else { // reset
+                else { // reset if checkbox unchecked
                     includeGeolocation =  false;
                     lat = null;
                     lon = null;
@@ -248,7 +266,7 @@ public class ResultsActivity extends AppCompatActivity {
             }
         });
 
-        // Update DB and return to MainFeed
+        // Update DB and goto qr profile
         continueToPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -311,26 +329,26 @@ public class ResultsActivity extends AppCompatActivity {
 
                 else {
                     // if the qr code already exists
-                    Map<String, Object> commentMap = new HashMap<>();
-                    commentMap.put("Comment", comment.getText().toString());
-                    commentMap.put("Author", FirebaseAuth.getInstance().getCurrentUser().getUid());
-                    commentMap.put("QRCode", hashed);
-
-                    DocumentReference newCommentRef = db.collection("Comments").document();
-                    final String commentRefId = newCommentRef.getId();
-                    newCommentRef.set(commentMap)
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void unused) {
-                                    // Add the comment ID to the 'comments' list
-                                    comments.add(commentRefId);
-                                }
-                            });
-                    Map<String, Object> updateComments = new HashMap<>();
-                    updateComments.put("Comments", FieldValue.arrayUnion(commentRefId));
-                    db.collection("QRCodes").document(hashed)
-                            .update(updateComments);
-
+                    if (!TextUtils.isEmpty(comment.getText().toString())) { // if comment box is not empty add it into Comments and QRCode's Comments array
+                        Map<String, Object> commentMap = new HashMap<>();
+                        commentMap.put("Comment", comment.getText().toString());
+                        commentMap.put("Author", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                        commentMap.put("QRCode", hashed);
+                        DocumentReference newCommentRef = db.collection("Comments").document();
+                        final String commentRefId = newCommentRef.getId();
+                        newCommentRef.set(commentMap)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void unused) {
+                                        // Add the comment ID to the 'comments' list
+                                        comments.add(commentRefId);
+                                    }
+                                });
+                        Map<String, Object> updateComments = new HashMap<>();
+                        updateComments.put("Comments", FieldValue.arrayUnion(commentRefId));
+                        db.collection("QRCodes").document(hashed)
+                                .update(updateComments);
+                    }
 
                     if (!hasScanned) { // user has not scanned this QR code yet
                         final Map<String,Object> addUser = new HashMap<>();
@@ -342,7 +360,7 @@ public class ResultsActivity extends AppCompatActivity {
                     final Map<String,Object> updateGeolocation = new HashMap<>();
                     if (includeGeolocation) { // update geolocation
                         GeoPoint geolocation = new GeoPoint(lat,lon);
-                        Log.d("TAG", "UPDATE GEOLOCATION "+geolocation);
+                        Log.d("TAG", "UPDATED GEOLOCATION "+geolocation);
                         updateGeolocation.put("Geolocation", geolocation);
                     }
                     else {
@@ -352,8 +370,27 @@ public class ResultsActivity extends AppCompatActivity {
                     db.collection("QRCodes").document(hashed)
                             .update(updateGeolocation);
                 }
-
-                finish(); // return to main activity TODO: go to QRProfile instead
+                DocumentReference docRef = db.collection("QRCodes").document(hashed); // get the qrcode from the db and package contents into qrcode to send into qrprofile
+                docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                Log.d("TAG", "DocumentSnapshot data: " + document.getData());
+                                QRCode qrCode = new QRCode(document.get("Comments"), ((Long) document.get("Points")).intValue(), (String) document.get("Name"), (String) document.get("icon"), document.get("playersScanned"), (GeoPoint) document.get("Geolocation"), (String) document.get("Hash"));
+                                Intent intent = new Intent(ResultsActivity.this, QRProfile.class);
+                                intent.putExtra("qr_code",qrCode);
+                                ResultsActivity.this.startActivity(intent);
+                            } else {
+                                Log.d("TAG", "No such document");
+                            }
+                        } else {
+                            Log.d("TAG", "get failed with ", task.getException());
+                        }
+                    }
+                });
+                finish();
             }
         });
 
@@ -363,13 +400,13 @@ public class ResultsActivity extends AppCompatActivity {
      * Pass in hashed barcode string and take first 6 digits that are mapped to various words that are then concatenated together to create
      * a name.
      * @param hashed
-     * @return string
+     * @return name string
      */
     public String createName(String hashed) {
         String hashedSubstring = hashed.substring(0,6);
         String QRName = "";
 
-        // 16^5 = 1.04 million unique combos.
+        // 16^6 = 16.8 million unique combos.
         HashMap<Character, String> hexMapName = new HashMap<Character, String>();
         hexMapName.put('0', "Alpha");
         hexMapName.put('1', "Bravo");
@@ -396,14 +433,14 @@ public class ResultsActivity extends AppCompatActivity {
      * Pass in hashed barcode string and take first 4 digits that are mapped to various emoticon (head/hat, eyes, nose, mouth
      * that are then concatenated together to create a visual representation.
      * @param hashed
-     * @return string
+     * @return visual string
      */
     public String createVisual (String hashed){
         String hashedSubstring = hashed.substring(0,4);
         String QRVisual = "";
 
-        // 16^4 = 65K combos (65K X 1.04 Million = 1.1*10^12 combos)
-        HashMap<Character, String> hexMapHead = new HashMap<Character, String>();
+        // 16^4 = 65K combos (65K X 16.8 Million = 1.1*10^12 combos)
+        HashMap<Character, String> hexMapHead = new HashMap<Character, String>(); // emoticons hats
         hexMapHead.put('0', "C|");
         hexMapHead.put('1', "[|");
         hexMapHead.put('2', "<|");
@@ -421,7 +458,7 @@ public class ResultsActivity extends AppCompatActivity {
         hexMapHead.put('e', "c|");
         hexMapHead.put('f', "*=|");
 
-        HashMap<Character, String> hexMapEyes = new HashMap<Character, String>();
+        HashMap<Character, String> hexMapEyes = new HashMap<Character, String>(); // emoticons eyes
         hexMapEyes.put('0', ":");
         hexMapEyes.put('1', ";");
         hexMapEyes.put('2', "$");
@@ -439,7 +476,7 @@ public class ResultsActivity extends AppCompatActivity {
         hexMapEyes.put('e', "D");
         hexMapEyes.put('f', ">D");
 
-        HashMap<Character, String> hexMapNose = new HashMap<Character, String>();
+        HashMap<Character, String> hexMapNose = new HashMap<Character, String>(); // emoticon noses
         hexMapNose.put('0', "c");
         hexMapNose.put('1', "<");
         hexMapNose.put('2', ">");
@@ -457,7 +494,7 @@ public class ResultsActivity extends AppCompatActivity {
         hexMapNose.put('e', "y");
         hexMapNose.put('f', "0");
 
-        HashMap<Character, String> hexMapMouth = new HashMap<Character, String>();
+        HashMap<Character, String> hexMapMouth = new HashMap<Character, String>(); // emoticon mouths
         hexMapMouth.put('0', "P");
         hexMapMouth.put('1', "B");
         hexMapMouth.put('2', "]");
@@ -484,7 +521,7 @@ public class ResultsActivity extends AppCompatActivity {
      * check/get intent permissions
      * @param context
      * @param action
-     * @return boolean
+     * @return boolean intent permission
      */
     public static boolean isIntentAvailable(Context context, String action) {
         final PackageManager packageManager = context.getPackageManager();
@@ -495,14 +532,16 @@ public class ResultsActivity extends AppCompatActivity {
     }
 
     /**
-     * Get bitmap image from Intent bundle.
+     * Get bitmap image from Intent bundle from startActivityForResult() and start uploadImage().
+     * @param requestCode
+     * @param resultCode
+     * @param data
      */
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
             imageBitmap = (Bitmap) data.getExtras().get("data");
             uploadImage();
-
         }
     }
 
@@ -511,9 +550,9 @@ public class ResultsActivity extends AppCompatActivity {
      */
     public void uploadImage () {
         StorageReference storageRef = storage.getReference();
-        StorageReference qrcRef = storageRef.child(hashed+".jpg"); // init storage ref image
+        StorageReference qrcRef = storageRef.child(hashed+".jpg"); // init storage ref image as qr hash + .jpg
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(); // convert bitmap into byte array
         imageBitmap.compress(Bitmap.CompressFormat.JPEG, 75, baos);
         byte[] data = baos.toByteArray();
 

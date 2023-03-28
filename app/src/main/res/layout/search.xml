@@ -32,7 +32,7 @@
         android:background="@drawable/button_shape"
         android:inputType="textPersonName"
         app:defaultQueryHint="Enter text"
-        app:layout_constraintBottom_toTopOf="@+id/button2"
+        app:layout_constraintBottom_toTopOf="@+id/QRCButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
@@ -50,7 +50,7 @@
 
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/button2"
+        android:id="@+id/QRCButton"
         android:layout_width="100dp"
         android:layout_height="50dp"
         android:layout_marginTop="12dp"
@@ -60,11 +60,11 @@
         android:text="QR Codes"
         android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/button"
+        app:layout_constraintStart_toEndOf="@+id/playerButton"
         app:layout_constraintTop_toBottomOf="@+id/searchView" />
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/button"
+        android:id="@+id/playerButton"
         android:layout_width="100dp"
         android:layout_height="50dp"
         android:layout_marginStart="96dp"
@@ -73,19 +73,19 @@
         android:textColor="@color/black"
         android:background="@drawable/button_shape"
         android:backgroundTint="#ffafbd"
-        app:layout_constraintEnd_toStartOf="@+id/button2"
+        app:layout_constraintEnd_toStartOf="@+id/QRCButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/searchView"
         />
 
     <ListView
-        android:id="@+id/listView"
+        android:id="@+id/searchResults"
         android:layout_width="340dp"
         android:layout_height="400dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button" />
+        app:layout_constraintTop_toBottomOf="@+id/playerButton" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

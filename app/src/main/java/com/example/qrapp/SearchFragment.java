@@ -73,13 +73,13 @@ public class SearchFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         view = LayoutInflater.from(getContext()).inflate(R.layout.search, null);
-        playerSearch = view.findViewById(R.id.button);
-        QRSearch = view.findViewById(R.id.button2);
+        playerSearch = view.findViewById(R.id.playerButton);
+        QRSearch = view.findViewById(R.id.QRCButton);
         searchView = view.findViewById(R.id.searchView);
         spinner = view.findViewById(R.id.spinner);
         spinner.setVisibility(View.GONE);
         spinner.clearAnimation();
-        qrListView = view.findViewById(R.id.listView);
+        qrListView = view.findViewById(R.id.searchResults);
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 

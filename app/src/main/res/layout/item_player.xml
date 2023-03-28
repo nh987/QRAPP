@@ -5,32 +5,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView
-        android:id="@+id/visual"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:contentDescription="@string/app_name"
-        android:padding="10dp"
-        android:maxLines="1"
-        app:autoSizeMaxTextSize="15dp"
-        app:autoSizeMinTextSize="8dp"
-        app:autoSizeStepGranularity="1dp"
-        app:autoSizeTextType="uniform"
-        app:srcCompat="@drawable/ic_baseline_scan2" />
-
-    <TextView
         android:id="@+id/QRCName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/visual"
         android:textColor="#824a5a"
         android:padding = "10dp"
         android:fontFamily="sans-serif-black"
         android:textSize="16dp"
-        android:maxLines="1"
-        app:autoSizeMaxTextSize="16dp"
-        app:autoSizeMinTextSize="8dp"
-        app:autoSizeStepGranularity="1dp"
-        app:autoSizeTextType="uniform"
         android:text = "hot GloUltraSonicShark"/>
 
     <TextView
@@ -38,14 +19,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/QRCName"
-        android:layout_toRightOf="@+id/visual"
         android:textColor="#000000"
         android:fontFamily="sans-serif-black"
         android:paddingLeft = "10dp"
         android:textSize="14dp"
-        app:autoSizeMaxTextSize="14dp"
-        app:autoSizeMinTextSize="8dp"
-        app:autoSizeStepGranularity="1dp"
-        app:autoSizeTextType="uniform"
         android:text = "100,000 Points"/>
 </RelativeLayout>

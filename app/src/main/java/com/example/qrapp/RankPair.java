@@ -1,12 +1,14 @@
 package com.example.qrapp;
 
 
-public class RankPair {
+import java.io.Serializable;
+
+public class RankPair implements Serializable {
 
     public String PlayerID="";
-    public Long Number=0L;
+    public int Number=0;
 
-    public RankPair(String playerID, Long number){
+    public RankPair(String playerID, int number){
         this.PlayerID=playerID;
         this.Number=number;
     }
