@@ -44,11 +44,11 @@ public class SearchFragmentTest {
         // Make sure we are now in the search fragment
         solo.waitForActivity(String.valueOf(SearchFragment.class));
         // Click on the search button
-        solo.clickOnView(solo.getView(R.id.button2));
+        solo.clickOnView(solo.getView(R.id.QRCButton));
         Spinner spinner = (Spinner) solo.getView(R.id.spinner);
         assertTrue(solo.searchText("Juliet CharlieNovemberDeltaBravoDelta"));
         String searchText = "Juliet CharlieNovemberDeltaBravoDelta";
-        ListView listView = (ListView) solo.getView(R.id.listView);
+        ListView listView = (ListView) solo.getView(R.id.searchResults);
         Integer count = listView.getCount();
         for (int i = 0; i < count; i++) {
             View view = listView.getChildAt(i);
@@ -70,8 +70,8 @@ public class SearchFragmentTest {
         solo.waitForActivity(MainActivity.class);
         solo.assertCurrentActivity("Wrong activity", MainActivity.class);
         solo.clickOnView(solo.getView(R.id.search_tab));
-        solo.clickOnView(solo.getView(R.id.button2));
-        solo.clickOnView(solo.getView(R.id.button));
+        solo.clickOnView(solo.getView(R.id.QRCButton));
+        solo.clickOnView(solo.getView(R.id.playerButton));
         androidx.appcompat.widget.SearchView searchView = (androidx.appcompat.widget.SearchView) solo.getView(R.id.searchView);
         ImageView searchIcon = (ImageView) searchView.findViewById(androidx.appcompat.R.id.search_button);
         solo.clickOnView(searchIcon);

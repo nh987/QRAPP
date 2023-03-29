@@ -1,6 +1,7 @@
 package com.example.qrapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Button;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
@@ -42,6 +44,8 @@ public class MyProfile extends AppCompatActivity {
     private ImageButton viewHighestQRCButton;
     private ImageButton viewLowestQRCButton;
 
+    private Button viewScansButton;
+
     private String userID;
 
     private String username;
@@ -74,31 +78,59 @@ public class MyProfile extends AppCompatActivity {
         codesScannedValue = findViewById(R.id.codesScannedValue);
         viewHighestQRCButton = findViewById(R.id.viewHighestQRCButton);
         viewLowestQRCButton = findViewById(R.id.viewLowestQRCButton);
+        viewScansButton = findViewById(R.id.myQRCbutton);
 
         db = FirebaseFirestore.getInstance();
 
-        // if you don't log in this will error...
+        //check if user is logged in
+        if(FirebaseAuth.getInstance().getCurrentUser() == null){
+            Toast.makeText(this, "You are not logged in", Toast.LENGTH_SHORT).show();
+            finish();
+        }
         userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-
-        // get the user data from the database
-        updateUserInfo();
-
-        //get all QRCodes scanned by the user
-        QRCodeList = new ArrayList<>();
-        getQRCodes();
-
-
-        //close activity when back button is pressed
-        backButton.setOnClickListener(v -> finish());
-
-        //set the view highest and lowest buttons to invisible and disabled until if and when the highest and lowest scores are found
+        //set the buttons related to highest & lowest QR codes to invisible and disabled until the data is loaded
         viewHighestQRCButton.setEnabled(false);
         viewHighestQRCButton.setVisibility(View.INVISIBLE);
         viewLowestQRCButton.setEnabled(false);
         viewLowestQRCButton.setVisibility(View.INVISIBLE);
 
+        //set the view scans button to open the ViewPlayerScannedQR with currentUser true
+        viewScansButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MyProfile.this, ViewPlayerScannedQRActivity.class);
+            intent.putExtra("isCurrentUser", true);
+            intent.putExtra("QRCodeList", QRCodeList);
+            startActivity(intent);
+        });
+
+
+        // set the view scans button to disabled until the data is loaded
+        viewScansButton.setEnabled(false);
+
+
+        // get the user data from the database
+        updateUserInfo();
+
+        //initialize the QRCodeList, this will be populated in the OnResume step of the lifecycle
+        QRCodeList = new ArrayList<>();
+
+
+        //close activity when back button is pressed
+        backButton.setOnClickListener(v -> finish());
+
+
     }
+
+    /**
+     * onResume is called whenever the user opens or returns to this activity
+     * it calls getQRCodes() to update the QRCodeList in case the user updated their qr codes
+     */
+    @Override
+    protected void onResume(){
+        super.onResume();
+        getQRCodes();
+    }
+
 
     /**
      * Gets all the QRCodes that the user has scanned,
@@ -106,6 +138,15 @@ public class MyProfile extends AppCompatActivity {
      * then calls updateScores() to update the stats
      */
     private void getQRCodes(){
+        //reset everything before loading data
+        QRCodeList.clear();
+        String loading = getString(R.string.loading);
+        highestQRCvalue.setText(loading);
+        lowestQRCvalue.setText(loading);
+        totalscoreValue.setText(loading);
+        codesScannedValue.setText(loading);
+
+        //get new data
         db.collection("QRCodes").whereArrayContains("playersScanned", userID).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 for (DocumentSnapshot document : task.getResult()) {
@@ -121,12 +162,18 @@ public class MyProfile extends AppCompatActivity {
                     QRCodeList.add(queriedQR);
                 }
                 updateScores();
+
+                //enable the view scans button
+                viewScansButton.setEnabled(true);
+
+
             } else {
                 Toast.makeText(MyProfile.this, "Error getting user data", Toast.LENGTH_SHORT).show();
                 finish();
                 return;
             }
         });
+
     }
 
     /**

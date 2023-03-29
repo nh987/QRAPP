@@ -45,7 +45,7 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_round_arrow_forward_ios_24"
                 android:layout_alignEnd="@id/frame"
-                android:paddingTop="2dp"
+                android:paddingTop="12dp"
                 android:paddingRight="12dp"
                 android:paddingLeft="12dp"
                 android:paddingBottom="2dp" />
@@ -68,7 +68,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
+        android:hapticFeedbackEnabled="true"
 
+        app:backgroundTint="#ffffafbd"
         app:hideOnScroll="true"
         app:contentInsetStart="0dp"
         app:fabCradleMargin="20dp"

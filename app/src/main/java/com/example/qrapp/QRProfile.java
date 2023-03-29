@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import com.example.qrapp.Comment;
+
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -76,7 +77,6 @@ public class QRProfile extends AppCompatActivity {
         players = findViewById(R.id.qrprofile_players_btn);
         commentListView = findViewById(R.id.commentsList);
 
-
         playersList = (ArrayList) qrCode.getPlayersScanned();
         commentsList = (ArrayList) qrCode.getComments();
         AtomicInteger completedCallbacks = new AtomicInteger(0);
@@ -131,17 +131,17 @@ public class QRProfile extends AppCompatActivity {
 
         QRCName.setText(qrCode.getName()); // set the name text
         points.setText(qrCode.getPoints() + " Points"); // set the points text
-        icon.setText(qrCode.getIcon());
+        icon.setText(qrCode.getIcon()); // set the icon text
 
+        getImage(qrCode); // check cloud storage for image
 
-        getImage(qrCode);
-
-        players.setOnClickListener(new View.OnClickListener() {
+        players.setOnClickListener(new View.OnClickListener() { // see players who have scanned qr code
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(QRProfile.this, ScannedBy.class);
                 intent.putParcelableArrayListExtra("userIDs",playersList);
                 QRProfile.this.startActivity(intent);
+//                finish();
             }
         });
 

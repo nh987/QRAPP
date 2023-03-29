@@ -7,6 +7,7 @@ import static java.lang.Math.toRadians;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Geocoder;
 import android.location.Location;
@@ -47,6 +48,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -82,9 +84,15 @@ public class MapFragment extends Fragment {
     //Views to display and/or update Model
     TextView points; //shows how many locations are saved
     Button UPDATE; //update locations
+    int codes_shown=0;//assume none to start
 
     //user
+    String UsernameBundleKey = "UB";
+    String UserIDBundleKey = "ID";
+
     String PlayerName;
+    String PlayerID;
+
 
 
     /**
@@ -100,9 +108,10 @@ public class MapFragment extends Fragment {
         DB = FirebaseFirestore.getInstance();
         Auth = FirebaseAuth.getInstance();
 
-        String userID = Auth.getCurrentUser().getUid();
-        PlayerName = "----"; // default if no username
-        setUsername(userID);
+        //String userID = Auth.getCurrentUser().getUid();
+        //PlayerName = "----"; // default if no username
+        //setUsername(userID);
+
 
         //MAPS RELATED VARS
         //get results every 10 secs
@@ -114,7 +123,14 @@ public class MapFragment extends Fragment {
                 //can throw null
                 if(curr_location!=null) {
                     //addLocationsToMap();
+                    int current = Integer.parseInt(points.getText().toString());
                     updateView();
+
+                    //tell user to update if need be
+                    int next = closestQRcs.size();
+                    if(next!=current)
+                        Toast.makeText(getContext(), "Refresh map to see new codes near you!", Toast.LENGTH_LONG).show();
+
                     Log.d("CURRENT LOCATION","started with location from callback");
                     LatLng curr_LL = new LatLng(curr_location.getLatitude(), curr_location.getLongitude());
                     Log.d("CURRENT LOCATION", String.valueOf(curr_LL.latitude) +  " " + String.valueOf(curr_LL.longitude) + " in callback");
@@ -163,6 +179,9 @@ public class MapFragment extends Fragment {
         //Connect to XML
         View view = LayoutInflater.from(getContext()).inflate(R.layout.fragment_map, null);
 
+        Bundle userInfo = getArguments();
+        PlayerName = userInfo.getString(UsernameBundleKey);
+        PlayerID = userInfo.getString(UserIDBundleKey);
 
         LRequest = new LocationRequest.Builder(trackingACCURACY)
                 .setIntervalMillis(update_interval * 1000L)
@@ -205,6 +224,9 @@ public class MapFragment extends Fragment {
 
         return view;
     }
+
+
+
 
 
     /**
@@ -356,13 +378,17 @@ public class MapFragment extends Fragment {
                             Location you = curr_location;
                             QRcLocation = (GeoPoint)QRcDoc.get("Geolocation");
 
-                            if(  inRange(Contact_Radius, calculateDistance(you, QRcLocation))  ){
+                            List<String> alreadyScanned = (List<String>) QRcDoc.get("playersScanned");
+                            boolean gotten = alreadyScanned!=null && alreadyScanned.contains(PlayerID);
+                            //true if already scanned not null and user has already scanned the code
+
+                            if(!gotten && inRange(Contact_Radius, calculateDistance(you, QRcLocation))  ){//dont add if already gotten
                                 closestQRcs.add( new QRCode(
                                         (Object)QRcDoc.get("Comments"),
                                         QRcDoc.getLong("Points").intValue(),
                                         (String)QRcDoc.get("Name"),
                                         (String)QRcDoc.get("icon"),
-                                        (Object)QRcDoc.get("playersScanned"),
+                                        (Object)alreadyScanned, //may still throw if null but same code everwhere...
                                         QRcLocation,
                                         (String)QRcDoc.get("Hash")) );
                                 count++;
@@ -403,10 +429,8 @@ public class MapFragment extends Fragment {
         //put location values in view
 
         //update points total
-        int current = Integer.parseInt(points.getText().toString());
         int next = closestQRcs.size();
-        if(next!=current)
-            Toast.makeText(getContext(), "Update to see new codes near you!", Toast.LENGTH_LONG).show();
+        Log.d("MAP", String.valueOf(next));
         points.setText(String.format(Locale.CANADA, "%d", next));
     }
 
@@ -438,23 +462,6 @@ public class MapFragment extends Fragment {
     private boolean inRange(double threshold, double wantsIn){
         return wantsIn <= threshold;
     }
-
-    /**
-     * This method sets the username of the user to be displayed on the map
-     * @param userID the user's unique ID
-     */
-    private void setUsername(String userID){
-        DB.collection("Users").document(userID).get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                DocumentSnapshot document = task.getResult();
-                if (document.exists()) {PlayerName = document.getString("username");}
-                //else {Toast.makeText(getContext(), "User Document doesnt exist", Toast.LENGTH_SHORT).show();}
-            }else {
-                //Toast.makeText(getContext(), "Username Task Unsuccessful", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
 
 
 }
