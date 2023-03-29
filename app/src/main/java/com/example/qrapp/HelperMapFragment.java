@@ -338,6 +338,7 @@ public class HelperMapFragment extends Fragment{
         }
     }
 
+    //HANDLE NO CONTEXT CRASH
     @Override
     public void onDetach() {
         super.onDetach();

@@ -3,6 +3,7 @@ package com.example.qrapp;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.location.Geocoder;
 import android.location.Location;
@@ -22,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -286,9 +288,15 @@ public class RankFragment extends Fragment {
 
                                                             //5)
                                                             //show it
-                                                            getActivity().getSupportFragmentManager()
-                                                                    .beginTransaction()
-                                                                    .replace(R.id.rankframe, selected).commit();//SHOW FRAGMENT
+                                                            FragmentActivity activity = getActivity();
+                                                            if(activity!=null) { //prevent crash
+                                                                Log.d("RANK2","Showing Main Leaderboard");
+                                                                activity.getSupportFragmentManager()
+                                                                        .beginTransaction()
+                                                                        .replace(R.id.rankframe, selected).commit();//SHOW FRAGMENT
+                                                            }else{
+                                                                Log.d("RANK2","Ended Rank Fragment there null error");
+                                                            }
                                                         }
 
 
@@ -384,9 +392,15 @@ public class RankFragment extends Fragment {
 
                                                                //5)
                                                                //show it
-                                                               getActivity().getSupportFragmentManager()
-                                                                       .beginTransaction()
-                                                                       .replace(R.id.rankframe, selected).commit();//SHOW FRAGMENT
+                                                               FragmentActivity activity = getActivity();
+                                                               if(activity!=null) { //prevent crash
+                                                                   Log.d("RANK3","Showing Sum Leaderboard");
+                                                                   activity.getSupportFragmentManager()
+                                                                           .beginTransaction()
+                                                                           .replace(R.id.rankframe, selected).commit();//SHOW FRAGMENT
+                                                               }else{
+                                                                   Log.d("RANK3","Ended Rank Fragment there null error");
+                                                               }
                                                            }
 
 
@@ -474,9 +488,15 @@ public class RankFragment extends Fragment {
 
                                                             //5)
                                                             //show it
-                                                            getActivity().getSupportFragmentManager()
-                                                                    .beginTransaction()
-                                                                    .replace(R.id.rankframe, selected).commit();//SHOW FRAGMENT
+                                                            FragmentActivity activity = getActivity();
+                                                            if(activity!=null) { //prevent crash
+                                                                Log.d("RANK4","Showing Count Leaderboard");
+                                                                activity.getSupportFragmentManager()
+                                                                        .beginTransaction()
+                                                                        .replace(R.id.rankframe, selected).commit();//SHOW FRAGMENT
+                                                            }else{
+                                                                Log.d("RANK4","Ended Rank Fragment there null error");
+                                                            }
                                                         }
 
 
@@ -571,9 +591,15 @@ public class RankFragment extends Fragment {
 
                                                             //5)
                                                             //show it
-                                                            getActivity().getSupportFragmentManager()
-                                                                    .beginTransaction()
-                                                                    .replace(R.id.rankframe, selected).commit();//SHOW FRAGMENT
+                                                            FragmentActivity activity = getActivity();
+                                                            if(activity!=null) { //prevent crash
+                                                                Log.d("RANK5","Showing Local Leaderboard");
+                                                                activity.getSupportFragmentManager()
+                                                                        .beginTransaction()
+                                                                        .replace(R.id.rankframe, selected).commit();//SHOW FRAGMENT
+                                                            }else{
+                                                                Log.d("RANK5","Ended Rank Fragment there null error");
+                                                            }
                                                         }
 
 
@@ -607,10 +633,10 @@ public class RankFragment extends Fragment {
         return view;
     }
 
-
-
-
-
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
 
 
     // to find the kth largest elem in an Arralist of Player hash string to QRCode pairs
