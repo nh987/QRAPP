@@ -1,6 +1,10 @@
 package com.example.qrapp;
 
 
+import static androidx.appcompat.content.res.AppCompatResources.getDrawable;
+import static java.lang.Math.abs;
+
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
 import android.location.Location;
@@ -9,11 +13,13 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.BounceInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -33,14 +39,18 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.auth.User;
 
 import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 //Fragment Class to show map on
+
 
 /**
  * This class extends the Fragment class. The "HelperMapFragment" class presents the data
@@ -63,12 +73,19 @@ public class HelperMapFragment extends Fragment{
 
     //Buttons
     ImageButton CENTRE;
+    ImageView TRASH;
 
     //Map
     SupportMapFragment SMH; //the google map needs its own support fragment
     int Zoom = 14; // how much to zoom in
     QRcMarkerInfoWindowAdapter QRcMarkerAdapter; // a custom view and behaviour for the markers for QRcs
     GoogleMap Map;
+
+    public interface HMFListener{
+        void onRemovedMarker(boolean lost);
+    }
+    HMFListener update_listener;
+
 
 
     /**
@@ -97,6 +114,10 @@ public class HelperMapFragment extends Fragment{
     }
 
 
+
+    //// End of Update Interface
+
+
     /**
      * The onCreateView method prepares to display the data on the map by setting all the view
      * attributes and items. It puts all the markers on the map and makes the map interactive.
@@ -117,11 +138,25 @@ public class HelperMapFragment extends Fragment{
         CENTRE.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                v.animate().translationZ(1000);
                 LatLng myLL = new LatLng(current.getLatitude(), current.getLongitude());
                 Map.animateCamera(CameraUpdateFactory.newLatLngZoom(myLL, Zoom+3));
 
             }
         });
+
+        //A place to throw your trash
+        TRASH=view.findViewById(R.id.trash);
+        TRASH.setVisibility(View.INVISIBLE);
+//        TRASH.setOnHoverListener(new View.OnHoverListener() {
+//            @Override
+//            public boolean onHover(View v, MotionEvent event) {
+//                TRASH.setHovered(true);
+//                return false;
+//            }
+//        });
+
+
 
         for (QRCode QRc:QRcs
         ) {//just a sanity check
@@ -156,8 +191,12 @@ public class HelperMapFragment extends Fragment{
                             intent.putExtra("qr_code", chosenQRcToSee); // pass the clicked item to the QRCProfile class
                             Log.d("QRC","starting new QRc Profile Activity");
                             startActivity(intent);
-                        }else{
-                            Log.d("QRC","Failed to start new QRc Profile Activity");
+                        }else{//def me show me!
+                            //start new PlayerProfile Activity
+                            Intent intent = new Intent(getActivity(), PlayerProfileActivity.class);
+                            intent.putExtra("player", Username); // pass the clicked item to the QRCProfile class
+                            Log.d("PLAYER","starting new Player Profile Activity");
+                            startActivity(intent);
                         }
                     }
                 });
@@ -177,6 +216,75 @@ public class HelperMapFragment extends Fragment{
                     }
                 });
 
+                //for when a marker is dragged
+                googleMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
+                    LatLng startLL;
+
+                    @Override
+                    public void onMarkerDrag(@NonNull Marker marker) {
+                        OnDragState(marker);
+                        OnDragTrashUI(marker);
+                        marker.setInfoWindowAnchor(0.5f,0.9f);
+                        marker.showInfoWindow();
+                    }
+
+                    @Override
+                    public void onMarkerDragEnd(@NonNull Marker marker) {
+                        LatLng markerLocation = marker.getPosition();
+                        Projection proj = googleMap.getProjection();
+                        Point endPoint = proj.toScreenLocation(markerLocation);
+
+                        int[] trash = new int[2];
+                        TRASH.getLocationOnScreen(trash);
+
+                        Log.d("MAP", endPoint + " " + Arrays.toString(trash));
+
+                        if((trash[0]<=endPoint.x&&endPoint.x<=trash[0]+200) && abs(trash[1]-endPoint.y)<400){
+                            String name = marker.getSnippet();
+                            Toast.makeText(getContext(), name + " removed from map.", Toast.LENGTH_SHORT).show();
+                            Log.d("MAP","trashed marker "+name );
+                            marker.setVisible(false);
+
+                            //let view know that we have less codes displayed
+                            update_listener.onRemovedMarker(true);
+
+                            //remove from actual list
+                            String codename = marker.getSnippet();
+                            QRcs.removeIf(code -> Objects.equals(code.getName(), codename));
+
+
+                        }else{
+                            marker.setPosition(startLL);
+                            marker.setRotation(0);
+                            marker.setAlpha(1f);
+                            marker.setVisible(true);
+                            marker.setInfoWindowAnchor(0.5f,0);
+                            markerBounce(Map,marker,startLL);
+                        }
+                        TRASH.setVisibility(View.INVISIBLE);
+                    }
+
+                    @Override
+                    public void onMarkerDragStart(@NonNull Marker marker) {
+//                        Projection proj = googleMap.getProjection();
+//
+//                        startLL = marker.getPosition();
+//                        Point startPoint = proj.toScreenLocation(startLL);
+//                        startPoint.offset(0, 100);
+//                        startLL = proj.fromScreenLocation(startPoint);
+
+                        String name = marker.getSnippet();
+                        for(QRCode code:QRcs){
+                            if(Objects.equals(code.getName(), name)){
+                                startLL = LatLngify(code.getGeolocation());
+                            }
+                        }
+
+                        TRASH.setVisibility(View.VISIBLE);
+
+                    }
+                });
+
 
 
                 //ADD EM TO MAP
@@ -187,7 +295,8 @@ public class HelperMapFragment extends Fragment{
                     MOptions.position(ll);
                     MOptions
                             .title(String.format("%s      %s %s",QRc.getIcon(),QRc.getPoints(),"points"))
-                            .snippet(QRc.getName());
+                            .snippet(QRc.getName())
+                            .draggable(true);
 
                     googleMap.addMarker(MOptions);
                 }
@@ -218,8 +327,50 @@ public class HelperMapFragment extends Fragment{
         return view;
     }
 
-    //make a marker bounce in place
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
 
+        if(context instanceof HMFListener){
+            update_listener = (HMFListener) context;
+        }else{
+            throw new RuntimeException(context.toString() + "MUST IMPLEMENT HMFListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        update_listener=null;
+    }
+
+
+    //state of a marker while dragging
+    private void OnDragState(Marker marker) {
+        marker.setAlpha(0.5f);
+        marker.setRotation(180);
+    }
+
+    //trash UI while dragging
+    private void OnDragTrashUI(Marker marker) {
+        LatLng markerLocation = marker.getPosition();
+        Projection proj = Map.getProjection();
+        Point endPoint = proj.toScreenLocation(markerLocation);
+
+        int[] trash = new int[2];
+        TRASH.getLocationOnScreen(trash);
+
+        Log.d("MAP1", endPoint + " " + Arrays.toString(trash));
+
+        if((trash[0]<=endPoint.x&&endPoint.x<=trash[0]+200) && abs(trash[1]-endPoint.y)<400){
+            TRASH.setImageDrawable(getDrawable(getContext(), R.drawable.ic_baseline_delete_24_other));
+        }else {
+            TRASH.setImageDrawable(getDrawable(getContext(), R.drawable.ic_baseline_delete_24));
+        }
+    }
+
+
+    //make a marker bounce in place
     /**
      * This method causes the google map markers to bounce in place
      * @param googleMap

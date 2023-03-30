@@ -69,7 +69,7 @@
                 android:padding="10dp"
                 android:text=":)"
                 android:textColor="#000000"
-                android:textSize="48dp"
+                android:textSize="100dp"
                 app:autoSizeMaxTextSize="100dp"
                 app:autoSizeMinTextSize="8dp"
                 app:autoSizeStepGranularity="1dp"

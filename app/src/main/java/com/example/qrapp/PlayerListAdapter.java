@@ -19,12 +19,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Class for defining a custom adapter for a ListView for player Searching
@@ -98,10 +107,32 @@ class PlayerListAdapter extends BaseAdapter {
             public void onClick(View view) {
                 // try catch for fragment error handling
                 try {
-                    Intent playerProfileIntent = new Intent(myActivity, PlayerProfileActivity.class);
-                    playerProfileIntent.putExtra("player", player.getUsername());
-                    myActivity.startActivity(playerProfileIntent);
+                    List<String> checkName = new ArrayList<String>();
+                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+                    DocumentReference userCheck = db.collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                    userCheck.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if (task.isSuccessful()) {
+                                DocumentSnapshot userDoc = task.getResult();
+                                if (userDoc.exists()) {
+                                    checkName.add(userDoc.getString("username"));
+                                    Log.d("TAG", "userNames: "+player.getUsername()+","+checkName);
+                                    if (Objects.equals(player.getUsername(), checkName.get(0))) {
+                                        Intent myProfileIntent = new Intent(myActivity, MyProfile.class);
+                                        myActivity.startActivity(myProfileIntent);
+                                    }
+                                    else {
+                                        Intent playerProfileIntent = new Intent(myActivity, PlayerProfileActivity.class);
+                                        playerProfileIntent.putExtra("player", player.getUsername());
+                                        myActivity.startActivity(playerProfileIntent);
+                                    }
+                                }
+                            }
+                        }
+                    });
                 }
+
                 catch (Exception e) {
                     Log.d("myTag", e.toString());
                     Toast errorToast = Toast.makeText(mycontext, "An error occurred, please try again", Toast.LENGTH_SHORT);

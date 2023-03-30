@@ -3,7 +3,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/holo_blue_bright">
+    android:background="#ffafbd">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,12 +15,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Nearby Codes: "
+            android:fontFamily="sans-serif-black"
             android:textSize="25dp"/>
+
         <TextView
             android:id="@+id/textview_points"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="0"
+            android:fontFamily="sans-serif-black"
             android:textSize="25dp"/>
 
         <Space
@@ -33,9 +36,10 @@
             android:id="@+id/button_update"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="UPDATE"
+            android:text="REFRESH"
             android:textSize="20dp"
-            android:layout_marginRight="10dp"/>
+            android:layout_marginRight="10dp"
+            android:textColor="@color/ranker"/>
 
     </LinearLayout>
 
