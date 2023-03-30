@@ -16,7 +16,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Player"
-            android:paddingLeft="5dp"
+            android:paddingLeft="30dp"
             android:textSize="20sp"
             android:fontFamily="sans-serif-black"
             android:layout_gravity="center_horizontal|center_vertical"

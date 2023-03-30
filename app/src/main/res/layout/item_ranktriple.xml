@@ -9,32 +9,36 @@
         android:layout_width="wrap_content"
         android:layout_height="65dp"
         android:contentDescription="@string/app_name"
-        android:text="1"
         android:fontFamily="sans-serif-black"
-        android:textSize="20dp"
-        android:padding="5dp"/>
+        android:padding="5dp"
+        android:text="1"
+        android:textSize="20dp" />
 
     <TextView
         android:id="@+id/triple_playername"
-        android:layout_width="0dp"
+        android:layout_width="41dp"
         android:layout_height="65dp"
+        android:layout_weight="3"
         android:contentDescription="@string/app_name"
-        android:text="Team#23"
         android:fontFamily="sans-serif-black"
-        android:textSize="20dp"
         android:padding="10dp"
-        android:layout_weight="3"/>
+        android:text="Team#23"
+        android:maxLines = "1"
+        android:ellipsize = "end"
+        android:textSize="20dp"
+        />
 
     <TextView
         android:id="@+id/triple_codeface"
         android:layout_width="0dp"
-        android:layout_height="65dp"
+        android:layout_height="58dp"
+        android:layout_weight="3"
         android:contentDescription="@string/app_name"
-        android:text="[|:'o"
         android:fontFamily="sans-serif-black"
-        android:textSize="20dp"
         android:padding="10dp"
-        android:layout_weight="3"/>
+        android:gravity = "center"
+        android:text="[|:'o"
+        android:textSize="20dp" />
 
     <TextView
         android:id="@+id/triple_codepoints"

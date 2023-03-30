@@ -22,6 +22,8 @@
         android:text="Team#23"
         android:fontFamily="sans-serif-black"
         android:textSize="20dp"
+        android:maxLines = "1"
+        android:ellipsize = "end"
         android:padding="10dp"
         android:layout_weight="3"/>
 
