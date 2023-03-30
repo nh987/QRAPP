@@ -3,7 +3,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffafbd">
+    android:background="#ffafbd">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,18 +15,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Nearby Codes: "
-            android:textSize="25dp"
-            android:textColor="#824a5a"
-            android:padding = "7dp"
-            android:fontFamily="sans-serif-black"/>
+            android:fontFamily="sans-serif-black"
+            android:textSize="25dp"/>
+
         <TextView
             android:id="@+id/textview_points"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="0"
-            android:textSize="25dp"
-            android:textColor="#824a5a"
-            android:fontFamily="sans-serif-black"/>
+            android:fontFamily="sans-serif-black"
+            android:textSize="25dp"/>
 
         <Space
             android:layout_width="wrap_content"

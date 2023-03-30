@@ -1,27 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content" >
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
 
-    <TextView xmlns:android = "http://schemas.android.com/apk/res/android"
-        android:id = "@+id/textinlist"
-        android:text = "User_6666"
-        android:textSize = "20sp"
-        android:textColor = "#824a5a"
-        android:fontFamily= "sans-serif-black"
+    <TextView
+        android:id="@+id/textinlist"
+        android:layout_width="276dp"
+        android:layout_height="29dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="10dp"
+        android:ellipsize="end"
+        android:fontFamily="sans-serif-black"
+        android:maxLines="1"
         android:paddingLeft="15dp"
-        android:layout_width = "400dp"
-        android:layout_marginTop="11dp"
-        android:layout_height = "wrap_content"/>
+        android:text="User_6666"
+        android:textColor="#824a5a"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/viewProfile"
         android:layout_width="89dp"
         android:layout_height="45dp"
-        android:layout_marginLeft="-150dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginRight="50dp"
         android:text="View Profile"
-        android:textSize="10sp" />
+        android:textSize="10sp"
+        app:layout_constraintStart_toEndOf="@+id/textinlist"
+        app:layout_constraintTop_toTopOf="parent" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
