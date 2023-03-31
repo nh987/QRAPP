@@ -281,18 +281,19 @@ public class HelperMapFragment extends Fragment{
                     public void onMarkerDragStart(@NonNull Marker marker) {
 
                         String name = marker.getSnippet();
+                        ArrayList<LatLng> allCodesLL = new ArrayList<>();
+                        ArrayList<String> allNames = new ArrayList<>();
+
                         for(QRCode code:QRcs){
-                            if(Objects.equals(code.getName(), name)){
-                                startLL = LatLngify(code.getGeolocation());
-                            }
+                            allCodesLL.add(LatLngify(code.getGeolocation()));
+                            allNames.add(code.getName());
                         }
-                        if(startLL==null){//in already scanned
-                            for(QRCode code:scanned){
-                                if(Objects.equals(code.getName(), name)){
-                                    startLL = LatLngify(code.getGeolocation());
-                                }
-                            }
+                        for(QRCode code:scanned){
+                            allCodesLL.add(LatLngify(code.getGeolocation()));
+                            allNames.add(code.getName());
                         }
+                        startLL = allCodesLL.get(allNames.indexOf(name));
+
 
 
                         Log.d("POS", "At start " + startLL.toString());
