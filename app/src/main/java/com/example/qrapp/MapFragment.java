@@ -75,6 +75,7 @@ public class MapFragment extends Fragment {
     //Model/Values for loaction storage and maintenace
     Location curr_location;
     ArrayList<QRCode> closestQRcs;
+    ArrayList<QRCode> scannedQRcs;
 
     //THE DBs
     FirebaseFirestore DB; // how we access a db, just use DB
@@ -104,6 +105,7 @@ public class MapFragment extends Fragment {
     public MapFragment(){
         //set attrs really needed as soon as it is created/ can already be set
         closestQRcs = new ArrayList<>();
+        scannedQRcs = new ArrayList<>();
 
         DB = FirebaseFirestore.getInstance();
         Auth = FirebaseAuth.getInstance();
@@ -127,7 +129,7 @@ public class MapFragment extends Fragment {
                     updateView();
 
                     //tell user to update if need be
-                    int next = closestQRcs.size();
+                    int next = closestQRcs.size()+scannedQRcs.size();
                     if(next!=current)
                         Toast.makeText(getContext(), "Refresh map to see new codes near you!", Toast.LENGTH_LONG).show();
 
@@ -262,6 +264,7 @@ public class MapFragment extends Fragment {
                 if (location == null) {
                     Log.d("CURRENT LOCATION", "Got location in getLocation() but was null");
 
+
                 } else {
 
                     curr_location = location;
@@ -320,6 +323,11 @@ public class MapFragment extends Fragment {
         String LocationsQRcDataKey = "LB";
         LocationsQRcBundle.putSerializable(LocationsQRcDataKey, closestQRcs);
 
+        //package scanned
+        Bundle ScannedQRcBundle = new Bundle(); //to pass location data into fragment
+        String ScannedQRcDataKey = "SB";
+        ScannedQRcBundle.putSerializable(ScannedQRcDataKey, scannedQRcs);
+
         //package current location
         Bundle MyLocationBundle = new Bundle();
         String MyLocationDataKey = "myLB";
@@ -330,6 +338,7 @@ public class MapFragment extends Fragment {
 
         //put all bundles
         LocationBundle.putBundle(LocationsQRcDataKey,LocationsQRcBundle);
+        LocationBundle.putBundle(ScannedQRcDataKey,ScannedQRcBundle);
         LocationBundle.putBundle(MyLocationDataKey,MyLocationBundle);
         LocationBundle.putString(MeDataKey,PlayerName); //also put username
 
@@ -353,12 +362,13 @@ public class MapFragment extends Fragment {
      * as data to be displayed on the map
      */
     private void addLocationsToMap() {
-        if(closestQRcs.size()>=10 || curr_location==null){
-            return;
-        }
+//        if(closestQRcs.size()>=60 || curr_location==null){
+//            return;
+//        }
         closestQRcs.clear();
+        scannedQRcs.clear();
         int Contact_Radius = 5; //all QRc within a xkm radius
-        int max_count = 10; // I want only x qrcs to show
+        int max_count = 60; // I want only x qrcs to show
 
 
 
@@ -372,32 +382,49 @@ public class MapFragment extends Fragment {
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        int count = 0; // the true counted QRcs
+                        //int count = 0; // the true counted QRcs
                         GeoPoint QRcLocation;
                         for (QueryDocumentSnapshot QRcDoc: queryDocumentSnapshots) {
                             Location you = curr_location;
                             QRcLocation = (GeoPoint)QRcDoc.get("Geolocation");
 
+
                             List<String> alreadyScanned = (List<String>) QRcDoc.get("playersScanned");
+
                             boolean gotten = alreadyScanned!=null && alreadyScanned.contains(PlayerID);
                             //true if already scanned not null and user has already scanned the code
 
-                            if(!gotten && inRange(Contact_Radius, calculateDistance(you, QRcLocation))  ){//dont add if already gotten
-                                closestQRcs.add( new QRCode(
-                                        (Object)QRcDoc.get("Comments"),
-                                        QRcDoc.getLong("Points").intValue(),
-                                        (String)QRcDoc.get("Name"),
-                                        (String)QRcDoc.get("icon"),
-                                        (Object)alreadyScanned, //may still throw if null but same code everwhere...
-                                        QRcLocation,
-                                        (String)QRcDoc.get("Hash")) );
-                                count++;
+
+                            if(inRange(Contact_Radius, calculateDistance(you, QRcLocation))  ){//dont add if already gotten
+
+                                if(gotten){
+                                    scannedQRcs.add(new QRCode(
+                                            (Object) QRcDoc.get("Comments"),
+                                            QRcDoc.getLong("Points").intValue(),
+                                            (String) QRcDoc.get("Name"),
+                                            (String) QRcDoc.get("icon"),
+                                            (Object) alreadyScanned, //may still throw if null but same code everwhere...
+                                            QRcLocation,
+                                            (String) QRcDoc.get("Hash")));
+
+                                }else {
+                                    closestQRcs.add(new QRCode(
+                                            (Object) QRcDoc.get("Comments"),
+                                            QRcDoc.getLong("Points").intValue(),
+                                            (String) QRcDoc.get("Name"),
+                                            (String) QRcDoc.get("icon"),
+                                            (Object) alreadyScanned, //may still throw if null but same code everwhere...
+                                            QRcLocation,
+                                            (String) QRcDoc.get("Hash")));
+                                }
+                                //count++;
                             }
-                            if(count==max_count){
-                                //
-                                // Toast.makeText(getContext(), String.valueOf(count), Toast.LENGTH_SHORT).show();
-                                break;
-                            }
+                            //removed upper bound
+//                            if(count==max_count){
+//                                //
+//                                // Toast.makeText(getContext(), String.valueOf(count), Toast.LENGTH_SHORT).show();
+//                                break;
+//                            }
                         }
                     }
                 })
@@ -429,7 +456,7 @@ public class MapFragment extends Fragment {
         //put location values in view
 
         //update points total
-        int next = closestQRcs.size();
+        int next = closestQRcs.size()+scannedQRcs.size();
         Log.d("MAP", String.valueOf(next));
         points.setText(String.format(Locale.CANADA, "%d", next));
     }

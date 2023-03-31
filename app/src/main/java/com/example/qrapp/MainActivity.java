@@ -84,12 +84,10 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Scro
         //database
         Auth = FirebaseAuth.getInstance();
         DB = FirebaseFirestore.getInstance();
-        FirebaseUser user = Auth.getCurrentUser();
+        //FirebaseUser user = Auth.getCurrentUser();
 
         //get username to use for MapFragment
-        userID = user.getUid();
         username="----";
-        setUsername(userID);
 
 
         Auth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
@@ -102,6 +100,10 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Scro
                     startActivity(new Intent(MainActivity.this, SignUpActivity.class));
 
                 } else {
+
+                    userID = currentUser.getUid();//get username to use for MapFragment
+                    setUsername(userID);
+
                     System.out.println("User is signed in");
                     currentUser.reload().addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
