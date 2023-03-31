@@ -3,6 +3,7 @@ package com.example.qrapp;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.location.Geocoder;
 import android.location.Location;
@@ -15,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -22,6 +24,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -37,6 +40,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Objects;
 
 
 /**
@@ -62,11 +66,12 @@ public class RankFragment extends Fragment {
     //for location
     //used whenvever a new last location is requested
     String my_region;
-    private ActivityResultLauncher<String> requestPermissionLauncher =
+    private final ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (isGranted) {
                     updateRegion(); //have permission to use region postal code
                     Log.d("CURRENT LOCATION", "Permission Granted");
+                    Log.d("CURRENT LOCATION", "Region = "+my_region);
                 } else {
                     //Permission not granted
                     // Local Ranking will be unavailable or inaccurate
@@ -133,6 +138,7 @@ public class RankFragment extends Fragment {
      */
     @SuppressLint("MissingPermission")
     public void updateRegion(){
+
         //get their current region
         LocationManager locationManager = (LocationManager) getActivity().getSystemService(getContext().LOCATION_SERVICE);
         Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -140,34 +146,74 @@ public class RankFragment extends Fragment {
             // If the location cannot be grabbed from GPS we grab it from network
             location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         }
-
-        Geocoder PostalCodeFinder= new Geocoder(getContext());
-        try {// try to get current region
-            String ANANAN = PostalCodeFinder.getFromLocation(location.getLatitude(),location.getLongitude(),1).get(0).getPostalCode();
-            int start = 0, end = 3; // want ANA
-            my_region = ANANAN.substring(start,end);
-            Log.d("REGION", "User is in region "+my_region);
-
-            //update  location
-            HashMap<String,Object>region = new HashMap<>();
-            region.put("location",my_region);
-            UserCR.document(userID).set(region, SetOptions.merge()).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    Log.d("REGION","Updated user region in database");
-                }
-            });
-
-
-        } catch (IOException e) { //cant get a region, use whatever is in db
-            e.printStackTrace();
+        //still null? are you an emu? check db for recorded lcoation
+        if(location==null){
+            //used db location even if empty, wont show anything on lcoal leaderboard if empty
             UserCR.document(userID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                     my_region = task.getResult().getString("location");
                 }
             });
+
+            //for emus set region to UofA Botanical or anywhere you want
+            //my_region = getDefaultRegion();
+
+        }else{// can update location in db and use most recent location
+            Geocoder PostalCodeFinder= new Geocoder(getContext());
+            try {// try to get current region
+                String ANANAN = PostalCodeFinder.getFromLocation(location.getLatitude(),location.getLongitude(),1).get(0).getPostalCode();
+                int start = 0, end = 3; // want ANA
+                my_region = ANANAN.substring(start,end);
+                Log.d("REGION", "User is in region "+my_region);
+
+                //update  location
+                HashMap<String,Object>region = new HashMap<>();
+                region.put("location",my_region);
+                UserCR.document(userID).set(region, SetOptions.merge()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Log.d("REGION","Updated user region in database");
+                    }
+                });
+
+
+            } catch (IOException e) { //cant get a region, use whatever is in db
+                e.printStackTrace();
+                Log.d("REGION-Rank","No Postal Code in Location");
+                //just set to empty
+                my_region="";
+            }
         }
+
+
+    }
+
+    private String getDefaultRegion() {
+        Location location = getDefaultLocation();
+
+        String region = "";
+        Geocoder PostalCodeFinder = new Geocoder(getContext());
+        try {// try to get current region
+            String ANANAN = PostalCodeFinder.getFromLocation(location.getLatitude(), location.getLongitude(), 1).get(0).getPostalCode();
+            int start = 0, end = 3; // want ANA
+            region = ANANAN.substring(start, end);
+            Log.d("REGION-SignUp", "User is in region " + my_region);
+        } catch (IOException e) { //cant get a region, use whatever is in db
+            Log.d("REGION-SignUp", "no location");
+            e.printStackTrace();
+            //update  location
+        }
+
+        return region;
+
+    }
+
+    private Location getDefaultLocation() {
+        Location location = new Location(LocationManager.GPS_PROVIDER);
+        location.setLatitude(53.4080);//somewhere near u of a hopefully
+        location.setLongitude(-113.7605);
+        return location;
     }
 
     /**The onCreateView method sets the functionality for critical view parameters
@@ -185,14 +231,13 @@ public class RankFragment extends Fragment {
 //        return super.onCreateView(inflater, container, savedInstanceState);
 
 
-
         View view = inflater.inflate(R.layout.fragment_rank, container, false);
 //        for (String playrID:players) {
 //            Log.d("RANK",playrID + " is a player");
 //        }
 
 
-        RANK_SPINNER = (Spinner) view.findViewById(R.id.spinnerRank);
+        RANK_SPINNER = view.findViewById(R.id.spinnerRank);
 
         //SET SPINNER
         // Create an ArrayAdapter using the string array and a default spinner layout
@@ -286,9 +331,15 @@ public class RankFragment extends Fragment {
 
                                                             //5)
                                                             //show it
-                                                            getActivity().getSupportFragmentManager()
-                                                                    .beginTransaction()
-                                                                    .replace(R.id.rankframe, selected).commit();//SHOW FRAGMENT
+                                                            FragmentActivity activity = getActivity();
+                                                            if(activity!=null) { //prevent crash
+                                                                Log.d("RANK2","Showing Main Leaderboard");
+                                                                activity.getSupportFragmentManager()
+                                                                        .beginTransaction()
+                                                                        .replace(R.id.rankframe, selected).commit();//SHOW FRAGMENT
+                                                            }else{
+                                                                Log.d("RANK2","Ended Rank Fragment there null error");
+                                                            }
                                                         }
 
 
@@ -384,9 +435,15 @@ public class RankFragment extends Fragment {
 
                                                                //5)
                                                                //show it
-                                                               getActivity().getSupportFragmentManager()
-                                                                       .beginTransaction()
-                                                                       .replace(R.id.rankframe, selected).commit();//SHOW FRAGMENT
+                                                               FragmentActivity activity = getActivity();
+                                                               if(activity!=null) { //prevent crash
+                                                                   Log.d("RANK3","Showing Sum Leaderboard");
+                                                                   activity.getSupportFragmentManager()
+                                                                           .beginTransaction()
+                                                                           .replace(R.id.rankframe, selected).commit();//SHOW FRAGMENT
+                                                               }else{
+                                                                   Log.d("RANK3","Ended Rank Fragment there null error");
+                                                               }
                                                            }
 
 
@@ -474,9 +531,15 @@ public class RankFragment extends Fragment {
 
                                                             //5)
                                                             //show it
-                                                            getActivity().getSupportFragmentManager()
-                                                                    .beginTransaction()
-                                                                    .replace(R.id.rankframe, selected).commit();//SHOW FRAGMENT
+                                                            FragmentActivity activity = getActivity();
+                                                            if(activity!=null) { //prevent crash
+                                                                Log.d("RANK4","Showing Count Leaderboard");
+                                                                activity.getSupportFragmentManager()
+                                                                        .beginTransaction()
+                                                                        .replace(R.id.rankframe, selected).commit();//SHOW FRAGMENT
+                                                            }else{
+                                                                Log.d("RANK4","Ended Rank Fragment there null error");
+                                                            }
                                                         }
 
 
@@ -491,13 +554,52 @@ public class RankFragment extends Fragment {
 
 
                         null_users=0; //reset nulls
+                        break;
                     case 3: //Local
                         Log.d("RANK", "LOCAL RANK(SCORE)");
+                        Log.d("REGION","Current Region: "+my_region);
 
                         //order top 10 by Highest QRCodes locally(ANA of Postal code)
                         //1. get the highest QRCodes of all players
                         Score_Or_Local = new ArrayList<>();
                         topTriples = new ArrayList<>();
+
+                        if(Objects.equals(my_region, "")){
+                            //try getting location and region
+                            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+                        }
+
+                        //still an empty location? Blank Local leaderboard
+
+                        if(Objects.equals(my_region, "")){
+                            Log.d("RANK5","Showing BLANK Local Leaderboard");
+                            Toast.makeText(getContext(), "No Location Found", Toast.LENGTH_LONG).show();
+                            //SHOW AN EMPTY BOARD
+                            //3)
+                            //Bundle em up
+                            Bundle RankBundle = new Bundle();
+                            RankBundle.putSerializable(RankBundleKey, topTriples);
+
+                            //4)
+                            //make new RankLocalFragment with data
+                            Fragment selected = new RankLocalFragment();
+                            selected.setArguments(RankBundle);
+
+                            //5)
+                            //show it
+                            FragmentActivity activity = getActivity();
+                            if(activity!=null) { //prevent crash
+                                Log.d("RANK5","Showing Local Leaderboard");
+                                activity.getSupportFragmentManager()
+                                        .beginTransaction()
+                                        .replace(R.id.rankframe, selected).commit();//SHOW FRAGMENT
+                            }else{
+                                Log.d("RANK5","Ended Rank Fragment there null error");
+                            }
+                            break;
+                        }
+
+
 
 
                         //get all players with the same region as me
@@ -570,9 +672,15 @@ public class RankFragment extends Fragment {
 
                                                             //5)
                                                             //show it
-                                                            getActivity().getSupportFragmentManager()
-                                                                    .beginTransaction()
-                                                                    .replace(R.id.rankframe, selected).commit();//SHOW FRAGMENT
+                                                            FragmentActivity activity = getActivity();
+                                                            if(activity!=null) { //prevent crash
+                                                                Log.d("RANK5","Showing Local Leaderboard");
+                                                                activity.getSupportFragmentManager()
+                                                                        .beginTransaction()
+                                                                        .replace(R.id.rankframe, selected).commit();//SHOW FRAGMENT
+                                                            }else{
+                                                                Log.d("RANK5","Ended Rank Fragment there null error");
+                                                            }
                                                         }
 
 
@@ -606,10 +714,10 @@ public class RankFragment extends Fragment {
         return view;
     }
 
-
-
-
-
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
 
 
     // to find the kth largest elem in an Arralist of Player hash string to QRCode pairs

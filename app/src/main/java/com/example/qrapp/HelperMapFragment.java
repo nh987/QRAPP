@@ -25,6 +25,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -60,6 +61,8 @@ public class HelperMapFragment extends Fragment{
 
     //Data
     ArrayList<QRCode> QRcs; //list of locations
+    ArrayList<QRCode> scanned; //list of locations
+
     int N; //number of locations
     Location current;
     String Username;
@@ -67,6 +70,7 @@ public class HelperMapFragment extends Fragment{
 
     // keys
     String LocationsQRcDataKey = "LB";
+    String ScannedQRcDataKey = "SB";
     String MyLocationDataKey = "myLB";
     String MeDataKey = "ME";
 
@@ -100,6 +104,7 @@ public class HelperMapFragment extends Fragment{
 
         //GET CLOSEST CODES
         QRcs = (ArrayList<QRCode>) LocationBundle.getBundle(LocationsQRcDataKey).getSerializable(LocationsQRcDataKey); //location list object passed as bundle so get the bundle
+        scanned = (ArrayList<QRCode>) LocationBundle.getBundle(ScannedQRcDataKey).getSerializable(ScannedQRcDataKey);//already scanned these
 
 
         //GET MY CURRENT LOCATION
@@ -107,7 +112,7 @@ public class HelperMapFragment extends Fragment{
 
         //GET MY UNIQUE USERNAME
         Username = LocationBundle.getString(MeDataKey);
-        N = QRcs.size();
+        N = QRcs.size()+scanned.size();
 
         //Marker need their own view adapter
         QRcMarkerAdapter = new QRcMarkerInfoWindowAdapter(getContext());
@@ -140,7 +145,7 @@ public class HelperMapFragment extends Fragment{
             public void onClick(View v) {
                 v.animate().translationZ(1000);
                 LatLng myLL = new LatLng(current.getLatitude(), current.getLongitude());
-                Map.animateCamera(CameraUpdateFactory.newLatLngZoom(myLL, Zoom+3));
+                Map.animateCamera(CameraUpdateFactory.newLatLngZoom(myLL, Zoom+4));
 
             }
         });
@@ -218,7 +223,7 @@ public class HelperMapFragment extends Fragment{
 
                 //for when a marker is dragged
                 googleMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
-                    LatLng startLL;
+                    LatLng startLL=null;
 
                     @Override
                     public void onMarkerDrag(@NonNull Marker marker) {
@@ -251,12 +256,20 @@ public class HelperMapFragment extends Fragment{
                             //remove from actual list
                             String codename = marker.getSnippet();
                             QRcs.removeIf(code -> Objects.equals(code.getName(), codename));
+                            scanned.removeIf(code -> Objects.equals(code.getName(), codename));
 
 
                         }else{
                             marker.setPosition(startLL);
+                            Log.d("POS", "At end " + startLL.toString());
                             marker.setRotation(0);
-                            marker.setAlpha(1f);
+
+                            float x = marker.getAlpha();
+                            if(x==0.45f || x==0.95f) {
+                                marker.setAlpha(0.95f);
+                            }else{
+                                marker.setAlpha(1f);
+                            }
                             marker.setVisible(true);
                             marker.setInfoWindowAnchor(0.5f,0);
                             markerBounce(Map,marker,startLL);
@@ -266,19 +279,24 @@ public class HelperMapFragment extends Fragment{
 
                     @Override
                     public void onMarkerDragStart(@NonNull Marker marker) {
-//                        Projection proj = googleMap.getProjection();
-//
-//                        startLL = marker.getPosition();
-//                        Point startPoint = proj.toScreenLocation(startLL);
-//                        startPoint.offset(0, 100);
-//                        startLL = proj.fromScreenLocation(startPoint);
 
                         String name = marker.getSnippet();
+                        ArrayList<LatLng> allCodesLL = new ArrayList<>();
+                        ArrayList<String> allNames = new ArrayList<>();
+
                         for(QRCode code:QRcs){
-                            if(Objects.equals(code.getName(), name)){
-                                startLL = LatLngify(code.getGeolocation());
-                            }
+                            allCodesLL.add(LatLngify(code.getGeolocation()));
+                            allNames.add(code.getName());
                         }
+                        for(QRCode code:scanned){
+                            allCodesLL.add(LatLngify(code.getGeolocation()));
+                            allNames.add(code.getName());
+                        }
+                        startLL = allCodesLL.get(allNames.indexOf(name));
+
+
+
+                        Log.d("POS", "At start " + startLL.toString());
 
                         TRASH.setVisibility(View.VISIBLE);
 
@@ -300,6 +318,19 @@ public class HelperMapFragment extends Fragment{
 
                     googleMap.addMarker(MOptions);
                 }
+                for (QRCode QRc : scanned) { //add a marker for each location
+                    ll = LatLngify(QRc.getGeolocation());
+                    MarkerOptions MOptions = new MarkerOptions();
+                    MOptions.position(ll);
+                    MOptions
+                            .alpha(0.95f)
+                            .title(String.format("%s      %s %s",QRc.getIcon(),QRc.getPoints(),"points [scanned]"))
+                            .snippet(QRc.getName())
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
+                            .draggable(true);
+
+                    googleMap.addMarker(MOptions);
+                }
 
                 //for my location specifically
                 if(current!=null) {// zoom in on the phones current location, its the last location
@@ -311,6 +342,7 @@ public class HelperMapFragment extends Fragment{
                             .title("YOU ARE HERE")
                             .snippet(Username);
                     MOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+                    MOptions.zIndex(1000000);//on top
 
                     googleMap.addMarker(MOptions);
                     googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLL, Zoom));
@@ -338,6 +370,7 @@ public class HelperMapFragment extends Fragment{
         }
     }
 
+    //HANDLE NO CONTEXT CRASH
     @Override
     public void onDetach() {
         super.onDetach();
@@ -347,12 +380,19 @@ public class HelperMapFragment extends Fragment{
 
     //state of a marker while dragging
     private void OnDragState(Marker marker) {
-        marker.setAlpha(0.5f);
+        float x = marker.getAlpha();
+
+        if(x==0.95f || x==0.45f){
+            marker.setAlpha(0.45f);
+        }else {
+            marker.setAlpha(0.5f);
+        }
         marker.setRotation(180);
     }
 
     //trash UI while dragging
     private void OnDragTrashUI(Marker marker) {
+
         LatLng markerLocation = marker.getPosition();
         Projection proj = Map.getProjection();
         Point endPoint = proj.toScreenLocation(markerLocation);
@@ -409,9 +449,19 @@ public class HelperMapFragment extends Fragment{
      */
     private QRCode getQRc(String chosen) {
         QRCode placeholder = null;
+
         for (QRCode QRc:QRcs) {
-            if(Objects.equals(QRc.getName(), chosen)){
-                return QRc;
+            if (Objects.equals(QRc.getName(), chosen)) {
+                placeholder = QRc;
+                break;
+            }
+        }
+        if(placeholder==null){
+            for (QRCode QRc:scanned) {
+                if (Objects.equals(QRc.getName(), chosen)) {
+                    placeholder = QRc;
+                    break;
+                }
             }
         }
         return placeholder;
