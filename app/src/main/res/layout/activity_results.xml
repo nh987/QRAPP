@@ -145,7 +145,7 @@
         android:textSize="25dp"
         android:maxLines="1"
         app:autoSizeMaxTextSize="25dp"
-        app:autoSizeMinTextSize="8dp"
+        app:autoSizeMinTextSize="6dp"
         app:autoSizeStepGranularity="1dp"
         app:autoSizeTextType="uniform"
         app:layout_constraintEnd_toEndOf="parent"
