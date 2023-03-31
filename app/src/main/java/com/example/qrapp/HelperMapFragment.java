@@ -326,6 +326,7 @@ public class HelperMapFragment extends Fragment{
                             .alpha(0.95f)
                             .title(String.format("%s      %s %s",QRc.getIcon(),QRc.getPoints(),"points [scanned]"))
                             .snippet(QRc.getName())
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
                             .draggable(true);
 
                     googleMap.addMarker(MOptions);

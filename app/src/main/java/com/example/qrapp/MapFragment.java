@@ -300,7 +300,7 @@ public class MapFragment extends Fragment {
      * This is used when a MapFragment reaches the end of its lifecycle
      */
     private void stopLocUpdates(){
-        FLPC.removeLocationUpdates(locationCallback);
+        if(FLPC!=null)FLPC.removeLocationUpdates(locationCallback);
     }
 
 
