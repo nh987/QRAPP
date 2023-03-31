@@ -76,6 +76,7 @@ public class SearchFragmentTest {
         ImageView searchIcon = (ImageView) searchView.findViewById(androidx.appcompat.R.id.search_button);
         solo.clickOnView(searchIcon);
         solo.typeText(0, "dds");
+        solo.sleep(6000);
         solo.sendKey(Solo.ENTER);
         solo.clickOnView(solo.getView(R.id.viewProfile));
         solo.waitForActivity(PlayerProfileActivity.class);
