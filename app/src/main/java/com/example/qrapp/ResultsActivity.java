@@ -421,10 +421,10 @@ public class ResultsActivity extends AppCompatActivity {
         hexMapName.put('8', "If");
         hexMapName.put('9', "Else");
         hexMapName.put('a', "Try");
-        hexMapName.put('b', "Throws");
-        hexMapName.put('c', "In");
-        hexMapName.put('d', "To");
-        hexMapName.put('e', "With");
+        hexMapName.put('b', "Catch");
+        hexMapName.put('c', "Throw");
+        hexMapName.put('d', "With");
+        hexMapName.put('e', "In");
         hexMapName.put('f', "Is");
 
         QRName = "listyCity."+hexMapName.get(hashedSubstring.charAt(0))+hexMapName.get(hashedSubstring.charAt(1))+hexMapName.get(hashedSubstring.charAt(2))+hexMapName.get(hashedSubstring.charAt(3))+hexMapName.get(hashedSubstring.charAt(4))+hexMapName.get(hashedSubstring.charAt(5))+"Cities()";
