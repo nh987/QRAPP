@@ -413,19 +413,19 @@ public class ResultsActivity extends AppCompatActivity {
         hexMapName.put('0', "Get");
         hexMapName.put('1', "Set");
         hexMapName.put('2', "Add");
-        hexMapName.put('3', "Del");
+        hexMapName.put('3', "Delete");
         hexMapName.put('4', "Has");
         hexMapName.put('5', "Count");
         hexMapName.put('6', "For");
         hexMapName.put('7', "While");
         hexMapName.put('8', "If");
         hexMapName.put('9', "Else");
-        hexMapName.put('a', "Try");
-        hexMapName.put('b', "Catch");
-        hexMapName.put('c', "Throw");
-        hexMapName.put('d', "With");
-        hexMapName.put('e', "In");
-        hexMapName.put('f', "Is");
+        hexMapName.put('a', "This");
+        hexMapName.put('b', "Name");
+        hexMapName.put('c', "Province");
+        hexMapName.put('d', "Is");
+        hexMapName.put('e', "With");
+        hexMapName.put('f', "In");
 
         QRName = "listyCity."+hexMapName.get(hashedSubstring.charAt(0))+hexMapName.get(hashedSubstring.charAt(1))+hexMapName.get(hashedSubstring.charAt(2))+hexMapName.get(hashedSubstring.charAt(3))+hexMapName.get(hashedSubstring.charAt(4))+hexMapName.get(hashedSubstring.charAt(5))+"Cities()";
         Log.d("QRName:", QRName);
