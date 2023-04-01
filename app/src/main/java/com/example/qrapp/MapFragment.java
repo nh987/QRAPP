@@ -492,3 +492,25 @@ public class MapFragment extends Fragment {
 
 
 }
+
+/*CITATIONS
+1)Making GPS apps
+https://www.youtube.com/watch?v=_xUcYfbtfsI
+
+2)querying a firebase database
+https://firebase.google.com/docs/firestore/query-data/queries#java
+
+3)Google Maps API Keys
+https://developers.google.com/maps/documentation/android-sdk/map-with-marker
+https://cloud.google.com/docs/authentication/api-keys#introduction
+
+4) changing UI objects at runtime
+https://stackoverflow.com/questions/55460249/app-setbackground-error-incompatible-types-int-cannot-be-converted-to-drawab
+
+5) Location and Location Permissions
+https://stackoverflow.com/questions/17983865/making-a-location-object-in-android-with-latitude-and-longitude-values
+https://www.youtube.com/watch?v=rNYaEFl6Fms
+https://www.youtube.com/watch?v=4eWoXPSpA5Y
+
+
+ */

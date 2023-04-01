@@ -19,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -67,6 +68,11 @@ public class SearchFragment extends Fragment {
 
     PlayerListAdapter playerListAdapter;
 
+    public interface Scrollable {
+        public void Scrollable(int scrollState);
+    }
+    private MainFragment.Scrollable dataPasser;
+    //
 
     @SuppressLint({"CutPasteId", "InflateParams"})
     @Nullable
@@ -341,7 +347,55 @@ public class SearchFragment extends Fragment {
             }
         });
 
+        //interface for scrolling
+        qrListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            int LastFirstVisibleItem;
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                if(LastFirstVisibleItem<firstVisibleItem)
+                {
+                    //Log.i("SCROLLING DOWN","TRUE");
+                    passData(2);
+                }
+                if(LastFirstVisibleItem>firstVisibleItem)
+                {
+                    passData(1);
+                    //Log.i("SCROLLING UP","TRUE");
+                }
+                LastFirstVisibleItem=firstVisibleItem;
+
+            }
+        });
+        //interface for scrolling
+
+
         return view;
     }
+
+    /**
+     * This method sets the dataPasser that is responsible for passing scroll information
+     * to the Main Activity to set the visibility of the bottom navigation bar
+     * @param context
+     */
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        dataPasser = (MainFragment.Scrollable) context;
+    }
+
+    /**
+     * This method passing scroll sata to the Main Activity to update the visibility
+     * of the bottom navigation bar
+     * @param data
+     */
+    public void passData(int data) {
+        dataPasser.Scrollable(data);
+    }
+    //// End of Scroll Interface
 
 }

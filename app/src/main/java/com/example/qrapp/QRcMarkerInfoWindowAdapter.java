@@ -14,6 +14,10 @@ import androidx.core.content.ContextCompat;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
 
+/**
+ * This class allows for the creation of custom
+ * Marker Information window to be used on the map
+ */
 public class QRcMarkerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
     private View markerInfoWindow;
@@ -26,6 +30,12 @@ public class QRcMarkerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
     }
 
 
+    /**
+     * This method renders all the necessary elements for
+     * the marker info window to be displayed on the map
+     * @param marker
+     * @param view
+     */
     private void render(Marker marker, View view){
         //set the title==icon + points + [scanned by user]scanned
         LinearLayout windowLout = view.findViewById(R.id.Lout_window);
@@ -59,6 +69,11 @@ public class QRcMarkerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
     }
 
 
+    /**
+     * This method gets the information content needed for a marker and renders it on the marker window custom display
+     * @param marker
+     * @return
+     */
     @Nullable
     @Override
     public View getInfoContents(@NonNull com.google.android.gms.maps.model.Marker marker) {
@@ -67,6 +82,11 @@ public class QRcMarkerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
         return markerInfoWindow;
     }
 
+    /**
+     * This method  get the custom marker window and renders for the marker
+     * @param marker
+     * @return View
+     */
     @Nullable
     @Override
     public View getInfoWindow(@NonNull com.google.android.gms.maps.model.Marker marker) {

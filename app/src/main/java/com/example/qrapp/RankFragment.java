@@ -826,3 +826,29 @@ public class RankFragment extends Fragment {
         return i + 1;
     }
 }
+
+
+/*CITATIONS
+
+1)Spinner making
+https://developer.android.com/develop/ui/views/components/spinner
+
+2)ChatGTP Coding kthLargest
+https://openai.com/blog/chatgpt
+
+3)ChatGTP Coding partition fro kth Largest
+https://openai.com/blog/chatgpt
+
+4)kth largest theory
+Introduction To Algorithms, 3rd Edition.
+ Chapter 9, 9.3: Selection in Worst-Case Linear Time.
+ Chapter 7 Quicksort, Chapter 8 Sorting in Linear Time.
+
+5)updating a firebase database
+https://firebase.google.com/docs/firestore/manage-data/add-data
+
+6)Region system using postal codes
+https://beginnersbook.com/2013/12/java-string-substring-method-example/
+
+
+ */
