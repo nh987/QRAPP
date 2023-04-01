@@ -73,6 +73,7 @@ public class SearchFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
+
         view = LayoutInflater.from(getContext()).inflate(R.layout.search, null);
         playerSearch = view.findViewById(R.id.playerButton);
         QRSearch = view.findViewById(R.id.QRCButton);
@@ -91,6 +92,8 @@ public class SearchFragment extends Fragment {
 
 
 
+
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             /**
@@ -100,9 +103,8 @@ public class SearchFragment extends Fragment {
              */
             public boolean onQueryTextSubmit(String query) {
                 // you actually have to click on the magnifying glass..
-                if (playerFilterButtonClicked) {
-                    getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
 
+                if (playerFilterButtonClicked) {
                     ArrayList<Player> playerList = new ArrayList<>();
                     String searchText = searchView.getQuery().toString();
                     // query all users based on partial string matching
@@ -151,7 +153,6 @@ public class SearchFragment extends Fragment {
 
                 }
                 else if (QrFilterButtonClicked) {
-
                 }
                 return false;
             }
