@@ -68,8 +68,8 @@ public class MapFragment extends Fragment {
 
     //Location request params
     int trackingACCURACY = PRIORITY_BALANCED_POWER_ACCURACY;
-    int update_interval = 10; // these are used to update location after a certain amount of secs
-    int fastest_update_interval = 5; // I times these by 100o because apparently, the function accepts time in millisecs
+    int update_interval = 4; // these are used to update location after a certain amount of secs
+    int fastest_update_interval = 2; // I times these by 100o because apparently, the function accepts time in millisecs
 
 
     //Model/Values for loaction storage and maintenace
