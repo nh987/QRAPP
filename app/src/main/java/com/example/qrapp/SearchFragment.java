@@ -121,9 +121,8 @@ public class SearchFragment extends Fragment {
                                 Log.d("myTag", document.getString("username"));
                                 String username = document.getString("username");
                                 String email = document.getString("email");
-                                //String phoneNumber = document.getString("phoneNumber");
-                                String phoneNumber = "1234";
-                                String location = "edmonton"; // TODO  This is currently NOT in the db
+                                String phoneNumber = document.getString("phoneNumber");
+                                String location = document.getString("location");
                                 Player queriedPlayer = new Player(username, email, location, phoneNumber);
                                 playerList.add(queriedPlayer);
                             }

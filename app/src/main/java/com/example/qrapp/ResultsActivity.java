@@ -408,26 +408,26 @@ public class ResultsActivity extends AppCompatActivity {
         String hashedSubstring = hashed.substring(0,6);
         String QRName = "";
 
-        // 16^6 = 16.8 million unique combos.
+        // 16^6 = 16.78 million unique combos.
         HashMap<Character, String> hexMapName = new HashMap<Character, String>();
-        hexMapName.put('0', "Alpha");
-        hexMapName.put('1', "Bravo");
-        hexMapName.put('2', "Charlie");
-        hexMapName.put('3', "Delta");
-        hexMapName.put('4', "Echo");
-        hexMapName.put('5', "Foxtrot");
-        hexMapName.put('6', "Golf");
-        hexMapName.put('7', "Hotel");
-        hexMapName.put('8', "India");
-        hexMapName.put('9', "Juliet");
-        hexMapName.put('a', "Kilo");
-        hexMapName.put('b', "Lima");
-        hexMapName.put('c', "Mike");
-        hexMapName.put('d', "November");
-        hexMapName.put('e', "Oscar");
-        hexMapName.put('f', "Papa");
+        hexMapName.put('0', "Get");
+        hexMapName.put('1', "Set");
+        hexMapName.put('2', "Add");
+        hexMapName.put('3', "Del");
+        hexMapName.put('4', "Has");
+        hexMapName.put('5', "Count");
+        hexMapName.put('6', "For");
+        hexMapName.put('7', "While");
+        hexMapName.put('8', "If");
+        hexMapName.put('9', "Else");
+        hexMapName.put('a', "Try");
+        hexMapName.put('b', "Catch");
+        hexMapName.put('c', "Throw");
+        hexMapName.put('d', "Is");
+        hexMapName.put('e', "With");
+        hexMapName.put('f', "In");
 
-        QRName = hexMapName.get(hashedSubstring.charAt(0))+" "+hexMapName.get(hashedSubstring.charAt(1))+hexMapName.get(hashedSubstring.charAt(2))+hexMapName.get(hashedSubstring.charAt(3))+hexMapName.get(hashedSubstring.charAt(4))+hexMapName.get(hashedSubstring.charAt(5));
+        QRName = "listyCity."+hexMapName.get(hashedSubstring.charAt(0))+hexMapName.get(hashedSubstring.charAt(1))+hexMapName.get(hashedSubstring.charAt(2))+hexMapName.get(hashedSubstring.charAt(3))+hexMapName.get(hashedSubstring.charAt(4))+hexMapName.get(hashedSubstring.charAt(5))+"Cities()";
         Log.d("QRName:", QRName);
         return QRName;
     }
@@ -441,7 +441,7 @@ public class ResultsActivity extends AppCompatActivity {
         String hashedSubstring = hashed.substring(0,4);
         String QRVisual = "";
 
-        // 16^4 = 65K combos (65K X 16.8 Million = 1.1*10^12 combos)
+        // 16^4 = 65K combos (65K X 16.78 Million = 1.1*10^12 combos)
         HashMap<Character, String> hexMapHead = new HashMap<Character, String>(); // emoticons hats
         hexMapHead.put('0', "C|");
         hexMapHead.put('1', "[|");
