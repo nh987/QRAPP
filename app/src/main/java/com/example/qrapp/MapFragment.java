@@ -403,7 +403,7 @@ public class MapFragment extends Fragment {
                                             QRcDoc.getLong("Points").intValue(),
                                             (String) QRcDoc.get("Name"),
                                             (String) QRcDoc.get("icon"),
-                                            (Object) alreadyScanned, //may still throw if null but same code everwhere...
+                                            (Object) alreadyScanned, //may still throw if null but same code everywhere...
                                             QRcLocation,
                                             (String) QRcDoc.get("Hash")));
 
@@ -413,7 +413,7 @@ public class MapFragment extends Fragment {
                                             QRcDoc.getLong("Points").intValue(),
                                             (String) QRcDoc.get("Name"),
                                             (String) QRcDoc.get("icon"),
-                                            (Object) alreadyScanned, //may still throw if null but same code everwhere...
+                                            (Object) alreadyScanned, //may still throw if null but same code everywhere...
                                             QRcLocation,
                                             (String) QRcDoc.get("Hash")));
                                 }

@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -88,6 +89,8 @@ public class SearchFragment extends Fragment {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
+
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             /**
@@ -98,6 +101,8 @@ public class SearchFragment extends Fragment {
             public boolean onQueryTextSubmit(String query) {
                 // you actually have to click on the magnifying glass..
                 if (playerFilterButtonClicked) {
+                    getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
+
                     ArrayList<Player> playerList = new ArrayList<>();
                     String searchText = searchView.getQuery().toString();
                     // query all users based on partial string matching

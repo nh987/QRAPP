@@ -110,8 +110,6 @@ public class RankFragment extends Fragment {
 
         //players = new ArrayList<>();
 
-
-
     }
 
     /**
@@ -189,6 +187,10 @@ public class RankFragment extends Fragment {
 
     }
 
+    /**
+     * This function returns a default region to use for testing location dependent functionality with emulators
+     * @return String
+     */
     private String getDefaultRegion() {
         Location location = getDefaultLocation();
 
@@ -209,6 +211,10 @@ public class RankFragment extends Fragment {
 
     }
 
+    /**
+     * This function returns a default Location to use for testing location dependent functionality with emulators
+     * @return Location
+     */
     private Location getDefaultLocation() {
         Location location = new Location(LocationManager.GPS_PROVIDER);
         location.setLatitude(53.4080);//somewhere near u of a hopefully
@@ -232,10 +238,6 @@ public class RankFragment extends Fragment {
 
 
         View view = inflater.inflate(R.layout.fragment_rank, container, false);
-//        for (String playrID:players) {
-//            Log.d("RANK",playrID + " is a player");
-//        }
-
 
         RANK_SPINNER = view.findViewById(R.id.spinnerRank);
 
@@ -328,6 +330,7 @@ public class RankFragment extends Fragment {
                                                             //make new RankScoreFragment with data
                                                             Fragment selected = new RankScoreFragment();
                                                             selected.setArguments(RankBundle);
+
 
                                                             //5)
                                                             //show it
@@ -712,11 +715,6 @@ public class RankFragment extends Fragment {
         });
 
         return view;
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
     }
 
 
