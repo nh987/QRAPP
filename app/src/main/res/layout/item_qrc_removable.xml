@@ -20,6 +20,8 @@
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/visual"
         android:textColor="#824a5a"
+        android:maxLines = "1"
+        android:ellipsize = "end"
         android:padding = "10dp"
         android:fontFamily="sans-serif-black"
         android:textSize="16dp"
