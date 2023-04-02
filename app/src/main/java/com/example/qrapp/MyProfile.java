@@ -280,6 +280,12 @@ public class MyProfile extends AppCompatActivity {
         });
     }
 
+    /**
+     * calculates the player's ranking for highest unique QR code
+     * @param db passed instance of firebase database
+     * @param deID the deviceId to calculate the ranking of
+     * @param rnk the textView to change once rank has been calculated
+     */
     public void calculateRanking(FirebaseFirestore db, String deID, TextView rnk) {
         // As a player, I want an estimate of my ranking for the highest scoring unique QR code
         // 1. go through all players, get their highest QR code that only they scanned, store it in a dict
