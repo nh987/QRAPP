@@ -39,14 +39,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.firebase.firestore.GeoPoint;
-import com.google.firebase.firestore.auth.User;
-
-import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 
 //Fragment Class to show map on
@@ -60,6 +56,8 @@ public class HelperMapFragment extends Fragment{
 
     //Data
     ArrayList<QRCode> QRcs; //list of locations
+    ArrayList<QRCode> scanned; //list of locations
+
     int N; //number of locations
     Location current;
     String Username;
@@ -67,6 +65,7 @@ public class HelperMapFragment extends Fragment{
 
     // keys
     String LocationsQRcDataKey = "LB";
+    String ScannedQRcDataKey = "SB";
     String MyLocationDataKey = "myLB";
     String MeDataKey = "ME";
 
@@ -100,6 +99,7 @@ public class HelperMapFragment extends Fragment{
 
         //GET CLOSEST CODES
         QRcs = (ArrayList<QRCode>) LocationBundle.getBundle(LocationsQRcDataKey).getSerializable(LocationsQRcDataKey); //location list object passed as bundle so get the bundle
+        scanned = (ArrayList<QRCode>) LocationBundle.getBundle(ScannedQRcDataKey).getSerializable(ScannedQRcDataKey);//already scanned these
 
 
         //GET MY CURRENT LOCATION
@@ -107,7 +107,7 @@ public class HelperMapFragment extends Fragment{
 
         //GET MY UNIQUE USERNAME
         Username = LocationBundle.getString(MeDataKey);
-        N = QRcs.size();
+        N = QRcs.size()+scanned.size();
 
         //Marker need their own view adapter
         QRcMarkerAdapter = new QRcMarkerInfoWindowAdapter(getContext());
@@ -140,7 +140,7 @@ public class HelperMapFragment extends Fragment{
             public void onClick(View v) {
                 v.animate().translationZ(1000);
                 LatLng myLL = new LatLng(current.getLatitude(), current.getLongitude());
-                Map.animateCamera(CameraUpdateFactory.newLatLngZoom(myLL, Zoom+3));
+                Map.animateCamera(CameraUpdateFactory.newLatLngZoom(myLL, Zoom+4));
 
             }
         });
@@ -218,7 +218,7 @@ public class HelperMapFragment extends Fragment{
 
                 //for when a marker is dragged
                 googleMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
-                    LatLng startLL;
+                    LatLng startLL=null;
 
                     @Override
                     public void onMarkerDrag(@NonNull Marker marker) {
@@ -251,12 +251,20 @@ public class HelperMapFragment extends Fragment{
                             //remove from actual list
                             String codename = marker.getSnippet();
                             QRcs.removeIf(code -> Objects.equals(code.getName(), codename));
+                            scanned.removeIf(code -> Objects.equals(code.getName(), codename));
 
 
                         }else{
                             marker.setPosition(startLL);
+                            Log.d("POS", "At end " + startLL.toString());
                             marker.setRotation(0);
-                            marker.setAlpha(1f);
+
+                            float x = marker.getAlpha();
+                            if(x==0.45f || x==0.95f) {//either normal or dragged, set back to normal at drag end
+                                marker.setAlpha(0.95f);
+                            }else{
+                                marker.setAlpha(1f);
+                            }
                             marker.setVisible(true);
                             marker.setInfoWindowAnchor(0.5f,0);
                             markerBounce(Map,marker,startLL);
@@ -266,19 +274,24 @@ public class HelperMapFragment extends Fragment{
 
                     @Override
                     public void onMarkerDragStart(@NonNull Marker marker) {
-//                        Projection proj = googleMap.getProjection();
-//
-//                        startLL = marker.getPosition();
-//                        Point startPoint = proj.toScreenLocation(startLL);
-//                        startPoint.offset(0, 100);
-//                        startLL = proj.fromScreenLocation(startPoint);
 
                         String name = marker.getSnippet();
+                        ArrayList<LatLng> allCodesLL = new ArrayList<>();
+                        ArrayList<String> allNames = new ArrayList<>();
+
                         for(QRCode code:QRcs){
-                            if(Objects.equals(code.getName(), name)){
-                                startLL = LatLngify(code.getGeolocation());
-                            }
+                            allCodesLL.add(LatLngify(code.getGeolocation()));
+                            allNames.add(code.getName());
                         }
+                        for(QRCode code:scanned){
+                            allCodesLL.add(LatLngify(code.getGeolocation()));
+                            allNames.add(code.getName());
+                        }
+                        startLL = allCodesLL.get(allNames.indexOf(name));
+
+
+
+                        Log.d("POS", "At start " + startLL.toString());
 
                         TRASH.setVisibility(View.VISIBLE);
 
@@ -300,6 +313,19 @@ public class HelperMapFragment extends Fragment{
 
                     googleMap.addMarker(MOptions);
                 }
+                for (QRCode QRc : scanned) { //add a marker for each location
+                    ll = LatLngify(QRc.getGeolocation());
+                    MarkerOptions MOptions = new MarkerOptions();
+                    MOptions.position(ll);
+                    MOptions
+                            .alpha(0.95f)
+                            .title(String.format("%s      %s %s",QRc.getIcon(),QRc.getPoints(),"points [scanned]"))
+                            .snippet(QRc.getName())
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
+                            .draggable(true);
+
+                    googleMap.addMarker(MOptions);
+                }
 
                 //for my location specifically
                 if(current!=null) {// zoom in on the phones current location, its the last location
@@ -311,6 +337,7 @@ public class HelperMapFragment extends Fragment{
                             .title("YOU ARE HERE")
                             .snippet(Username);
                     MOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+                    MOptions.zIndex(1000000);//on top
 
                     googleMap.addMarker(MOptions);
                     googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLL, Zoom));
@@ -323,10 +350,14 @@ public class HelperMapFragment extends Fragment{
         fragmentTransaction.replace(R.id.google_map, SMH).commit(); //SHOW MAP
 
 
-
         return view;
     }
 
+    /**
+     * This method sets the listeners for the HelperMapFragment to communicate
+     * map changes with the MapFragment when the fragment is attached
+     * @param context
+     */
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -338,6 +369,10 @@ public class HelperMapFragment extends Fragment{
         }
     }
 
+    //HANDLE NO CONTEXT CRASH
+    /**
+     * This method sets all listeners to null before detaching the fragment
+     */
     @Override
     public void onDetach() {
         super.onDetach();
@@ -346,13 +381,31 @@ public class HelperMapFragment extends Fragment{
 
 
     //state of a marker while dragging
+
+    /**
+     * This method sets the state of a marker when it is being dragged
+     * @param marker
+     */
     private void OnDragState(Marker marker) {
-        marker.setAlpha(0.5f);
+        float x = marker.getAlpha();
+
+        if(x==0.95f || x==0.45f){
+            marker.setAlpha(0.45f);
+        }else {
+            marker.setAlpha(0.5f);
+        }
         marker.setRotation(180);
     }
 
     //trash UI while dragging
+
+    /**
+     * This method sets the state of the trash when a marker is being dragged
+     * and when a marker is near the trash
+     * @param marker
+     */
     private void OnDragTrashUI(Marker marker) {
+
         LatLng markerLocation = marker.getPosition();
         Projection proj = Map.getProjection();
         Point endPoint = proj.toScreenLocation(markerLocation);
@@ -405,13 +458,23 @@ public class HelperMapFragment extends Fragment{
     /**
      * This method return the QRcode the user selects on a the map
      * @param chosen
-     * @return
+     * @return QRCode
      */
     private QRCode getQRc(String chosen) {
         QRCode placeholder = null;
+
         for (QRCode QRc:QRcs) {
-            if(Objects.equals(QRc.getName(), chosen)){
-                return QRc;
+            if (Objects.equals(QRc.getName(), chosen)) {
+                placeholder = QRc;
+                break;
+            }
+        }
+        if(placeholder==null){
+            for (QRCode QRc:scanned) {
+                if (Objects.equals(QRc.getName(), chosen)) {
+                    placeholder = QRc;
+                    break;
+                }
             }
         }
         return placeholder;
@@ -423,7 +486,7 @@ public class HelperMapFragment extends Fragment{
     /**
      * This method converts a GeoPoint object to a LatLng object
      * @param geo
-     * @return
+     * @return LatLng
      */
     private LatLng LatLngify(GeoPoint geo){
         return new LatLng(geo.getLatitude(),geo.getLongitude());
@@ -432,6 +495,47 @@ public class HelperMapFragment extends Fragment{
 
 
 }
+
+
+/*CITATIONS
+
+1)Show map on fragment
+https://www.geeksforgeeks.org/how-to-implement-google-map-inside-fragment-in-android/
+https://www.youtube.com/watch?v=YCFPClPjDIQ
+
+2)listener between fragments
+https://codinginflow.com/tutorials/android/fragment-to-fragment-communication-with-interfaces
+
+3) Making custom markers
+https://github.com/googlemaps/android-samples/tree/master/ApiDemos/java/app/src/gms/java/com/example/mapdemo
+https://github.com/googlemaps/android-samples/blob/master/ApiDemos/java/app/src/gms/java/com/example/mapdemo/MarkerDemoActivity.java
+
+4)Set z index
+https://cloud.google.com/blog/products/maps-platform/marker-zindex-and-more-come-to-google
+https://stackoverflow.com/questions/7932727/max-initial-zindex-for-google-maps-v3-markers
+
+5)Marker bounce
+https://stackoverflow.com/questions/8191582/how-to-animate-marker-when-it-is-added-to-map-on-android
+https://stackoverflow.com/questions/7339200/bounce-a-pin-in-google-maps-once
+https://www.wpmapspro.com/example/bounce-animation-marker-click-google-maps/
+
+6)Custom info window
+https://www.youtube.com/watch?v=DhYofrJPzlI&list=PLgCYzUzKIBE-vInwQhGSdnbyJ62nixHCt&index=11
+
+
+7) Add marker to google map
+https://www.youtube.com/watch?v=s_6xxTjoLGY&list=PLgCYzUzKIBE-vInwQhGSdnbyJ62nixHCt&index=7
+
+
+8)Marker settings
+https://stackoverflow.com/questions/32943568/android-google-map-infowindow-anchor-point-after-marker-rotation
+http://www.learnsharecorner.com/javascript/working-google-map-api-v3-infowindow-custom-positioning-based-on-space-from-top-left-right-bottom/
+https://stackoverflow.com/questions/2472957/how-can-i-change-the-color-of-a-google-maps-marker
+https://developers.google.com/maps/documentation/android-sdk/marker
+
+
+
+ */
 
 
 

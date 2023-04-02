@@ -148,12 +148,23 @@ public class MainFragment extends Fragment {
 
     The solution here is a bit tacky but seems to work ok
      */
+
+    /**
+     * This method sets the dataPasser that is responsible for passing scroll information
+     * to the Main Activity to set the visibility of the bottom navigation bar
+     * @param context
+     */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         dataPasser = (Scrollable) context;
     }
 
+    /**
+     * This method passing scroll sata to the Main Activity to update the visibility
+     * of the bottom navigation bar
+     * @param data
+     */
     public void passData(int data) {
         dataPasser.Scrollable(data);
     }

@@ -12,17 +12,26 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
+/**
+ * This fragment shows a user's scanned QR codes. it is built to show either the current user's
+ * or another user's scanned QR codes. If the current user is viewing their own QR codes, they
+ * can delete them from the list. If they are viewing another user's QR codes, they can only
+ * view them.
+ */
 public class ViewPlayerScannedQRActivity extends AppCompatActivity {
 
 
     private ListView qrListView;
-
     private ImageButton backButton;
     private QRcAdapter qRcAdapter;
     private ArrayList<QRCode> QRCodeList;
     private Boolean isCurrentUser;
 
-
+    /**
+     * This method is called when the activity is created. It sets up the list view and the
+     * back button.
+     * @param savedInstanceState the saved instance state
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

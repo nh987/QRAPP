@@ -42,7 +42,7 @@ public class QRProfileTest {
         solo.waitForActivity(QRProfile.class);
         solo.assertCurrentActivity("Wrong activity", QRProfile.class);
         assertTrue(solo.searchText("Alpha EchoCharlieEchoJulietHotel"));
-        assertTrue(solo.searchText("0 Points"));
+        assertTrue(solo.searchText("53 Points"));
         assertTrue(solo.searchText("C|X>)"));
     }
     @After
