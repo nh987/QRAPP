@@ -2,6 +2,7 @@ package com.example.qrapp;
 
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -37,19 +38,15 @@ public class ResultsActivityTest {
     }
 
     @Test
-    public void testCreateName() {
-        String hexHash = hashTest();
-        when(resultsActivity.createName(hexHash)).thenReturn("Golf JulietGolfMikeOscarEcho");
-        String expectedName = "Golf JulietGolfMikeOscarEcho";
-        assertEquals(expectedName, resultsActivity.createName(hexHash)); // this function works as intended
+    public void testNameVisual() {
+        String hash = hashTest();
+
+        when(resultsActivity.createName(hash)).thenReturn("listyCity.ForElseForThrowWithHas()");
+        String expectedName = "listyCity.ForElseForThrowWithHas()";
+        assertEquals(expectedName, resultsActivity.createName(hash));
+
+        when(resultsActivity.createVisual(hash)).thenReturn("F|>X*{(");
+        String expectedVisual = "F|>X*{(";
+        assertEquals(expectedVisual, resultsActivity.createVisual(hash));
     }
-
-//    @Test // TODO: Figure out why this test returns null... It should not. Since the above test is essentially the same in its function structure.
-//    public void testCreateVisual() {
-//        String hexHash = hashTest();
-//        when(resultsActivity.createVisual(hexHash)).thenReturn("F|>X*{(");
-//        String expectedVisual = "F|>X*{(";
-//        assertEquals(expectedVisual, resultsActivity.createName(hexHash)); // // this function returns null???
-//    }
-
 }
