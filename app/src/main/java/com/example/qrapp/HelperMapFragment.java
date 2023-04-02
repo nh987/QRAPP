@@ -25,7 +25,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -40,14 +39,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.firebase.firestore.GeoPoint;
-import com.google.firebase.firestore.auth.User;
-
-import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 
 //Fragment Class to show map on
@@ -265,7 +260,7 @@ public class HelperMapFragment extends Fragment{
                             marker.setRotation(0);
 
                             float x = marker.getAlpha();
-                            if(x==0.45f || x==0.95f) {
+                            if(x==0.45f || x==0.95f) {//either normal or dragged, set back to normal at drag end
                                 marker.setAlpha(0.95f);
                             }else{
                                 marker.setAlpha(1f);
@@ -355,10 +350,14 @@ public class HelperMapFragment extends Fragment{
         fragmentTransaction.replace(R.id.google_map, SMH).commit(); //SHOW MAP
 
 
-
         return view;
     }
 
+    /**
+     * This method sets the listeners for the HelperMapFragment to communicate
+     * map changes with the MapFragment when the fragment is attached
+     * @param context
+     */
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -371,6 +370,9 @@ public class HelperMapFragment extends Fragment{
     }
 
     //HANDLE NO CONTEXT CRASH
+    /**
+     * This method sets all listeners to null before detaching the fragment
+     */
     @Override
     public void onDetach() {
         super.onDetach();
@@ -379,6 +381,11 @@ public class HelperMapFragment extends Fragment{
 
 
     //state of a marker while dragging
+
+    /**
+     * This method sets the state of a marker when it is being dragged
+     * @param marker
+     */
     private void OnDragState(Marker marker) {
         float x = marker.getAlpha();
 
@@ -391,6 +398,12 @@ public class HelperMapFragment extends Fragment{
     }
 
     //trash UI while dragging
+
+    /**
+     * This method sets the state of the trash when a marker is being dragged
+     * and when a marker is near the trash
+     * @param marker
+     */
     private void OnDragTrashUI(Marker marker) {
 
         LatLng markerLocation = marker.getPosition();
@@ -445,7 +458,7 @@ public class HelperMapFragment extends Fragment{
     /**
      * This method return the QRcode the user selects on a the map
      * @param chosen
-     * @return
+     * @return QRCode
      */
     private QRCode getQRc(String chosen) {
         QRCode placeholder = null;
@@ -473,7 +486,7 @@ public class HelperMapFragment extends Fragment{
     /**
      * This method converts a GeoPoint object to a LatLng object
      * @param geo
-     * @return
+     * @return LatLng
      */
     private LatLng LatLngify(GeoPoint geo){
         return new LatLng(geo.getLatitude(),geo.getLongitude());
@@ -482,6 +495,47 @@ public class HelperMapFragment extends Fragment{
 
 
 }
+
+
+/*CITATIONS
+
+1)Show map on fragment
+https://www.geeksforgeeks.org/how-to-implement-google-map-inside-fragment-in-android/
+https://www.youtube.com/watch?v=YCFPClPjDIQ
+
+2)listener between fragments
+https://codinginflow.com/tutorials/android/fragment-to-fragment-communication-with-interfaces
+
+3) Making custom markers
+https://github.com/googlemaps/android-samples/tree/master/ApiDemos/java/app/src/gms/java/com/example/mapdemo
+https://github.com/googlemaps/android-samples/blob/master/ApiDemos/java/app/src/gms/java/com/example/mapdemo/MarkerDemoActivity.java
+
+4)Set z index
+https://cloud.google.com/blog/products/maps-platform/marker-zindex-and-more-come-to-google
+https://stackoverflow.com/questions/7932727/max-initial-zindex-for-google-maps-v3-markers
+
+5)Marker bounce
+https://stackoverflow.com/questions/8191582/how-to-animate-marker-when-it-is-added-to-map-on-android
+https://stackoverflow.com/questions/7339200/bounce-a-pin-in-google-maps-once
+https://www.wpmapspro.com/example/bounce-animation-marker-click-google-maps/
+
+6)Custom info window
+https://www.youtube.com/watch?v=DhYofrJPzlI&list=PLgCYzUzKIBE-vInwQhGSdnbyJ62nixHCt&index=11
+
+
+7) Add marker to google map
+https://www.youtube.com/watch?v=s_6xxTjoLGY&list=PLgCYzUzKIBE-vInwQhGSdnbyJ62nixHCt&index=7
+
+
+8)Marker settings
+https://stackoverflow.com/questions/32943568/android-google-map-infowindow-anchor-point-after-marker-rotation
+http://www.learnsharecorner.com/javascript/working-google-map-api-v3-infowindow-custom-positioning-based-on-space-from-top-left-right-bottom/
+https://stackoverflow.com/questions/2472957/how-can-i-change-the-color-of-a-google-maps-marker
+https://developers.google.com/maps/documentation/android-sdk/marker
+
+
+
+ */
 
 
 

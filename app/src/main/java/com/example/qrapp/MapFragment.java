@@ -68,8 +68,8 @@ public class MapFragment extends Fragment {
 
     //Location request params
     int trackingACCURACY = PRIORITY_BALANCED_POWER_ACCURACY;
-    int update_interval = 10; // these are used to update location after a certain amount of secs
-    int fastest_update_interval = 5; // I times these by 100o because apparently, the function accepts time in millisecs
+    int update_interval = 4; // these are used to update location after a certain amount of secs
+    int fastest_update_interval = 2; // I times these by 100o because apparently, the function accepts time in millisecs
 
 
     //Model/Values for loaction storage and maintenace
@@ -403,7 +403,7 @@ public class MapFragment extends Fragment {
                                             QRcDoc.getLong("Points").intValue(),
                                             (String) QRcDoc.get("Name"),
                                             (String) QRcDoc.get("icon"),
-                                            (Object) alreadyScanned, //may still throw if null but same code everwhere...
+                                            (Object) alreadyScanned, //may still throw if null but same code everywhere...
                                             QRcLocation,
                                             (String) QRcDoc.get("Hash")));
 
@@ -413,7 +413,7 @@ public class MapFragment extends Fragment {
                                             QRcDoc.getLong("Points").intValue(),
                                             (String) QRcDoc.get("Name"),
                                             (String) QRcDoc.get("icon"),
-                                            (Object) alreadyScanned, //may still throw if null but same code everwhere...
+                                            (Object) alreadyScanned, //may still throw if null but same code everywhere...
                                             QRcLocation,
                                             (String) QRcDoc.get("Hash")));
                                 }
@@ -492,3 +492,25 @@ public class MapFragment extends Fragment {
 
 
 }
+
+/*CITATIONS
+1)Making GPS apps
+https://www.youtube.com/watch?v=_xUcYfbtfsI
+
+2)querying a firebase database
+https://firebase.google.com/docs/firestore/query-data/queries#java
+
+3)Google Maps API Keys
+https://developers.google.com/maps/documentation/android-sdk/map-with-marker
+https://cloud.google.com/docs/authentication/api-keys#introduction
+
+4) changing UI objects at runtime
+https://stackoverflow.com/questions/55460249/app-setbackground-error-incompatible-types-int-cannot-be-converted-to-drawab
+
+5) Location and Location Permissions
+https://stackoverflow.com/questions/17983865/making-a-location-object-in-android-with-latitude-and-longitude-values
+https://www.youtube.com/watch?v=rNYaEFl6Fms
+https://www.youtube.com/watch?v=4eWoXPSpA5Y
+
+
+ */

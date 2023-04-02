@@ -110,8 +110,6 @@ public class RankFragment extends Fragment {
 
         //players = new ArrayList<>();
 
-
-
     }
 
     /**
@@ -189,6 +187,10 @@ public class RankFragment extends Fragment {
 
     }
 
+    /**
+     * This function returns a default region to use for testing location dependent functionality with emulators
+     * @return String
+     */
     private String getDefaultRegion() {
         Location location = getDefaultLocation();
 
@@ -209,6 +211,10 @@ public class RankFragment extends Fragment {
 
     }
 
+    /**
+     * This function returns a default Location to use for testing location dependent functionality with emulators
+     * @return Location
+     */
     private Location getDefaultLocation() {
         Location location = new Location(LocationManager.GPS_PROVIDER);
         location.setLatitude(53.4080);//somewhere near u of a hopefully
@@ -232,10 +238,6 @@ public class RankFragment extends Fragment {
 
 
         View view = inflater.inflate(R.layout.fragment_rank, container, false);
-//        for (String playrID:players) {
-//            Log.d("RANK",playrID + " is a player");
-//        }
-
 
         RANK_SPINNER = view.findViewById(R.id.spinnerRank);
 
@@ -328,6 +330,7 @@ public class RankFragment extends Fragment {
                                                             //make new RankScoreFragment with data
                                                             Fragment selected = new RankScoreFragment();
                                                             selected.setArguments(RankBundle);
+
 
                                                             //5)
                                                             //show it
@@ -714,11 +717,6 @@ public class RankFragment extends Fragment {
         return view;
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-
 
     // to find the kth largest elem in an Arralist of Player hash string to QRCode pairs
     //eg kthLargest(player_pairs, 1) returns the Player hash string and QRCode pair with
@@ -828,3 +826,29 @@ public class RankFragment extends Fragment {
         return i + 1;
     }
 }
+
+
+/*CITATIONS
+
+1)Spinner making
+https://developer.android.com/develop/ui/views/components/spinner
+
+2)ChatGTP Coding kthLargest
+https://openai.com/blog/chatgpt
+
+3)ChatGTP Coding partition fro kth Largest
+https://openai.com/blog/chatgpt
+
+4)kth largest theory
+Introduction To Algorithms, 3rd Edition.
+ Chapter 9, 9.3: Selection in Worst-Case Linear Time.
+ Chapter 7 Quicksort, Chapter 8 Sorting in Linear Time.
+
+5)updating a firebase database
+https://firebase.google.com/docs/firestore/manage-data/add-data
+
+6)Region system using postal codes
+https://beginnersbook.com/2013/12/java-string-substring-method-example/
+
+
+ */

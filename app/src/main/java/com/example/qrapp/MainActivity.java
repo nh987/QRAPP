@@ -4,36 +4,34 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
+
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
-import com.google.android.material.navigation.NavigationView;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Objects;
-
-public class MainActivity extends AppCompatActivity implements MainFragment.Scrollable,HelperMapFragment.HMFListener  {
+/**
+ * This class is the MainActivity from wish the application begins when it loads
+ */
+public class MainActivity extends AppCompatActivity implements MainFragment.Scrollable, HelperMapFragment.HMFListener, SearchFragment.Scrollable {
 
     BottomAppBar bottomAppBar; //solely to hide nav bar when scrolling
 
@@ -54,10 +52,22 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Scro
     Fragment selected;
 
 
+    /**
+     * The onCreate method sets important attributes and objects required for the application and controls
+     * main navigation across the application.
+     * Some objects include the Scan button, the bottom navigation bar and the MYprofile button. Since
+     * the Main Activity is the first Activity executed, it also checks for valid users. If there is no current user account,
+     * the user is taken to the SignUp page. Otherwise, the application is ready for use.
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //code to prevent listview pushing
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
+
 
         //bottom app bar
         bottomAppBar = findViewById(R.id.bottom_nav_bar);
@@ -84,10 +94,10 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Scro
         //database
         Auth = FirebaseAuth.getInstance();
         DB = FirebaseFirestore.getInstance();
-        //FirebaseUser user = Auth.getCurrentUser();
+
 
         //get username to use for MapFragment
-        username="----";
+        username = "----";
 
 
         Auth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
@@ -122,7 +132,6 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Scro
         });
 
 
-
         //SCAN BUTTON
         //This takes the player to the Scanning[and Picture] activity
         SCAN.setOnClickListener(new View.OnClickListener() {
@@ -136,7 +145,6 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Scro
         });
 
 
-
         // start at menu tab when created
         nav_bar.setSelectedItemId(R.id.main_tab);
         getSupportFragmentManager()
@@ -144,10 +152,12 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Scro
                 .replace(R.id.frame, new MainFragment())
                 .commit();
 
+        //MYPROFILE BUTTON
+        //This takes the player to the MyProfile activity
         MYPROFILE.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               //start myprofile activity
+                //start myprofile activity
                 Intent myprofileIntent = new Intent(MainActivity.this, MyProfile.class);
                 startActivity(myprofileIntent);
             }
@@ -164,9 +174,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Scro
             }
         });
 
-        }
-
-
+    }
 
 
 
@@ -196,9 +204,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Scro
 
             switch (item.getItemId()){
                 case R.id.leaderboard_tab:
-                    bottomAppBar.setVisibility(View.INVISIBLE);
-                    SCAN.setVisibility(View.INVISIBLE);
-                    BACK.setVisibility(View.VISIBLE);
+                    hideBottomNavBar();//temporarily
                     selected = new RankFragment();
                     break;
 
@@ -230,7 +236,21 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Scro
 
     };
 
+    /**
+     * This method hides the bottom nav bar options, used when showing leaderboard
+     */
+    private void hideBottomNavBar() {
+        bottomAppBar.setVisibility(View.INVISIBLE);
+        SCAN.setVisibility(View.INVISIBLE);
+        BACK.setVisibility(View.VISIBLE);
+    }
+
     //hide bottom nva bar when scrolling sown
+
+    /**
+     * This method sets the visibility of the bottom app bar options when scrolling on a long list
+     * @param scrollState
+     */
     @Override
     public void Scrollable(int scrollState) {
         Log.d("INTERFACE",String.format("I got %d",scrollState));
@@ -253,12 +273,18 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Scro
                 if (document.exists()) {username = document.getString("username");}
                 //else {Toast.makeText(getContext(), "User Document doesnt exist", Toast.LENGTH_SHORT).show();}
             }else {
+                Log.d("Main Acitivity", "Could not set username because user does not exist");
                 //Toast.makeText(getContext(), "Username Task Unsuccessful", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
 
+    /**
+     * This method updates the display for number of codes on the map
+     * once a marker is removed from the map
+     * @param lost
+     */
     @Override
     public void onRemovedMarker(boolean lost) {
         if(selected instanceof MapFragment && lost){
@@ -270,3 +296,32 @@ public class MainActivity extends AppCompatActivity implements MainFragment.Scro
         }
     }
 }
+
+/*CITATIONS
+
+1)Scrolling interface to hide nav bar sometimes x2
+https://stackoverflow.com/questions/16791100/detect-scroll-up-scroll-down-in-listview
+https://stackoverflow.com/questions/9343241/passing-data-between-a-fragment-and-its-container-activity
+
+
+2)Soft keyboard settings(prevent view pushing. Instead, the keyboard is on top of the view)
+https://stackoverflow.com/questions/4207880/android-how-do-i-prevent-the-soft-keyboard-from-pushing-my-view-up
+
+
+3)the layout of the nav bar original
+https://www.youtube.com/watch?v=x6-_va1R788
+
+4)general nav bar design principles
+https://m2.material.io/components/bottom-navigation/android
+https://m2.material.io/components/app-bars-bottom#usage
+
+
+5)making a nav bar with fragments
+https://www.youtube.com/watch?v=OV25x3a55pk
+
+
+6)Multiple interfaces and fragment communication with interfaces
+https://codinginflow.com/tutorials/android/fragment-to-fragment-communication-with-interfaces
+https://stackoverflow.com/questions/21263607/can-a-normal-class-implement-multiple-interfaces
+
+ */
