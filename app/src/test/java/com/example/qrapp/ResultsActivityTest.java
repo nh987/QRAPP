@@ -1,25 +1,18 @@
 package com.example.qrapp;
 
-
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
-import androidx.lifecycle.LiveData;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-import org.mockito.Mock;
-import org.mockito.Spy;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
-//@RunWith(JUnit4.class)
+
 @RunWith(MockitoJUnitRunner.class)
 public class ResultsActivityTest {
     private ResultsActivity resultsActivity;
@@ -37,19 +30,15 @@ public class ResultsActivityTest {
     }
 
     @Test
-    public void testCreateName() {
-        String hexHash = hashTest();
-        when(resultsActivity.createName(hexHash)).thenReturn("Golf JulietGolfMikeOscarEcho");
+    public void testNameVisual() {
+        String hash = hashTest();
+
+        when(resultsActivity.createName(hash)).thenReturn("Golf JulietGolfMikeOscarEcho");
         String expectedName = "Golf JulietGolfMikeOscarEcho";
-        assertEquals(expectedName, resultsActivity.createName(hexHash)); // this function works as intended
+        assertEquals(expectedName, resultsActivity.createName(hash));
+
+        when(resultsActivity.createVisual(hash)).thenReturn("F|>X*{(");
+        String expectedVisual = "F|>X*{(";
+        assertEquals(expectedVisual, resultsActivity.createVisual(hash));
     }
-
-//    @Test // TODO: Figure out why this test returns null... It should not. Since the above test is essentially the same in its function structure.
-//    public void testCreateVisual() {
-//        String hexHash = hashTest();
-//        when(resultsActivity.createVisual(hexHash)).thenReturn("F|>X*{(");
-//        String expectedVisual = "F|>X*{(";
-//        assertEquals(expectedVisual, resultsActivity.createName(hexHash)); // // this function returns null???
-//    }
-
 }
