@@ -45,7 +45,7 @@ public class RankTripleAdapter extends BaseAdapter {
      * @param i
      * @return item
      */
-    public Object getItem(int i) {
+    public RankTriple getItem(int i) {
         return items.get(i);
     }
 

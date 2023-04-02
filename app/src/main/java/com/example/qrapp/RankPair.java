@@ -21,6 +21,14 @@ public class RankPair implements Serializable {
         this.Number=number;
     }
 
+    public String getPlayerName(){
+        return this.PlayerName;
+    }
+
+    public int getNumber(){
+        return this.Number;
+    }
+
 
 
 }

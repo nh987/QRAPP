@@ -7,7 +7,7 @@
 
     <TextView
         android:id="@+id/textinlist"
-        android:layout_width="276dp"
+        android:layout_width="240dp"
         android:layout_height="29dp"
         android:layout_marginStart="4dp"
         android:layout_marginTop="10dp"
