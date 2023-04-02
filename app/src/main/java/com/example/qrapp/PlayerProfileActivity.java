@@ -32,8 +32,17 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -161,8 +170,15 @@ public class PlayerProfileActivity extends AppCompatActivity {
                                 highestQrc.setText(Long.toString(highest));
                                 lowestQrc.setText(Long.toString(lowest));
                                 totalScore.setText(Long.toString(totalScoreValue));
-                                String filler = "TODO";
+
+
+
+                                String filler = "Loading...";
                                 ranking.setText(filler);
+
+
+
+
                                 totalCodesScanned.setText(Long.toString(totalCodesScannedValue));
                                 // find highest and lowest QR
                                 QRCode highestQR = new QRCode(null, -1, null, null, null, null, null);
@@ -182,8 +198,10 @@ public class PlayerProfileActivity extends AppCompatActivity {
                                 setViewButtons(highestQR, lowestQR);
 
                                 // set the view QR codes button to open a listview activity?
-
                                 setPlayerCodesScanned(QrList);
+
+                                // calculate ranking
+                                calculateRanking(db, deviceId, ranking);
 
                                 // show buttons now that querying is done
                                 showButtons();
@@ -263,4 +281,76 @@ public class PlayerProfileActivity extends AppCompatActivity {
         });
 
     }
+
+    public void calculateRanking(FirebaseFirestore db, String deID, TextView rnk) {
+        // As a player, I want an estimate of my ranking for the highest scoring unique QR code
+        // 1. go through all players, get their highest QR code that only they scanned, store it in a dict
+        // query all player's deviceID, add them to a dict with highest = 0
+        Hashtable<String, Integer> deviceIdDict = new Hashtable<String, Integer>();
+        db.collection("Users").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<DocumentSnapshot> documents = task.getResult().getDocuments();
+                for (DocumentSnapshot iterativeDocument : documents) {
+                    String deviceId = iterativeDocument.getId();
+                    deviceIdDict.put(deviceId, 0);
+                }
+                //2. Go through all playersScanned fields, find highest QR code that only they scanned
+                Set<String> setofKeys = deviceIdDict.keySet();
+                for (String key : setofKeys) {
+                    db.collection("QRCodes").whereArrayContains("playersScanned", key).get().addOnCompleteListener(newTask -> {
+                        if (newTask.isSuccessful()) {
+                            try {
+                                DocumentSnapshot test = newTask.getResult().getDocuments().get(0);
+                            }
+                            catch (IndexOutOfBoundsException e) {
+                                Log.d("myTag", "Nothing scanned");
+                            }
+                            // loop through QR codes where playersScanned contains DeviceID
+                            // check if ONLY they scanned it
+                            int highestUnique = 0;
+                            List<DocumentSnapshot> newTaskDocuments = newTask.getResult().getDocuments();
+                            for (DocumentSnapshot newDocument : newTaskDocuments) {
+                                ArrayList<String> pS = new ArrayList<>();
+                                pS = (ArrayList<String>) newDocument.get("playersScanned");
+                                int size = pS.size();
+                                if(size == 1) { // now we know that the only player who scanned it is the 'key'
+                                    long points = (long) newDocument.get("Points");
+                                    if(points > highestUnique) {
+                                        highestUnique =  (int) points;
+                                    }
+                                }
+                            }
+                            Log.d("myTag", Integer.toString(highestUnique));
+                            deviceIdDict.put(key, highestUnique);
+                        }
+                    });
+                }
+                // we have a dict of highest uniques now (confirmed working), just need to sort it so (highest = index 0)
+                // yeah I know this is ugly I used a bad datatype
+                ArrayList<Integer> highestArrayList = new ArrayList<>();
+                ArrayList<String> highestStringArrayList = new ArrayList<>();
+                Collection<Integer> highestSet = deviceIdDict.values();
+                Set<String> highestDvID = deviceIdDict.keySet();
+                highestArrayList.addAll(highestSet);
+                highestStringArrayList.addAll(highestDvID);
+                Collections.sort(highestArrayList, Collections.reverseOrder());
+                int playerScore = deviceIdDict.get(deID);
+                int index = 1;
+                for(int score : highestArrayList) {
+                    if(score == playerScore) {
+                        String stringRank = Integer.toString(index);
+                        rnk.setText(stringRank);
+                        break;
+                    }
+                    index += 1;
+                }
+            }
+        });
+
+    }
+
+
 }
+
+
+
