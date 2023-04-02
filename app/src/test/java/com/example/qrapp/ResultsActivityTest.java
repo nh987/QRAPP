@@ -33,8 +33,8 @@ public class ResultsActivityTest {
     public void testNameVisual() {
         String hash = hashTest();
 
-        when(resultsActivity.createName(hash)).thenReturn("listyCity.ForElseForThrowWithHas()");
-        String expectedName = "listyCity.ForElseForThrowWithHas()";
+        when(resultsActivity.createName(hash)).thenReturn("Golf JulietGolfMikeOscarEcho");
+        String expectedName = "Golf JulietGolfMikeOscarEcho";
         assertEquals(expectedName, resultsActivity.createName(hash));
 
         when(resultsActivity.createVisual(hash)).thenReturn("F|>X*{(");
