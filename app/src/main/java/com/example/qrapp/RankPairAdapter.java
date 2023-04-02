@@ -45,7 +45,7 @@ public class RankPairAdapter extends BaseAdapter {
      * @param i
      * @return item
      */
-    public Object getItem(int i) {
+    public RankPair getItem(int i) {
         return items.get(i);
     }
 

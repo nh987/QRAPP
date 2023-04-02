@@ -378,86 +378,86 @@ public class RankFragment extends Fragment {
 
 
                         UserCR.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                               @Override
-                               public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                   //String userID;
-                                   if (task.isSuccessful()) {
-                                       int P = task.getResult().size(); //used to make querying quicker
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                //String userID;
+                                if (task.isSuccessful()) {
+                                    int P = task.getResult().size(); //used to make querying quicker
 
-                                       Log.d("RANK3", P + "docs");
-                                       for (QueryDocumentSnapshot userDoc : task.getResult()) {//GO OVER USERS
-                                           Sum_Or_Count.clear(); //remove whatever is there
-                                           userID = userDoc.getId();
+                                    Log.d("RANK3", P + "docs");
+                                    for (QueryDocumentSnapshot userDoc : task.getResult()) {//GO OVER USERS
+                                        Sum_Or_Count.clear(); //remove whatever is there
+                                        userID = userDoc.getId();
 
-                                           QRCodeCR.whereArrayContains("playersScanned", userID).get()
+                                        QRCodeCR.whereArrayContains("playersScanned", userID).get()
 
-                                                   .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
 
-                                                       @Override
-                                                       public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                                           int QRCSum = 0;
-                                                           if (task.isSuccessful()) {
-                                                               for (QueryDocumentSnapshot qrcDoc : task.getResult()) {//GO OVER USER'S CODES, GET SUM OF SCANS
-                                                                   QRCSum += qrcDoc.getLong("Points").intValue();
-                                                               }
-                                                           } else {
-                                                               Log.d("RANK3", "Failed to get QRCodes");
-                                                           }
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                        int QRCSum = 0;
+                                                        if (task.isSuccessful()) {
+                                                            for (QueryDocumentSnapshot qrcDoc : task.getResult()) {//GO OVER USER'S CODES, GET SUM OF SCANS
+                                                                QRCSum += qrcDoc.getLong("Points").intValue();
+                                                            }
+                                                        } else {
+                                                            Log.d("RANK3", "Failed to get QRCodes");
+                                                        }
 
-                                                           //ADD USER SCORE SUM TO LIST, also track the null users so can know when to get top 10
-                                                           if (userDoc.getString("username") != null) {
-                                                               Sum_Or_Count.add(new RankPair(userDoc.getString("username"), QRCSum));
-                                                           } else {
-                                                               null_users++;
-                                                           }
+                                                        //ADD USER SCORE SUM TO LIST, also track the null users so can know when to get top 10
+                                                        if (userDoc.getString("username") != null) {
+                                                            Sum_Or_Count.add(new RankPair(userDoc.getString("username"), QRCSum));
+                                                        } else {
+                                                            null_users++;
+                                                        }
 
-                                                           //Log.d("RANK", userDoc.getString("username") + " " + highest);
-                                                           int N_Players = Sum_Or_Count.size();
-                                                           Log.d("RANK3", String.valueOf(N_Players));
-
-
-                                                           //ONLY GET TOP 10 WHEN ALL PLayers's highest is gotten
-                                                           if (N_Players + null_users == P) {
-
-                                                               //2)
-                                                               //top 10
-                                                               for (int i = 1; i <= X && i <= N_Players; i++){
-                                                                     topPairs.add(kthLargestPair(Sum_Or_Count, i));
-                                                                   Log.d("RANK3", topPairs.get(i - 1).PlayerName + " " + topPairs.get(i - 1).Number);
-                                                               }
-
-                                                               //3)
-                                                               //Bundle em up
-                                                               Bundle RankBundle = new Bundle();
-                                                               RankBundle.putSerializable(RankBundleKey, topPairs);
-
-                                                               //4)
-                                                               //make new RankSumFragment with data
-                                                               Fragment selected = new RankSumFragment();
-                                                               selected.setArguments(RankBundle);
-
-                                                               //5)
-                                                               //show it
-                                                               FragmentActivity activity = getActivity();
-                                                               if(activity!=null) { //prevent crash
-                                                                   Log.d("RANK3","Showing Sum Leaderboard");
-                                                                   activity.getSupportFragmentManager()
-                                                                           .beginTransaction()
-                                                                           .replace(R.id.rankframe, selected).commit();//SHOW FRAGMENT
-                                                               }else{
-                                                                   Log.d("RANK3","Ended Rank Fragment there null error");
-                                                               }
-                                                           }
+                                                        //Log.d("RANK", userDoc.getString("username") + " " + highest);
+                                                        int N_Players = Sum_Or_Count.size();
+                                                        Log.d("RANK3", String.valueOf(N_Players));
 
 
-                                                       }
-                                                   });
-                                       }
-                                   } else {
-                                       Log.d("RANK", "Failed to get Users");
-                                   }
-                               }
-                           });
+                                                        //ONLY GET TOP 10 WHEN ALL PLayers's highest is gotten
+                                                        if (N_Players + null_users == P) {
+
+                                                            //2)
+                                                            //top 10
+                                                            for (int i = 1; i <= X && i <= N_Players; i++){
+                                                                topPairs.add(kthLargestPair(Sum_Or_Count, i));
+                                                                Log.d("RANK3", topPairs.get(i - 1).PlayerName + " " + topPairs.get(i - 1).Number);
+                                                            }
+
+                                                            //3)
+                                                            //Bundle em up
+                                                            Bundle RankBundle = new Bundle();
+                                                            RankBundle.putSerializable(RankBundleKey, topPairs);
+
+                                                            //4)
+                                                            //make new RankSumFragment with data
+                                                            Fragment selected = new RankSumFragment();
+                                                            selected.setArguments(RankBundle);
+
+                                                            //5)
+                                                            //show it
+                                                            FragmentActivity activity = getActivity();
+                                                            if(activity!=null) { //prevent crash
+                                                                Log.d("RANK3","Showing Sum Leaderboard");
+                                                                activity.getSupportFragmentManager()
+                                                                        .beginTransaction()
+                                                                        .replace(R.id.rankframe, selected).commit();//SHOW FRAGMENT
+                                                            }else{
+                                                                Log.d("RANK3","Ended Rank Fragment there null error");
+                                                            }
+                                                        }
+
+
+                                                    }
+                                                });
+                                    }
+                                } else {
+                                    Log.d("RANK", "Failed to get Users");
+                                }
+                            }
+                        });
 
 
                         null_users=0; //reset nulls
@@ -728,7 +728,7 @@ public class RankFragment extends Fragment {
      * @param k
      * @return RankTriple
      */
-    public RankTriple kthLargestTriple(ArrayList<RankTriple> arr, int k) {
+    public static RankTriple kthLargestTriple(ArrayList<RankTriple> arr, int k) {
         //O(n)linear time + works for unsorted ordered containers
         int left = 0;
         int right = arr.size() - 1;
@@ -781,7 +781,7 @@ public class RankFragment extends Fragment {
      * @param k
      * @return RankPair
      */
-    public RankPair kthLargestPair(ArrayList<RankPair> arr, int k) {
+    public static RankPair kthLargestPair(ArrayList<RankPair> arr, int k) {
         //O(n)linear time + works for unsorted ordered containers
         int left = 0;
         int right = arr.size() - 1;

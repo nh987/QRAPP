@@ -24,4 +24,16 @@ public class RankTriple implements Serializable {
         this.QRcPoints = qrcPoints;
     }
 
+    public String getPlayerName(){
+        return PlayerName;
+    }
+
+    public String getQRcFace(){
+        return QRcFace;
+    }
+
+    public int getQRcPoints(){
+        return QRcPoints;
+    }
+
 }
