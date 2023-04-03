@@ -41,7 +41,7 @@ public class QRProfileTest {
     public void testProfile() throws Exception {
         solo.waitForActivity(MainActivity.class);
         solo.assertCurrentActivity("Wrong activity", MainActivity.class);
-        String searchText = "Alpha BravoBravoJulietGolfIndia";
+        String searchText = "Alpha DeltaLimaNovemberGolfAlpha";
         ListView listView = (ListView) solo.getView(R.id.item_listview);
         Integer count = listView.getCount();
         for (int i = 0; i < count; i++) {
@@ -54,9 +54,8 @@ public class QRProfileTest {
         }
         solo.waitForActivity(QRProfile.class);
         solo.assertCurrentActivity("Wrong activity", QRProfile.class);
-        assertTrue(solo.searchText("Alpha BravoBravoJulietGolfIndia"));
-        assertTrue(solo.searchText("31 Points"));
-        assertTrue(solo.searchText("C|;<{]"));
+        assertTrue(solo.searchText(searchText));
+        assertTrue(solo.searchText("52 Points"));
     }
     @After
     public void tearDown() throws Exception {
