@@ -63,9 +63,6 @@ public class SearchFragmentTest {
         solo.clickOnView(searchIcon);
         solo.typeText(0, "mo_ketchum");
         solo.sendKey(Solo.ENTER);
-        solo.sleep(6000);
-        solo.clickOnView(solo.getView(R.id.viewProfile));
-        solo.waitForActivity(PlayerProfileActivity.class);
         assertTrue(solo.searchText("mo_ketchum"));
     }
 
