@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -305,9 +306,9 @@ public class PlayerProfileActivity extends AppCompatActivity {
                     deviceIdDict.put(deviceId, 0);
                 }
                 //2. Go through all playersScanned fields, find highest QR code that only they scanned
-                Set<String> setofKeys = deviceIdDict.keySet();
-                for (String key : setofKeys) {
-                    db.collection("QRCodes").whereArrayContains("playersScanned", key).get().addOnCompleteListener(newTask -> {
+                //Set<String> setofKeys = deviceIdDict.keySet();
+                //for (String key : setofKeys) {
+                    db.collection("QRCodes").get().addOnCompleteListener(newTask -> {
                         if (newTask.isSuccessful()) {
                             try {
                                 DocumentSnapshot test = newTask.getResult().getDocuments().get(0);
@@ -317,55 +318,55 @@ public class PlayerProfileActivity extends AppCompatActivity {
                             }
                             // loop through QR codes where playersScanned contains DeviceID
                             // check if ONLY they scanned it
-                            int highestUnique = 0;
                             List<DocumentSnapshot> newTaskDocuments = newTask.getResult().getDocuments();
                             for (DocumentSnapshot newDocument : newTaskDocuments) {
                                 ArrayList<String> pS = new ArrayList<>();
                                 pS = (ArrayList<String>) newDocument.get("playersScanned");
-                                int size = pS.size();
-                                if(size == 1) { // now we know that the only player who scanned it is the 'key'
+                                int size = 0;
+                                try {
+                                     size = pS.size();
+                                }
+                                catch(Exception e) {
+                                    Log.d("myTag", "Nothing Scanned");
+                                }
+                                String stringSize = Integer.toString(size);
+                                if(stringSize.equals("1")) { // now we know that the only player who scanned it is the 'key'
+                                    String playerID = pS.get(0);
                                     long points = (long) newDocument.get("Points");
+                                    int highestUnique = deviceIdDict.get(playerID);
                                     if(points > highestUnique) {
                                         highestUnique =  (int) points;
+                                        deviceIdDict.put(playerID, highestUnique);
                                     }
                                 }
                             }
-                            Log.d("myTag", Integer.toString(highestUnique));
-                            deviceIdDict.put(key, highestUnique);
+                            // we have a dict of highest uniques now (confirmed working), just need to sort it so (highest = index 0)
+                            // yeah I know this is ugly I used a bad datatype
+                            ArrayList<Integer> highestArrayList = new ArrayList<>();
+                            Collection<Integer> highestSet = deviceIdDict.values();
+                            highestArrayList.addAll(highestSet);
+                            Collections.sort(highestArrayList, Collections.reverseOrder());
+                            int playerScore = deviceIdDict.get(deID);
+                            String pS = Integer.toString(playerScore);
+                            int index = 1;
+                            for(int score : highestArrayList) {
+                                String s_score = Integer.toString(score);
+                                if(s_score.equals(pS)) {
+                                    Log.d("myTag", "SCORES" + s_score + pS);
+                                    String stringRank = Integer.toString(index);
+                                    rnk.setText(stringRank);
+                                    break;
+                                }
+                                else {
+                                    index += 1;
+                                }
+                            }
                         }
                     });
-                }
-                // we have a dict of highest uniques now (confirmed working), just need to sort it so (highest = index 0)
-                // yeah I know this is ugly I used a bad datatype
-                ArrayList<Integer> highestArrayList = new ArrayList<>();
-                ArrayList<String> highestStringArrayList = new ArrayList<>();
-                Collection<Integer> highestSet = deviceIdDict.values();
-                Set<String> highestDvID = deviceIdDict.keySet();
-                highestArrayList.addAll(highestSet);
-                highestStringArrayList.addAll(highestDvID);
-                Collections.sort(highestArrayList, Collections.reverseOrder());
-                int playerScore = deviceIdDict.get(deID);
-                String pS = Integer.toString(playerScore);
-                int index = 1;
-                // ahh the issue william is that the query  is still running before the computation...
-                for(int score : highestArrayList) {
-                    String s_score = Integer.toString(score);
-                    if(s_score.equals(pS)) {
-                        Log.d("myTag", "SCORES" + s_score + pS);
-                        String stringRank = Integer.toString(index);
-                        rnk.setText(stringRank);
-                        break;
-                    }
-                    else {
-                        index += 1;
-                    }
-                }
+                //}
             }
-        });
-
+        }); // first query
     }
-
-
 }
 
 
