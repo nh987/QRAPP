@@ -345,14 +345,20 @@ public class PlayerProfileActivity extends AppCompatActivity {
                 highestStringArrayList.addAll(highestDvID);
                 Collections.sort(highestArrayList, Collections.reverseOrder());
                 int playerScore = deviceIdDict.get(deID);
+                String pS = Integer.toString(playerScore);
                 int index = 1;
+                // ahh the issue william is that the query  is still running before the computation...
                 for(int score : highestArrayList) {
-                    if(score == playerScore) {
+                    String s_score = Integer.toString(score);
+                    if(s_score.equals(pS)) {
+                        Log.d("myTag", "SCORES" + s_score + pS);
                         String stringRank = Integer.toString(index);
                         rnk.setText(stringRank);
                         break;
                     }
-                    index += 1;
+                    else {
+                        index += 1;
+                    }
                 }
             }
         });

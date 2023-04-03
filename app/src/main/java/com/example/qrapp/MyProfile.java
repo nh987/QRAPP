@@ -341,6 +341,7 @@ public class MyProfile extends AppCompatActivity {
                 int playerScore = deviceIdDict.get(deID);
                 int index = 1;
                 for(int score : highestArrayList) {
+
                     if(score == playerScore) {
                         String stringRank = Integer.toString(index);
                         rnk.setText(stringRank);
