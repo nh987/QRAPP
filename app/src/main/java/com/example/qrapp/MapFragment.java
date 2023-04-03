@@ -36,7 +36,6 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -237,10 +236,11 @@ public class MapFragment extends Fragment {
      * This method stops getting location updates before the MapFragment is destroyed
      */
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onDestroy() {
         stopLocUpdates();
         FLPC=null;
+        super.onDestroy();
+
     }
 
 
@@ -379,12 +379,12 @@ public class MapFragment extends Fragment {
         QRC_collectionReference
                 .whereNotEqualTo("Geolocation", null)// non null location
                 .get() //getem
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                         //int count = 0; // the true counted QRcs
                         GeoPoint QRcLocation;
-                        for (QueryDocumentSnapshot QRcDoc: task.getResult()) {
+                        for (QueryDocumentSnapshot QRcDoc: queryDocumentSnapshots) {
                             Location you = curr_location;
                             QRcLocation = (GeoPoint)QRcDoc.get("Geolocation");
 
