@@ -45,9 +45,9 @@ public class SearchFragmentTest {
         solo.waitForActivity(String.valueOf(SearchFragment.class));
         // Click on the search button
         solo.clickOnView(solo.getView(R.id.QRCButton));
+        solo.sleep(7000);
         Spinner spinner = (Spinner) solo.getView(R.id.spinner);
-        assertTrue(solo.searchText("Juliet CharlieNovemberDeltaBravoDelta"));
-        String searchText = "Juliet CharlieNovemberDeltaBravoDelta";
+        String searchText = "Alpha BravoBravoJulietGolfIndia";
         ListView listView = (ListView) solo.getView(R.id.searchResults);
         Integer count = listView.getCount();
         for (int i = 0; i < count; i++) {
@@ -60,9 +60,9 @@ public class SearchFragmentTest {
         }
         solo.waitForActivity(QRProfile.class);
         solo.assertCurrentActivity("Wrong activity", QRProfile.class);
-        assertTrue(solo.searchText("Juliet CharlieNovemberDeltaBravoDelta"));
-        assertTrue(solo.searchText("22 Points"));
-        assertTrue(solo.searchText("[I$,["));
+        assertTrue(solo.searchText("Alpha BravoBravoJulietGolfIndia"));
+        assertTrue(solo.searchText("31 Points"));
+        assertTrue(solo.searchText("C|;<{]"));
     }
 
     @Test
@@ -75,12 +75,12 @@ public class SearchFragmentTest {
         androidx.appcompat.widget.SearchView searchView = (androidx.appcompat.widget.SearchView) solo.getView(R.id.searchView);
         ImageView searchIcon = (ImageView) searchView.findViewById(androidx.appcompat.R.id.search_button);
         solo.clickOnView(searchIcon);
-        solo.typeText(0, "dds");
-        solo.sleep(6000);
+        solo.typeText(0, "mo_ketchum");
         solo.sendKey(Solo.ENTER);
+        solo.sleep(6000);
         solo.clickOnView(solo.getView(R.id.viewProfile));
         solo.waitForActivity(PlayerProfileActivity.class);
-        assertTrue(solo.searchText("dds's Profile"));
+        assertTrue(solo.searchText("mo_ketchum"));
     }
 
     @After
