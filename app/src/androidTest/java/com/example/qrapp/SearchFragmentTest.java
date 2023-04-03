@@ -70,7 +70,7 @@ public class SearchFragmentTest {
         solo.waitForActivity(MainActivity.class);
         solo.assertCurrentActivity("Wrong activity", MainActivity.class);
         solo.clickOnView(solo.getView(R.id.search_tab));
-        solo.sleep(7000);
+        solo.waitForActivity(String.valueOf(SearchFragment.class));
         solo.clickOnView(solo.getView(R.id.QRCButton));
         solo.clickOnView(solo.getView(R.id.playerButton));
         androidx.appcompat.widget.SearchView searchView = (androidx.appcompat.widget.SearchView) solo.getView(R.id.searchView);
