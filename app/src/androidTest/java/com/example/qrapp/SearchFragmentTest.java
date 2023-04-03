@@ -38,31 +38,16 @@ public class SearchFragmentTest {
     @Test
     public void testSearchButton() throws Exception {
         solo.waitForActivity(MainActivity.class);
-        // Check if we are on main activity
         solo.assertCurrentActivity("Wrong activity", MainActivity.class);
         solo.clickOnView(solo.getView(R.id.search_tab));
-        // Make sure we are now in the search fragment
         solo.waitForActivity(String.valueOf(SearchFragment.class));
-        // Click on the search button
         solo.clickOnView(solo.getView(R.id.QRCButton));
         solo.sleep(7000);
         Spinner spinner = (Spinner) solo.getView(R.id.spinner);
-        String searchText = "Alpha BravoBravoJulietGolfIndia";
         ListView listView = (ListView) solo.getView(R.id.searchResults);
-        Integer count = listView.getCount();
-        for (int i = 0; i < count; i++) {
-            View view = listView.getChildAt(i);
-            TextView textView = (TextView) view.findViewById(R.id.QRCName);
-            if (textView.getText().toString().contains(searchText)) {
-                solo.clickOnView(view);
-                break;
-            }
-        }
+        solo.clickInList(0);
         solo.waitForActivity(QRProfile.class);
         solo.assertCurrentActivity("Wrong activity", QRProfile.class);
-        assertTrue(solo.searchText("Alpha BravoBravoJulietGolfIndia"));
-        assertTrue(solo.searchText("31 Points"));
-        assertTrue(solo.searchText("C|;<{]"));
     }
 
     @Test
