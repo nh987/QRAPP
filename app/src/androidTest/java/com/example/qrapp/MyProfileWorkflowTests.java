@@ -100,6 +100,23 @@ public class MyProfileWorkflowTests {
         }
     }
 
+    @Test
+    public void testBackButton(){
+        solo.assertCurrentActivity("Wrong Activity", MainActivity.class);
+        solo.clickOnView(solo.getView(R.id.button_MYprofile));
+        solo.assertCurrentActivity("Wrong Activity", MyProfile.class);
+        solo.clickOnView(solo.getView(R.id.back));
+        solo.assertCurrentActivity("Wrong Activity", MainActivity.class);
+    }
+
+    @Test
+    public void testViewQR(){
+        solo.assertCurrentActivity("Wrong Activity", MainActivity.class);
+        solo.clickOnView(solo.getView(R.id.button_MYprofile));
+        solo.assertCurrentActivity("Wrong Activity", MyProfile.class);
+        solo.clickOnView(solo.getView(R.id.myQRCbutton));
+        solo.assertCurrentActivity("Wrong Activity", ViewPlayerScannedQRActivity.class);
+    }
     @After
     public void tearDown() throws Exception{
         solo.finishOpenedActivities();
