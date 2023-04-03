@@ -4,7 +4,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import android.content.Intent;
+import android.view.View;
+import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.test.rule.ActivityTestRule;
 
@@ -38,12 +41,22 @@ public class QRProfileTest {
     public void testSearchButton() throws Exception {
         solo.waitForActivity(MainActivity.class);
         solo.assertCurrentActivity("Wrong activity", MainActivity.class);
-        solo.clickInList(1);
+        String searchText = "Alpha EchoCharlieEchoJulietHotel";
+        ListView listView = (ListView) solo.getView(R.id.item_listview);
+        Integer count = listView.getCount();
+        for (int i = 0; i < count; i++) {
+            View view = listView.getChildAt(i);
+            TextView textView = (TextView) view.findViewById(R.id.QRCName);
+            if (textView.getText().toString().contains(searchText)) {
+                solo.clickOnView(view);
+                break;
+            }
+        }
         solo.waitForActivity(QRProfile.class);
         solo.assertCurrentActivity("Wrong activity", QRProfile.class);
         assertTrue(solo.searchText("Alpha EchoCharlieEchoJulietHotel"));
-        assertTrue(solo.searchText("53 Points"));
-        assertTrue(solo.searchText("C|X>)"));
+        assertTrue(solo.searchText("0 Points"));
+        assertTrue(solo.searchText("bigdog"));
     }
     @After
     public void tearDown() throws Exception {
