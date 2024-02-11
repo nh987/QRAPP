@@ -1,6 +1,8 @@
 # QRAPP
 
-A fully functional Android app for QRc aggregation. Built using Java & Firebase.
+A fully functional Android QR Scanning app.
+Users can hunt for QR codes around them, scan them to earn points, and see its locations on the map. There is a leaderboards feature as well as the ability to comment on the locations where the QR codes were found. 
+Built using Java & Firebase.
 A demo is available under /doc
 
 Some screens:
