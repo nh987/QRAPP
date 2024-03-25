@@ -1,7 +1,7 @@
 # QRAPP
 
 A fully functional Android QR Scanning app.
-Users can hunt for QR codes around them, scan them to earn points, and see its locations on the map. There is a leaderboards feature as well as the ability to comment on the locations where the QR codes were found. 
+Users can hunt for QR codes around them, scan them to earn points, and see its locations on the map. There is a feature to comment on the locations where the QR codes were found, and to compete with other users there is a leaderboards page.
 Built using Java & Firebase.
 A demo is available under /doc
 
